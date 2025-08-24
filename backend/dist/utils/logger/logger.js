@@ -42,7 +42,7 @@ const winston_1 = __importStar(require("winston"));
 const { combine, timestamp, printf } = winston_1.format;
 // مسار المجلد للّوجات
 //const logsDir = 'C:\\Dev\\Git\\TestVSCode\\shared\\logs';
-const logsDir = path_1.default.resolve(process.cwd(), 'shared', 'logs');
+const logsDir = 'C:\\Dev\\Git\\wmsV1\\shared\\logs';
 // إنشاء المجلد إذا غير موجود
 if (!fs_1.default.existsSync(logsDir)) {
     fs_1.default.mkdirSync(logsDir, { recursive: true });
@@ -63,29 +63,37 @@ const logFormat = printf((info) => {
     const sourceInfo = source ? `[${source}${method ? `::${method}` : ''}]` : '';
     return `${timestamp} [${level.toUpperCase()}] ${sourceInfo}: ${message}`;
 });
+const appFileTransport = new winston_1.transports.File({
+    filename: path_1.default.join(logsDir, 'app.log'),
+    format: combine(timestamp(), logFormat),
+});
+appFileTransport.on('error', (err) => {
+    console.error('Winston app.log file transport error:', err);
+});
+const errorFileTransport = new winston_1.transports.File({
+    filename: path_1.default.join(logsDir, 'error.log'),
+    level: 'error',
+    format: combine(timestamp(), logFormat),
+});
+errorFileTransport.on('error', (err) => {
+    console.error('Winston error.log file transport error:', err);
+});
+const debugFileTransport = new winston_1.transports.File({
+    filename: path_1.default.join(logsDir, 'debug.log'),
+    level: 'debug',
+    format: combine(timestamp(), logFormat),
+});
+debugFileTransport.on('error', (err) => {
+    console.error('Winston debug.log file transport error:', err);
+});
 const logger = winston_1.default.createLogger({
     level: 'debug',
     format: combine(attachMeta(), // دمج الميتا
     timestamp()),
     transports: [
-        // All logs
-        new winston_1.transports.File({
-            filename: path_1.default.join(logsDir, 'app.log'),
-            format: combine(timestamp(), logFormat),
-        }),
-        // Error logs only
-        new winston_1.transports.File({
-            filename: path_1.default.join(logsDir, 'error.log'),
-            level: 'error',
-            format: combine(timestamp(), logFormat),
-        }),
-        // Debug logs only
-        new winston_1.transports.File({
-            filename: path_1.default.join(logsDir, 'debug.log'),
-            level: 'debug',
-            format: combine(timestamp(), logFormat),
-        }),
-        // Console logs
+        appFileTransport,
+        errorFileTransport,
+        debugFileTransport,
         new winston_1.transports.Console({
             format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
         }),
