@@ -1,0 +1,34 @@
+{
+  "name": "wmsv1",
+  "version": "1.0.0",
+  "description": "Full-stack TypeScript monorepo",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "build": "npm run shared:build && npm run backend:build && npm run frontend:build",
+    "start": "concurrently \"npm run backend:start\" \"npm run frontend:start\"",
+    "install:all": "npm install && npm run backend:install && npm run frontend:install && npm run shared:install",
+    "backend:install": "cd backend && npm install",
+    "frontend:install": "cd frontend && npm install",
+    "shared:install": "cd shared && npm install",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend && npm run build",
+    "shared:build": "cd shared && npm run build",
+    "backend:start": "cd backend && npm start",
+    "frontend:start": "cd frontend && npm start",
+    "clean": "rm -rf backend/dist frontend/.next shared/dist node_modules/*/node_modules"
+  },
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "devDependencies": {
+    "@types/winston": "^2.4.4",
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "winston": "^3.17.0"
+  }
+}
