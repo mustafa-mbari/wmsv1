@@ -1,11 +1,4 @@
-2025-08-24T22:08:03.357Z [INFO] : This is an info message
-2025-08-24T22:08:03.359Z [ERROR] : This is an error message
-2025-08-24T22:08:03.359Z [DEBUG] : This is a debug message
-2025-08-24T22:08:03.360Z [WARN] : This is a warning message
-2025-08-24T22:08:03.360Z [INFO] [testLogger::testMethod]: This is a message with meta
-2025-08-24T22:11:03.810Z [INFO] [server::startup]: Backend server started successfully
-2025-08-24T22:11:03.812Z [INFO] [server::startup]: API documentation available
-2025-08-24T22:11:45.076Z [INFO] [server::startup]: Backend server started successfully
-2025-08-24T22:11:45.080Z [INFO] [server::startup]: API documentation available
-2025-08-24T22:13:09.238Z [INFO] [server::startup]: Backend server started successfully
-2025-08-24T22:13:09.240Z [INFO] [server::startup]: API documentation available
+2025-08-24T22:31:44.309Z [INFO] [server::startup]: Backend server started successfully
+2025-08-24T22:31:44.311Z [INFO] [server::startup]: API documentation available
+2025-08-25 00:34:28 [INFO] [server::startup]: Backend server started successfully
+2025-08-25 00:34:28 [INFO] [server::startup]: API documentation available

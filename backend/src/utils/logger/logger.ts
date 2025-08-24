@@ -42,7 +42,7 @@ const logFormat = printf((info: LogInfo) => {
 
 const appFileTransport = new transports.File({
   filename: path.join(logsDir, 'app.log'),
-  format: combine(timestamp(), logFormat),
+  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
 });
 appFileTransport.on('error', (err) => {
   console.error('Winston app.log file transport error:', err);
@@ -51,7 +51,7 @@ appFileTransport.on('error', (err) => {
 const errorFileTransport = new transports.File({
   filename: path.join(logsDir, 'error.log'),
   level: 'error',
-  format: combine(timestamp(), logFormat),
+  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
 });
 errorFileTransport.on('error', (err) => {
   console.error('Winston error.log file transport error:', err);
@@ -60,7 +60,7 @@ errorFileTransport.on('error', (err) => {
 const debugFileTransport = new transports.File({
   filename: path.join(logsDir, 'debug.log'),
   level: 'debug',
-  format: combine(timestamp(), logFormat),
+  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
 });
 debugFileTransport.on('error', (err) => {
   console.error('Winston debug.log file transport error:', err);
