@@ -2,3 +2,17 @@
 2025-08-24T22:31:44.311Z [INFO] [server::startup]: API documentation available
 2025-08-25 00:34:28 [INFO] [server::startup]: Backend server started successfully
 2025-08-25 00:34:28 [INFO] [server::startup]: API documentation available
+2025-08-28 12:56:53 [INFO] [server::startup]: Backend server started successfully
+2025-08-28 12:56:53 [INFO] [server::startup]: API documentation available
+2025-08-28 12:56:58 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 12:56:58 [INFO] [userRoutes::getUsers]: Fetching all users
+2025-08-28 12:56:58 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 12:56:58 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 12:56:58 [INFO] [userRoutes::getUsers]: Fetching all users
+2025-08-28 12:56:58 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 12:57:21 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 12:57:21 [INFO] [userRoutes::getUsers]: Fetching all users
+2025-08-28 12:57:21 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 12:57:21 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 12:57:21 [INFO] [userRoutes::getUsers]: Fetching all users
+2025-08-28 12:57:21 [INFO] [middleware::requestLogger]: Request completed
