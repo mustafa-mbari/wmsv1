@@ -1,16 +1,308 @@
-// backend/prisma/schema.prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  createdAt DateTime @default(now())
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://mb_user:pass5432@localhost:5432/wms"
+}
+
+model class_types {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique(map: "class_types_name_unique") @db.VarChar(100)
+  description String?
+  is_active   Boolean? @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model knex_migrations {
+  id             Int       @id @default(autoincrement())
+  name           String?   @db.VarChar(255)
+  batch          Int?
+  migration_time DateTime? @db.Timestamptz(6)
+}
+
+model knex_migrations_lock {
+  index     Int  @id @default(autoincrement())
+  is_locked Int?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model notifications {
+  id            Int       @id @default(autoincrement())
+  type          String    @db.VarChar(50)
+  title         String    @db.VarChar(200)
+  message       String
+  data          Json?     @db.Json
+  user_id       Int?
+  email         String?   @db.VarChar(255)
+  phone         String?   @db.VarChar(20)
+  status        String?   @default("pending")
+  sent_at       DateTime? @db.Timestamptz(6)
+  read_at       DateTime? @db.Timestamptz(6)
+  retry_count   Int?      @default(0)
+  error_message String?
+  priority      String?   @default("normal") @db.VarChar(10)
+  metadata      Json?     @db.Json
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime  @default(now()) @db.Timestamptz(6)
+  users         users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_user_id_foreign")
+
+  @@index([created_at, priority], map: "notifications_created_at_priority_index")
+  @@index([type, status], map: "notifications_type_status_index")
+  @@index([user_id, status], map: "notifications_user_id_status_index")
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "permissions_name_unique") @db.VarChar(100)
+  slug             String             @unique(map: "permissions_slug_unique") @db.VarChar(100)
+  description      String?
+  module           String?            @db.VarChar(50)
+  is_active        Boolean?           @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  role_permissions role_permissions[]
+}
+
+model product_attribute_options {
+  id                       Int                        @id @default(autoincrement())
+  attribute_id             Int
+  value                    String                     @db.VarChar(200)
+  label                    String                     @db.VarChar(200)
+  sort_order               Int?                       @default(0)
+  is_active                Boolean?                   @default(true)
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  product_attributes       product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_options_attribute_id_foreign")
+  product_attribute_values product_attribute_values[]
+
+  @@unique([attribute_id, value], map: "product_attribute_options_attribute_id_value_unique")
+}
+
+model product_attribute_values {
+  id                        Int                        @id @default(autoincrement())
+  product_id                Int
+  attribute_id              Int
+  value                     String?
+  option_id                 Int?
+  created_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  product_attributes        product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_attribute_id_foreign")
+  product_attribute_options product_attribute_options? @relation(fields: [option_id], references: [id], onUpdate: NoAction, map: "product_attribute_values_option_id_foreign")
+  products                  products                   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_product_id_foreign")
+
+  @@unique([product_id, attribute_id], map: "product_attribute_values_product_id_attribute_id_unique")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model product_attributes {
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @db.VarChar(100)
+  slug                      String                      @unique(map: "product_attributes_slug_unique") @db.VarChar(100)
+  type                      String
+  description               String?
+  is_required               Boolean?                    @default(false)
+  is_filterable             Boolean?                    @default(false)
+  is_searchable             Boolean?                    @default(false)
+  sort_order                Int?                        @default(0)
+  is_active                 Boolean?                    @default(true)
+  created_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  product_attribute_options product_attribute_options[]
+  product_attribute_values  product_attribute_values[]
+}
+
+model product_categories {
+  id                       Int                  @id @default(autoincrement())
+  name                     String               @db.VarChar(100)
+  slug                     String               @unique(map: "product_categories_slug_unique") @db.VarChar(100)
+  description              String?
+  parent_id                Int?
+  image_url                String?              @db.VarChar(255)
+  sort_order               Int?                 @default(0)
+  is_active                Boolean?             @default(true)
+  created_at               DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime             @default(now()) @db.Timestamptz(6)
+  product_categories       product_categories?  @relation("product_categoriesToproduct_categories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "product_categories_parent_id_foreign")
+  other_product_categories product_categories[] @relation("product_categoriesToproduct_categories")
+  product_families         product_families[]
+  products                 products[]
+}
+
+model product_families {
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique(map: "product_families_name_unique") @db.VarChar(100)
+  description        String?
+  category_id        Int?
+  is_active          Boolean?            @default(true)
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  product_categories product_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "product_families_category_id_foreign")
+  products           products[]
+}
+
+model products {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(200)
+  sku                      String                     @unique(map: "products_sku_unique") @db.VarChar(100)
+  barcode                  String?                    @unique(map: "products_barcode_unique") @db.VarChar(100)
+  description              String?
+  short_description        String?
+  category_id              Int?
+  family_id                Int?
+  unit_id                  Int?
+  price                    Decimal?                   @default(0) @db.Decimal(12, 2)
+  cost                     Decimal?                   @default(0) @db.Decimal(12, 2)
+  stock_quantity           Int?                       @default(0)
+  min_stock_level          Int?                       @default(0)
+  weight                   Decimal?                   @db.Decimal(8, 3)
+  length                   Decimal?                   @db.Decimal(8, 2)
+  width                    Decimal?                   @db.Decimal(8, 2)
+  height                   Decimal?                   @db.Decimal(8, 2)
+  status                   String?                    @default("active") @db.VarChar(20)
+  is_digital               Boolean?                   @default(false)
+  track_stock              Boolean?                   @default(true)
+  image_url                String?                    @db.VarChar(255)
+  images                   Json?                      @db.Json
+  tags                     Json?                      @db.Json
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  product_attribute_values product_attribute_values[]
+  product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
+  product_families         product_families?          @relation(fields: [family_id], references: [id], onUpdate: NoAction, map: "products_family_id_foreign")
+  units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
+
+  @@index([category_id, status], map: "products_category_id_status_index")
+  @@index([sku, status], map: "products_sku_status_index")
+}
+
+model role_permissions {
+  id            Int         @id @default(autoincrement())
+  role_id       Int
+  permission_id Int
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_permission_id_foreign")
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_role_id_foreign")
+
+  @@unique([role_id, permission_id], map: "role_permissions_role_id_permission_id_unique")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "roles_name_unique") @db.VarChar(100)
+  slug             String             @unique(map: "roles_slug_unique") @db.VarChar(100)
+  description      String?
+  is_active        Boolean?           @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  role_permissions role_permissions[]
+  user_roles       user_roles[]
+}
+
+model system_logs {
+  id          Int       @id @default(autoincrement())
+  level       String    @db.VarChar(20)
+  action      String    @db.VarChar(100)
+  message     String
+  context     Json?     @db.Json
+  user_id     Int?
+  ip_address  String?   @db.VarChar(45)
+  user_agent  String?   @db.VarChar(500)
+  module      String?   @db.VarChar(50)
+  entity_type String?   @db.VarChar(50)
+  entity_id   Int?
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  users       users?    @relation(fields: [user_id], references: [id], onUpdate: NoAction, map: "system_logs_user_id_foreign")
+
+  @@index([entity_type, entity_id], map: "system_logs_entity_type_entity_id_index")
+  @@index([level, created_at], map: "system_logs_level_created_at_index")
+  @@index([user_id, created_at], map: "system_logs_user_id_created_at_index")
+}
+
+model system_settings {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique(map: "system_settings_key_unique") @db.VarChar(100)
+  value       String?
+  type        String?  @default("string") @db.VarChar(20)
+  description String?
+  group       String?  @db.VarChar(50)
+  is_public   Boolean? @default(false)
+  is_editable Boolean? @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model units_of_measure {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique(map: "units_of_measure_name_unique") @db.VarChar(100)
+  symbol      String     @db.VarChar(10)
+  description String?
+  is_active   Boolean?   @default(true)
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  products    products[]
+}
+
+model user_roles {
+  id                                  Int       @id @default(autoincrement())
+  user_id                             Int
+  role_id                             Int
+  assigned_at                         DateTime? @default(now()) @db.Timestamptz(6)
+  assigned_by                         Int?
+  created_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  users_user_roles_assigned_byTousers users?    @relation("user_roles_assigned_byTousers", fields: [assigned_by], references: [id], onUpdate: NoAction, map: "user_roles_assigned_by_foreign")
+  roles                               roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_role_id_foreign")
+  users_user_roles_user_idTousers     users     @relation("user_roles_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_user_id_foreign")
+
+  @@unique([user_id, role_id], map: "user_roles_user_id_role_id_unique")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id                                       Int             @id @default(autoincrement())
+  username                                 String          @unique(map: "users_username_unique") @db.VarChar(50)
+  email                                    String          @unique(map: "users_email_unique") @db.VarChar(255)
+  password_hash                            String          @db.VarChar(255)
+  first_name                               String          @db.VarChar(100)
+  last_name                                String          @db.VarChar(100)
+  phone                                    String?         @db.VarChar(20)
+  address                                  String?
+  birth_date                               DateTime?       @db.Date
+  gender                                   String?
+  avatar_url                               String?         @db.VarChar(255)
+  is_active                                Boolean?        @default(true)
+  email_verified                           Boolean?        @default(false)
+  email_verified_at                        DateTime?       @db.Timestamptz(6)
+  last_login_at                            DateTime?       @db.Timestamptz(6)
+  reset_token                              String?         @db.VarChar(255)
+  reset_token_expires_at                   DateTime?       @db.Timestamptz(6)
+  created_at                               DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at                               DateTime        @default(now()) @db.Timestamptz(6)
+  notifications                            notifications[]
+  system_logs                              system_logs[]
+  user_roles_user_roles_assigned_byTousers user_roles[]    @relation("user_roles_assigned_byTousers")
+  user_roles_user_roles_user_idTousers     user_roles[]    @relation("user_roles_user_idTousers")
+  warehouses                               warehouses[]
+}
+
+model warehouses {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  code        String   @unique(map: "warehouses_code_unique") @db.VarChar(20)
+  address     String?
+  city        String?  @db.VarChar(100)
+  state       String?  @db.VarChar(100)
+  country     String?  @db.VarChar(100)
+  postal_code String?  @db.VarChar(20)
+  phone       String?  @db.VarChar(20)
+  email       String?  @db.VarChar(255)
+  manager_id  Int?
+  is_active   Boolean? @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  users       users?   @relation(fields: [manager_id], references: [id], onUpdate: NoAction, map: "warehouses_manager_id_foreign")
 }
