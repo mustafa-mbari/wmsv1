@@ -4,3 +4,6 @@ node_modules
 
 # Ignore shared log files
 shared/logs/
+
+# Ignore backend environment file
+backend/.env
