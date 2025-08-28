@@ -1,4 +1,35 @@
-2025-08-24T22:31:44.309Z [INFO] [server::startup]: Backend server started successfully
-2025-08-24T22:31:44.311Z [INFO] [server::startup]: API documentation available
-2025-08-25 00:34:28 [INFO] [server::startup]: Backend server started successfully
-2025-08-25 00:34:28 [INFO] [server::startup]: API documentation available
+2025-08-28 15:28:49 [INFO] [server::startup]: Backend server started successfully
+2025-08-28 15:28:49 [INFO] [server::startup]: API documentation available
+2025-08-28 15:29:21 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:29:21 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:29:22 [WARN] [authRoutes::login]: Login failed: invalid credentials
+2025-08-28 15:29:22 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:30:20 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:30:20 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:30:20 [INFO] [authRoutes::login]: Login successful
+2025-08-28 15:32:34 [INFO] [server::startup]: Backend server started successfully
+2025-08-28 15:32:34 [INFO] [server::startup]: API documentation available
+2025-08-28 15:32:34 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:34 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:35 [INFO] [authRoutes::login]: Login successful
+2025-08-28 15:32:35 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:32:36 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:36 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:36 [INFO] [authRoutes::login]: Login successful
+2025-08-28 15:32:36 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:32:38 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:38 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:38 [INFO] [authRoutes::login]: Login successful
+2025-08-28 15:32:38 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:32:44 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:44 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:44 [WARN] [authRoutes::login]: Login failed: invalid credentials
+2025-08-28 15:32:44 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:32:47 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:47 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:47 [WARN] [authRoutes::login]: Login failed: invalid credentials
+2025-08-28 15:32:47 [INFO] [middleware::requestLogger]: Request completed
+2025-08-28 15:32:51 [INFO] [middleware::requestLogger]: Incoming request
+2025-08-28 15:32:51 [INFO] [authRoutes::login]: Login attempt
+2025-08-28 15:32:51 [INFO] [authRoutes::login]: Login successful
+2025-08-28 15:32:51 [INFO] [middleware::requestLogger]: Request completed

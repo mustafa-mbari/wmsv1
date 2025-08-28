@@ -24,21 +24,14 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 
   // Find user in DB
-  let user = await prisma.user.findUnique({ where: { email } });
+  let user = await prisma.users.findUnique({ where: { email } });
   let validPassword = false;
   if (user) {
-    validPassword = await bcrypt.compare(password, user.password);
+    validPassword = await bcrypt.compare(password, user.password_hash);
   } else {
     // Mock authentication fallback
     if (email === 'admin@example.com' && password === 'password123') {
-      user = {
-        id: '1',
-        email,
-        name: 'Admin User',
-        password: '', // Not used for mock
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+
       validPassword = true;
     }
   }
@@ -50,7 +43,9 @@ router.post('/login', async (req: Request, res: Response) => {
 
   // Success: generate JWT, etc.
   logger.info('Login successful', { source: 'authRoutes', method: 'login', email });
-  // ...generate JWT and respond...
+  
+  // Example response (replace with your JWT logic if needed)
+res.json(createApiResponse(true, { user }, 'Login successful'));
 });
 
 export default router;
