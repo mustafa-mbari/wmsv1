@@ -1,0 +1,15 @@
+{
+  "name": "wms-seeds",
+  "version": "1.0.0",
+  "description": "Seed data for WMS database",
+  "main": "seed.ts",
+  "scripts": {
+    "seed": "npx tsx seed.ts",
+    "seed:dev": "npx tsx seed.ts"
+  },
+  "keywords": ["prisma", "seed", "database", "wms"],
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}
