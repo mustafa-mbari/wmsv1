@@ -26,10 +26,14 @@
   ],
   "devDependencies": {
     "@types/winston": "^2.4.4",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "express": "^5.1.0",
     "pg": "^8.16.3",
+    "prisma": "^6.15.0",
     "winston": "^3.17.0"
   }
 }

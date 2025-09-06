@@ -44,7 +44,7 @@ The seeds create the following users (all with password: `Password123!`):
 npx prisma generate
 
 # Run the seeds
-cd prisma/seeds
+cd backend/prisma/seeds
 npm install
 npm run seed
 ```
