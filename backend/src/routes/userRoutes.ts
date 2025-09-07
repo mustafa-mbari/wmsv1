@@ -1,66 +1,143 @@
 import { Router, Request, Response } from 'express';
-import { User, createApiResponse, HttpStatus } from '../../../shared/dist'
+import { createApiResponse, HttpStatus } from '../../../shared/dist'
 import logger from '../utils/logger/logger';
+import { PrismaClient } from '@prisma/client';
 
 const router = Router();
-
-// Mock users data
-const users: User[] = [
-  {
-    id: '1',
-    email: 'john@example.com',
-    name: 'John Doe',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '2',
-    email: 'jane@example.com',
-    name: 'Jane Smith',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+const prisma = new PrismaClient();
 
 // GET /api/users
-router.get('/', (req: Request, res: Response) => {
-  logger.info('Fetching all users', { 
-    source: 'userRoutes', 
-    method: 'getUsers',
-    count: users.length
-  });
-  res.json(createApiResponse(true, users, 'Users retrieved successfully'));
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    logger.info('Fetching all users from database', { 
+      source: 'userRoutes', 
+      method: 'getUsers'
+    });
+
+    const users = await prisma.user.findMany({
+      include: {
+        UserRole: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
+
+    // Transform the data to match frontend expectations
+    const transformedUsers = users.map(user => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      address: user.address,
+      city: user.city,
+      country: user.country,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      emailVerified: user.emailVerified,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      role_names: user.UserRole.map(ur => ur.role.name),
+      role_slugs: user.UserRole.map(ur => ur.role.slug)
+    }));
+
+    logger.info('Users retrieved successfully from database', { 
+      source: 'userRoutes', 
+      method: 'getUsers',
+      count: transformedUsers.length
+    });
+
+    res.json(createApiResponse(true, transformedUsers, 'Users retrieved successfully'));
+  } catch (error) {
+    logger.error('Error fetching users from database', {
+      source: 'userRoutes',
+      method: 'getUsers',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to fetch users')
+    );
+  }
 });
 
 // GET /api/users/:id
-router.get('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  logger.info('Fetching user by ID', { 
-    source: 'userRoutes', 
-    method: 'getUserById',
-    userId: id
-  });
-  
-  const user = users.find(u => u.id === id);
-  
-  if (!user) {
-    logger.warn('User not found', { 
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    logger.info('Fetching user by ID from database', { 
       source: 'userRoutes', 
       method: 'getUserById',
       userId: id
     });
-    return res.status(HttpStatus.NOT_FOUND).json(
-      createApiResponse(false, null, 'User not found')
+    
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        UserRole: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
+    
+    if (!user) {
+      logger.warn('User not found in database', { 
+        source: 'userRoutes', 
+        method: 'getUserById',
+        userId: id
+      });
+      return res.status(HttpStatus.NOT_FOUND).json(
+        createApiResponse(false, null, 'User not found')
+      );
+    }
+
+    // Transform the data to match frontend expectations
+    const transformedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      address: user.address,
+      city: user.city,
+      country: user.country,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      emailVerified: user.emailVerified,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      role_names: user.UserRole.map(ur => ur.role.name),
+      role_slugs: user.UserRole.map(ur => ur.role.slug)
+    };
+    
+    logger.info('User retrieved successfully from database', { 
+      source: 'userRoutes', 
+      method: 'getUserById',
+      userId: id,
+      userEmail: transformedUser.email
+    });
+
+    res.json(createApiResponse(true, transformedUser, 'User retrieved successfully'));
+  } catch (error) {
+    logger.error('Error fetching user from database', {
+      source: 'userRoutes',
+      method: 'getUserById',
+      userId: req.params.id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to fetch user')
     );
   }
-  
-  logger.info('User retrieved successfully', { 
-    source: 'userRoutes', 
-    method: 'getUserById',
-    userId: id,
-    userEmail: user.email
-  });
-  res.json(createApiResponse(true, user, 'User retrieved successfully'));
 });
 
 export default router;
