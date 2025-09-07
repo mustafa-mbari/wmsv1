@@ -13,6 +13,19 @@
     "roles": ["super-admin"]
   },
   {
+    "username": "superadmin",
+    "email": "admin@example.com",
+    "password": "password123",
+    "first_name": "Admin",
+    "last_name": "User",
+    "phone": "+1234567890",
+    "address": "123 Admin Street, Tech City",
+    "gender": "other",
+    "is_active": true,
+    "email_verified": true,
+    "roles": ["super-admin"]
+  },
+  {
     "username": "admin",
     "email": "admin@wmlab.com",
     "password": "Admin123!",

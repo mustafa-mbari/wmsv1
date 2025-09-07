@@ -1,9 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:8000',
+  reactStrictMode: true,
+  swcMinify: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
   },
-  transpilePackages: ['@my-app/shared'],
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

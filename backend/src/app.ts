@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { createApiResponse, HttpStatus } from '../../shared/dist'
+import { createApiResponse, HttpStatus } from '../../shared/dist';
 import logger from './utils/logger/logger';
 import { requestLogger } from './middleware/requestLogger';
 
@@ -17,7 +17,12 @@ const app: Application = express();
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003'
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
