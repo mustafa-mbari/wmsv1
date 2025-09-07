@@ -2,6 +2,9 @@ frontend/.next/
 frontend/node_modules/
 node_modules
 
+# Ignore compiled TypeScript files
+backend/dist/
+
 # Ignore shared log files
 shared/logs/
 
