@@ -7,3 +7,6 @@ shared/logs/
 
 # Ignore backend environment file
 backend/.env
+
+# Ignore Claude Code local settings
+.claude/
