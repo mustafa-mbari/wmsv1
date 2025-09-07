@@ -1,6 +1,7 @@
 // prisma/seeds/classes/UnitsOfMeasureSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface UnitSeedData {
   name: string;
@@ -32,31 +33,31 @@ export class UnitsOfMeasureSeeder extends BaseSeed<UnitSeedData> {
   validateRecord(record: UnitSeedData): boolean {
     // Required fields validation
     if (!record.name || !record.symbol) {
-      console.error('Unit record missing required fields:', record);
+      logger.error('Unit record missing required fields', { source: 'UnitsOfMeasureSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Name length validation
     if (record.name.length > 100) {
-      console.error('Unit name too long (max 100 characters):', record.name);
+      logger.error('Unit name too long (max 100 characters)', { source: 'UnitsOfMeasureSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     // Symbol length validation
     if (record.symbol.length > 10) {
-      console.error('Unit symbol too long (max 10 characters):', record.symbol);
+      logger.error('Unit symbol too long (max 10 characters)', { source: 'UnitsOfMeasureSeeder', method: 'validateRecord', symbol: record.symbol, length: record.symbol.length });
       return false;
     }
 
     // Symbol format validation (no spaces)
     if (record.symbol.includes(' ')) {
-      console.error('Unit symbol cannot contain spaces:', record.symbol);
+      logger.error('Unit symbol cannot contain spaces', { source: 'UnitsOfMeasureSeeder', method: 'validateRecord', symbol: record.symbol });
       return false;
     }
 
     // Conversion factor validation
     if (record.conversion_factor !== undefined && record.conversion_factor <= 0) {
-      console.error('Conversion factor must be positive:', record.conversion_factor);
+      logger.error('Conversion factor must be positive', { source: 'UnitsOfMeasureSeeder', method: 'validateRecord', conversion_factor: record.conversion_factor });
       return false;
     }
 

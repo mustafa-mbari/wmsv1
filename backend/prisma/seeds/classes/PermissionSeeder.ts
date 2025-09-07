@@ -1,6 +1,7 @@
 // prisma/seeds/classes/PermissionSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface PermissionSeedData {
   name: string;
@@ -31,32 +32,32 @@ export class PermissionSeeder extends BaseSeed<PermissionSeedData> {
   validateRecord(record: PermissionSeedData): boolean {
     // Required fields validation
     if (!record.name || !record.slug) {
-      console.error('Permission record missing required fields:', record);
+      logger.error('Permission record missing required fields', { source: 'PermissionSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Slug format validation (lowercase, numbers, underscore, hyphen only)
     const slugRegex = /^[a-z0-9_-]+$/;
     if (!slugRegex.test(record.slug)) {
-      console.error('Invalid permission slug format (use lowercase, numbers, _ or -):', record.slug);
+      logger.error('Invalid permission slug format (use lowercase, numbers, _ or -)', { source: 'PermissionSeeder', method: 'validateRecord', slug: record.slug });
       return false;
     }
 
     // Name length validation
     if (record.name.length > 100) {
-      console.error('Permission name too long (max 100 characters):', record.name);
+      logger.error('Permission name too long (max 100 characters)', { source: 'PermissionSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     // Slug length validation
     if (record.slug.length > 100) {
-      console.error('Permission slug too long (max 100 characters):', record.slug);
+      logger.error('Permission slug too long (max 100 characters)', { source: 'PermissionSeeder', method: 'validateRecord', slug: record.slug, length: record.slug.length });
       return false;
     }
 
     // Module validation if provided
     if (record.module && record.module.length > 50) {
-      console.error('Permission module too long (max 50 characters):', record.module);
+      logger.error('Permission module too long (max 50 characters)', { source: 'PermissionSeeder', method: 'validateRecord', module: record.module, length: record.module.length });
       return false;
     }
 

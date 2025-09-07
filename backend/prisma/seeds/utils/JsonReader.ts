@@ -3,6 +3,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import logger from '../../../src/utils/logger/logger';
 
 export interface JsonReaderOptions {
   encoding?: BufferEncoding;
@@ -45,12 +46,22 @@ export class JsonReader {
         this.validateJsonStructure(data, fileName);
       }
       
-      console.log(`📖 Successfully read ${fileName}: ${Array.isArray(data) ? data.length : 1} records`);
+      logger.info(`Successfully read ${fileName}`, {
+        source: 'JsonReader',
+        method: 'readJsonFile',
+        fileName,
+        recordCount: Array.isArray(data) ? data.length : 1
+      });
       
       return Array.isArray(data) ? data : [data];
       
     } catch (error) {
-      console.error(`❌ Failed to read JSON file ${fileName}:`, error);
+      logger.error(`Failed to read JSON file ${fileName}`, {
+        source: 'JsonReader',
+        method: 'readJsonFile',
+        fileName,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw new Error(`Could not read JSON file ${fileName}: ${error}`);
     }
   }
@@ -65,7 +76,11 @@ export class JsonReader {
       try {
         results[fileName] = await this.readJsonFile<T>(fileName);
       } catch (error) {
-        console.warn(`⚠️ Could not read ${fileName}, skipping...`);
+        logger.warn(`Could not read ${fileName}, skipping`, {
+          source: 'JsonReader',
+          method: 'readMultipleJsonFiles',
+          fileName
+        });
         results[fileName] = [];
       }
     }
@@ -94,7 +109,11 @@ export class JsonReader {
       const files = await fs.readdir(this.basePath);
       return files.filter(file => file.endsWith('.json'));
     } catch (error) {
-      console.error('❌ Failed to list JSON files:', error);
+      logger.error('Failed to list JSON files', {
+        source: 'JsonReader',
+        method: 'listJsonFiles',
+        error: error instanceof Error ? error.message : String(error)
+      });
       return [];
     }
   }
@@ -126,10 +145,19 @@ export class JsonReader {
       const content = pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data);
       
       await fs.writeFile(filePath, content, { encoding: this.options.encoding });
-      console.log(`💾 Successfully wrote ${fileName}`);
+      logger.info(`Successfully wrote ${fileName}`, {
+        source: 'JsonReader',
+        method: 'writeJsonFile',
+        fileName
+      });
       
     } catch (error) {
-      console.error(`❌ Failed to write JSON file ${fileName}:`, error);
+      logger.error(`Failed to write JSON file ${fileName}`, {
+        source: 'JsonReader',
+        method: 'writeJsonFile',
+        fileName,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw new Error(`Could not write JSON file ${fileName}: ${error}`);
     }
   }
@@ -144,10 +172,20 @@ export class JsonReader {
     
     try {
       await fs.copyFile(filePath, backupPath);
-      console.log(`📋 Backup created: ${path.basename(backupPath)}`);
+      logger.info(`Backup created: ${path.basename(backupPath)}`, {
+        source: 'JsonReader',
+        method: 'backupJsonFile',
+        fileName,
+        backupPath
+      });
       return backupPath;
     } catch (error) {
-      console.error(`❌ Failed to create backup for ${fileName}:`, error);
+      logger.error(`Failed to create backup for ${fileName}`, {
+        source: 'JsonReader',
+        method: 'backupJsonFile',
+        fileName,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
@@ -166,7 +204,11 @@ export class JsonReader {
 
     if (Array.isArray(data)) {
       if (data.length === 0) {
-        console.warn(`⚠️ JSON file ${fileName} contains an empty array`);
+        logger.warn(`JSON file ${fileName} contains an empty array`, {
+          source: 'JsonReader',
+          method: 'validateJsonStructure',
+          fileName
+        });
       }
 
       // Check if all items in array are objects

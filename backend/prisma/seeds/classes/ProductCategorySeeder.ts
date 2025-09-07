@@ -1,6 +1,7 @@
 // prisma/seeds/classes/ProductCategorySeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface CategorySeedData {
   name: string;
@@ -44,7 +45,7 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
       
       // Type guard to check if it's an array
       if (Array.isArray(rawData)) {
-        console.log('📖 Loading categories from array format');
+        logger.info('Loading categories from array format', { source: 'ProductCategorySeeder', method: 'loadData' });
         return rawData as CategorySeedData[];
       }
       
@@ -54,28 +55,28 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
         
         // Now TypeScript knows that structuredData has the categories property
         if (structuredData.categories) {
-          console.log(`📖 Loading ${structuredData.categories.length || 0} categories from structured format`);
+          logger.info(`Loading ${structuredData.categories.length || 0} categories from structured format`, { source: 'ProductCategorySeeder', method: 'loadData', categoriesCount: structuredData.categories.length || 0 });
           return structuredData.categories;
         }
       }
       
-      console.warn('⚠️ No categories found in products.json');
+      logger.warn('No categories found in products.json', { source: 'ProductCategorySeeder', method: 'loadData' });
       return [];
     } catch (error) {
-      console.error(`❌ Failed to load categories:`, error);
+      logger.error('Failed to load categories', { source: 'ProductCategorySeeder', method: 'loadData', error: error instanceof Error ? error.message : error });
       return [];
     }
   }
 
   validateRecord(record: CategorySeedData): boolean {
     if (!record.name || !record.slug) {
-      console.error('Category missing required fields:', record);
+      logger.error('Category missing required fields', { source: 'ProductCategorySeeder', method: 'validateRecord', record });
       return false;
     }
     
     const slugRegex = /^[a-z0-9_-]+$/;
     if (!slugRegex.test(record.slug)) {
-      console.error('Invalid category slug:', record.slug);
+      logger.error('Invalid category slug', { source: 'ProductCategorySeeder', method: 'validateRecord', slug: record.slug });
       return false;
     }
     
@@ -92,7 +93,7 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
       parent_id = parent?.id || null;
       
       if (!parent) {
-        console.warn(`⚠️ Parent category '${record.parent_slug}' not found for '${record.slug}'`);
+        logger.warn(`Parent category '${record.parent_slug}' not found for '${record.slug}'`, { source: 'ProductCategorySeeder', method: 'transformRecord', parent_slug: record.parent_slug, category_slug: record.slug });
       }
     }
 

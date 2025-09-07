@@ -1,6 +1,7 @@
 // prisma/seeds/classes/WarehouseSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface WarehouseSeedData {
   name: string;
@@ -39,26 +40,26 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
   validateRecord(record: WarehouseSeedData): boolean {
     // Required fields validation
     if (!record.name || !record.code) {
-      console.error('Warehouse record missing required fields:', record);
+      logger.error('Warehouse record missing required fields', { source: 'WarehouseSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Name length validation
     if (record.name.length > 100) {
-      console.error('Warehouse name too long (max 100 characters):', record.name);
+      logger.error('Warehouse name too long (max 100 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     // Code length validation
     if (record.code.length > 20) {
-      console.error('Warehouse code too long (max 20 characters):', record.code);
+      logger.error('Warehouse code too long (max 20 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', code: record.code, length: record.code.length });
       return false;
     }
 
     // Code format validation (uppercase letters, numbers, underscore, hyphen)
     const codeRegex = /^[A-Z0-9_-]+$/;
     if (!codeRegex.test(record.code)) {
-      console.error('Invalid warehouse code format (use uppercase, numbers, _ or -):', record.code);
+      logger.error('Invalid warehouse code format (use uppercase, numbers, _ or -)', { source: 'WarehouseSeeder', method: 'validateRecord', code: record.code });
       return false;
     }
 
@@ -66,7 +67,7 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
     if (record.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(record.email)) {
-        console.error('Invalid email format:', record.email);
+        logger.error('Invalid email format', { source: 'WarehouseSeeder', method: 'validateRecord', email: record.email });
         return false;
       }
     }
@@ -75,30 +76,30 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
     if (record.phone) {
       const phoneRegex = /^[\+]?[0-9\s\-\(\)]+$/;
       if (!phoneRegex.test(record.phone) || record.phone.length > 20) {
-        console.error('Invalid phone format or too long:', record.phone);
+        logger.error('Invalid phone format or too long', { source: 'WarehouseSeeder', method: 'validateRecord', phone: record.phone });
         return false;
       }
     }
 
     // Postal code validation if provided
     if (record.postal_code && record.postal_code.length > 20) {
-      console.error('Postal code too long (max 20 characters):', record.postal_code);
+      logger.error('Postal code too long (max 20 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', postal_code: record.postal_code, length: record.postal_code.length });
       return false;
     }
 
     // City, state, country validation if provided
     if (record.city && record.city.length > 100) {
-      console.error('City name too long (max 100 characters):', record.city);
+      logger.error('City name too long (max 100 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', city: record.city, length: record.city.length });
       return false;
     }
 
     if (record.state && record.state.length > 100) {
-      console.error('State name too long (max 100 characters):', record.state);
+      logger.error('State name too long (max 100 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', state: record.state, length: record.state.length });
       return false;
     }
 
     if (record.country && record.country.length > 100) {
-      console.error('Country name too long (max 100 characters):', record.country);
+      logger.error('Country name too long (max 100 characters)', { source: 'WarehouseSeeder', method: 'validateRecord', country: record.country, length: record.country.length });
       return false;
     }
 
@@ -116,7 +117,7 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
       if (manager) {
         manager_id = manager.id;
       } else {
-        console.warn(`⚠️ Manager '${record.manager_username}' not found for warehouse '${record.name}'`);
+        logger.warn(`Manager '${record.manager_username}' not found for warehouse '${record.name}'`, { source: 'WarehouseSeeder', method: 'transformRecord', manager_username: record.manager_username, warehouse_name: record.name });
       }
     }
 
@@ -296,7 +297,7 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
   // Helper method to assign managers to warehouses
   async assignManagersToWarehouses(): Promise<void> {
     try {
-      console.log('👥 Assigning managers to warehouses...');
+      logger.info('Assigning managers to warehouses', { source: 'WarehouseSeeder', method: 'assignManagersToWarehouses' });
       
       const warehousesData = await this.loadData();
       const warehousesWithManagers = warehousesData.filter(w => w.manager_username);
@@ -313,7 +314,7 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
         });
 
         if (!manager) {
-          console.warn(`⚠️ Manager '${warehouseRecord.manager_username}' not found for warehouse '${warehouseRecord.name}'`);
+          logger.warn(`Manager '${warehouseRecord.manager_username}' not found for warehouse '${warehouseRecord.name}'`, { source: 'WarehouseSeeder', method: 'assignManagersToWarehouses', manager_username: warehouseRecord.manager_username, warehouse_name: warehouseRecord.name });
           continue;
         }
 
@@ -327,11 +328,11 @@ export class WarehouseSeeder extends BaseSeed<WarehouseSeedData> {
           }
         });
 
-        console.log(`✅ Assigned manager '${warehouseRecord.manager_username}' to warehouse '${warehouseRecord.name}'`);
+        logger.info(`Assigned manager '${warehouseRecord.manager_username}' to warehouse '${warehouseRecord.name}'`, { source: 'WarehouseSeeder', method: 'assignManagersToWarehouses', manager_username: warehouseRecord.manager_username, warehouse_name: warehouseRecord.name });
       }
       
     } catch (error) {
-      console.error('❌ Error assigning managers to warehouses:', error);
+      logger.error('Error assigning managers to warehouses', { source: 'WarehouseSeeder', method: 'assignManagersToWarehouses', error: error instanceof Error ? error.message : error });
     }
   }
 }

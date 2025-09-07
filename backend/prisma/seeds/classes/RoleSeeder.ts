@@ -1,6 +1,7 @@
 // prisma/seeds/classes/RoleSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface RoleSeedData {
   name: string;
@@ -31,20 +32,20 @@ export class RoleSeeder extends BaseSeed<RoleSeedData> {
   validateRecord(record: RoleSeedData): boolean {
     // Required fields validation
     if (!record.name || !record.slug) {
-      console.error('Role record missing required fields:', record);
+      logger.error('Role record missing required fields', { source: 'RoleSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Slug format validation
     const slugRegex = /^[a-z0-9_-]+$/;
     if (!slugRegex.test(record.slug)) {
-      console.error('Invalid role slug format (use lowercase, numbers, _ or -):', record.slug);
+      logger.error('Invalid role slug format (use lowercase, numbers, _ or -)', { source: 'RoleSeeder', method: 'validateRecord', slug: record.slug });
       return false;
     }
 
     // Name length validation
     if (record.name.length > 100) {
-      console.error('Role name too long (max 100 characters):', record.name);
+      logger.error('Role name too long (max 100 characters)', { source: 'RoleSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
@@ -87,7 +88,7 @@ export class RoleSeeder extends BaseSeed<RoleSeedData> {
   // Assign permissions to roles after seeding
   private async assignPermissionsToRoles(): Promise<void> {
     try {
-      console.log('🔗 Assigning permissions to roles...');
+      logger.info('Assigning permissions to roles', { source: 'RoleSeeder', method: 'assignPermissionsToRoles' });
       
       const rolesData = await this.loadData();
       const rolesWithPermissions = rolesData.filter(role => role.permissions && role.permissions.length > 0);
@@ -98,7 +99,7 @@ export class RoleSeeder extends BaseSeed<RoleSeedData> {
         });
         
         if (!role) {
-          console.warn(`⚠️ Role '${roleRecord.slug}' not found, skipping permission assignment`);
+          logger.warn(`Role '${roleRecord.slug}' not found, skipping permission assignment`, { source: 'RoleSeeder', method: 'assignPermissionsToRoles', role_slug: roleRecord.slug });
           continue;
         }
 
@@ -108,7 +109,7 @@ export class RoleSeeder extends BaseSeed<RoleSeedData> {
           });
 
           if (!permission) {
-            console.warn(`⚠️ Permission '${permissionSlug}' not found for role '${roleRecord.slug}'`);
+            logger.warn(`Permission '${permissionSlug}' not found for role '${roleRecord.slug}'`, { source: 'RoleSeeder', method: 'assignPermissionsToRoles', permission_slug: permissionSlug, role_slug: roleRecord.slug });
             continue;
           }
 
@@ -131,15 +132,15 @@ export class RoleSeeder extends BaseSeed<RoleSeedData> {
                 updated_by: this.options.systemUserId
               }
             });
-            console.log(`✅ Assigned permission '${permissionSlug}' to role '${roleRecord.slug}'`);
+            logger.info(`Assigned permission '${permissionSlug}' to role '${roleRecord.slug}'`, { source: 'RoleSeeder', method: 'assignPermissionsToRoles', permission_slug: permissionSlug, role_slug: roleRecord.slug });
           } else {
-            console.log(`⏭️ Permission '${permissionSlug}' already assigned to role '${roleRecord.slug}'`);
+            logger.info(`Permission '${permissionSlug}' already assigned to role '${roleRecord.slug}'`, { source: 'RoleSeeder', method: 'assignPermissionsToRoles', permission_slug: permissionSlug, role_slug: roleRecord.slug, status: 'already_assigned' });
           }
         }
       }
       
     } catch (error) {
-      console.error('❌ Error assigning permissions to roles:', error);
+      logger.error('Error assigning permissions to roles', { source: 'RoleSeeder', method: 'assignPermissionsToRoles', error: error instanceof Error ? error.message : error });
     }
   }
 

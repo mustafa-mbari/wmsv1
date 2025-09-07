@@ -3,6 +3,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions, SeedResult } from '../classes/BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface RunnerOptions extends SeedOptions {
   runAll?: boolean;           // Run all available seeders
@@ -53,7 +54,12 @@ export class SeedRunner {
     const seederInstance = seederFactory();
     this.dependencies.set(name, seederInstance.getDependencies());
     
-    console.log(`📝 Registered seeder: ${name} (dependencies: ${seederInstance.getDependencies().join(', ') || 'none'})`);
+    logger.info(`Registered seeder: ${name}`, {
+      source: 'SeedRunner',
+      method: 'registerSeeder',
+      seeder: name,
+      dependencies: seederInstance.getDependencies()
+    });
   }
 
   /**
@@ -73,13 +79,19 @@ export class SeedRunner {
     };
 
     try {
-      console.log('🚀 Starting WMS Database Seeding...\n');
+      logger.info('Starting WMS Database Seeding', {
+        source: 'SeedRunner',
+        method: 'run'
+      });
 
       // Determine which seeders to run
       const seedersToRun = this.determineSeedersToRun();
       
       if (seedersToRun.length === 0) {
-        console.log('📭 No seeders to run');
+        logger.info('No seeders to run', {
+          source: 'SeedRunner',
+          method: 'run'
+        });
         result.success = true;
         result.duration = Date.now() - startTime;
         return result;
@@ -88,10 +100,18 @@ export class SeedRunner {
       // Sort seeders by dependency order
       const sortedSeeders = this.sortSeedersByDependencies(seedersToRun);
       
-      console.log(`📋 Planned execution order: ${sortedSeeders.join(' → ')}\n`);
+      logger.info(`Planned execution order: ${sortedSeeders.join(' → ')}`, {
+        source: 'SeedRunner',
+        method: 'run',
+        executionOrder: sortedSeeders
+      });
 
       if (this.options.dryRun) {
-        console.log('🔍 DRY RUN - No actual seeding will be performed\n');
+        logger.info('DRY RUN - No actual seeding will be performed', {
+          source: 'SeedRunner',
+          method: 'run',
+          dryRun: true
+        });
         result.success = true;
         result.totalSeeders = sortedSeeders.length;
         result.duration = Date.now() - startTime;
@@ -103,7 +123,11 @@ export class SeedRunner {
       // Run seeders in order
       for (const seederName of sortedSeeders) {
         try {
-          console.log(`\n🌱 Running ${seederName} seeder...`);
+          logger.info(`Running ${seederName} seeder`, {
+            source: 'SeedRunner',
+            method: 'run',
+            seeder: seederName
+          });
           
           const seederFactory = this.seeders.get(seederName)!;
           const seeder = seederFactory();
@@ -113,14 +137,28 @@ export class SeedRunner {
 
           if (seederResult.success) {
             result.successfulSeeders++;
-            console.log(`✅ ${seederName} completed successfully`);
+            logger.info(`${seederName} completed successfully`, {
+              source: 'SeedRunner',
+              method: 'run',
+              seeder: seederName,
+              success: true
+            });
           } else {
             result.failedSeeders++;
             result.errors.push(...seederResult.errors);
-            console.error(`❌ ${seederName} failed`);
+            logger.error(`${seederName} failed`, {
+              source: 'SeedRunner',
+              method: 'run',
+              seeder: seederName,
+              errors: seederResult.errors
+            });
             
             if (!this.options.continueOnError) {
-              console.log('🛑 Stopping execution due to error');
+              logger.info('Stopping execution due to error', {
+                source: 'SeedRunner',
+                method: 'run',
+                seeder: seederName
+              });
               break;
             }
           }
@@ -131,10 +169,20 @@ export class SeedRunner {
         } catch (error) {
           result.failedSeeders++;
           result.errors.push(`${seederName}: ${error}`);
-          console.error(`💥 ${seederName} crashed:`, error);
+          logger.error(`${seederName} crashed`, {
+            source: 'SeedRunner',
+            method: 'run',
+            seeder: seederName,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined
+          });
           
           if (!this.options.continueOnError) {
-            console.log('🛑 Stopping execution due to crash');
+            logger.info('Stopping execution due to crash', {
+              source: 'SeedRunner',
+              method: 'run',
+              seeder: seederName
+            });
             break;
           }
         }
@@ -151,7 +199,12 @@ export class SeedRunner {
       result.errors.push(`Runner error: ${error}`);
       result.success = false;
       result.duration = Date.now() - startTime;
-      console.error('💥 Seed runner crashed:', error);
+      logger.error('Seed runner crashed', {
+        source: 'SeedRunner',
+        method: 'run',
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
     }
 
     return result;
@@ -286,26 +339,36 @@ export class SeedRunner {
    * Print execution summary
    */
   private printSummary(result: RunnerResult): void {
-    console.log('\n' + '='.repeat(50));
-    console.log('📊 SEEDING SUMMARY');
-    console.log('='.repeat(50));
-    console.log(`⏱️  Duration: ${result.duration}ms`);
-    console.log(`📝 Total Seeders: ${result.totalSeeders}`);
-    console.log(`✅ Successful: ${result.successfulSeeders}`);
-    console.log(`❌ Failed: ${result.failedSeeders}`);
-    console.log(`⏭️  Skipped: ${result.skippedSeeders}`);
+    logger.info('SEEDING SUMMARY', {
+      source: 'SeedRunner',
+      method: 'printSummary',
+      duration: result.duration,
+      totalSeeders: result.totalSeeders,
+      successfulSeeders: result.successfulSeeders,
+      failedSeeders: result.failedSeeders,
+      skippedSeeders: result.skippedSeeders,
+      success: result.success
+    });
     
     if (result.errors.length > 0) {
-      console.log(`\n🚨 Errors (${result.errors.length}):`);
-      result.errors.forEach(error => console.log(`   • ${error}`));
+      logger.error(`Errors encountered (${result.errors.length})`, {
+        source: 'SeedRunner',
+        method: 'printSummary',
+        errors: result.errors
+      });
     }
 
     if (result.success) {
-      console.log('\n🎉 All seeders completed successfully!');
+      logger.info('All seeders completed successfully!', {
+        source: 'SeedRunner',
+        method: 'printSummary'
+      });
     } else {
-      console.log('\n⚠️  Some seeders failed. Check the logs above.');
+      logger.warn('Some seeders failed. Check the logs above.', {
+        source: 'SeedRunner',
+        method: 'printSummary',
+        failedCount: result.failedSeeders
+      });
     }
-    
-    console.log('='.repeat(50) + '\n');
   }
 }

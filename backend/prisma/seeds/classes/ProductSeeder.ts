@@ -1,6 +1,7 @@
 // prisma/seeds/classes/ProductSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface ProductSeedData {
   name: string;
@@ -52,7 +53,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
       
       // Check if it's an array (direct products)
       if (Array.isArray(rawData)) {
-        console.log(`📖 Loading ${rawData.length} products from array format`);
+        logger.info(`Loading ${rawData.length} products from array format`, { source: 'ProductSeeder', method: 'loadData' });
         return rawData as ProductSeedData[];
       }
       
@@ -60,15 +61,15 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
       if (rawData && typeof rawData === 'object') {
         const data = rawData as any;
         if (data.products && Array.isArray(data.products)) {
-          console.log(`📖 Loading ${data.products.length} products from structured format`);
+          logger.info(`Loading ${data.products.length} products from structured format`, { source: 'ProductSeeder', method: 'loadData' });
           return data.products as ProductSeedData[];
         }
       }
       
-      console.warn('⚠️ No products found in products.json');
+      logger.warn('No products found in products.json', { source: 'ProductSeeder', method: 'loadData' });
       return [];
     } catch (error) {
-      console.error(`❌ Failed to load products:`, error);
+      logger.error('Failed to load products', { source: 'ProductSeeder', method: 'loadData', error: error instanceof Error ? error.message : error });
       return [];
     }
   }
@@ -76,47 +77,47 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
   validateRecord(record: ProductSeedData): boolean {
     // Check required fields
     if (!record.name || !record.sku) {
-      console.error('Product missing required fields (name, sku):', record);
+      logger.error('Product missing required fields (name, sku)', { source: 'ProductSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // SKU validation
     const skuRegex = /^[A-Z0-9_-]+$/;
     if (!skuRegex.test(record.sku)) {
-      console.error('Invalid SKU format (use uppercase, numbers, _ or -):', record.sku);
+      logger.error('Invalid SKU format (use uppercase, numbers, _ or -)', { source: 'ProductSeeder', method: 'validateRecord', sku: record.sku });
       return false;
     }
 
     if (record.sku.length > 100) {
-      console.error('SKU too long (max 100 characters):', record.sku);
+      logger.error('SKU too long (max 100 characters)', { source: 'ProductSeeder', method: 'validateRecord', sku: record.sku, length: record.sku.length });
       return false;
     }
 
     if (record.name.length > 200) {
-      console.error('Product name too long (max 200 characters):', record.name);
+      logger.error('Product name too long (max 200 characters)', { source: 'ProductSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     // Price validation
     if (record.price !== undefined && record.price < 0) {
-      console.error('Product price cannot be negative:', record.price);
+      logger.error('Product price cannot be negative', { source: 'ProductSeeder', method: 'validateRecord', price: record.price });
       return false;
     }
 
     if (record.cost !== undefined && record.cost < 0) {
-      console.error('Product cost cannot be negative:', record.cost);
+      logger.error('Product cost cannot be negative', { source: 'ProductSeeder', method: 'validateRecord', cost: record.cost });
       return false;
     }
 
     // Stock validation
     if (record.stock_quantity !== undefined && record.stock_quantity < 0) {
-      console.error('Stock quantity cannot be negative:', record.stock_quantity);
+      logger.error('Stock quantity cannot be negative', { source: 'ProductSeeder', method: 'validateRecord', stock_quantity: record.stock_quantity });
       return false;
     }
 
     // Barcode validation
     if (record.barcode && record.barcode.length > 100) {
-      console.error('Barcode too long (max 100 characters):', record.barcode);
+      logger.error('Barcode too long (max 100 characters)', { source: 'ProductSeeder', method: 'validateRecord', barcode: record.barcode, length: record.barcode.length });
       return false;
     }
 
@@ -134,10 +135,10 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
         category_id = category?.id || null;
         
         if (!category) {
-          console.warn(`⚠️ Category '${record.category_slug}' not found for product '${record.sku}'`);
+          logger.warn(`Category '${record.category_slug}' not found for product '${record.sku}'`, { source: 'ProductSeeder', method: 'transformRecord', category_slug: record.category_slug, sku: record.sku });
         }
       } catch (error) {
-        console.warn(`⚠️ Error finding category '${record.category_slug}':`, error);
+        logger.warn(`Error finding category '${record.category_slug}'`, { source: 'ProductSeeder', method: 'transformRecord', category_slug: record.category_slug, error: error instanceof Error ? error.message : error });
       }
     }
 
@@ -151,10 +152,10 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
         family_id = family?.id || null;
         
         if (!family) {
-          console.warn(`⚠️ Family '${record.family_name}' not found for product '${record.sku}'`);
+          logger.warn(`Family '${record.family_name}' not found for product '${record.sku}'`, { source: 'ProductSeeder', method: 'transformRecord', family_name: record.family_name, sku: record.sku });
         }
       } catch (error) {
-        console.warn(`⚠️ Error finding family '${record.family_name}':`, error);
+        logger.warn(`Error finding family '${record.family_name}'`, { source: 'ProductSeeder', method: 'transformRecord', family_name: record.family_name, error: error instanceof Error ? error.message : error });
       }
     }
 
@@ -168,10 +169,10 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
         unit_id = unit?.id || null;
         
         if (!unit) {
-          console.warn(`⚠️ Unit '${record.unit_symbol}' not found for product '${record.sku}'`);
+          logger.warn(`Unit '${record.unit_symbol}' not found for product '${record.sku}'`, { source: 'ProductSeeder', method: 'transformRecord', unit_symbol: record.unit_symbol, sku: record.sku });
         }
       } catch (error) {
-        console.warn(`⚠️ Error finding unit '${record.unit_symbol}':`, error);
+        logger.warn(`Error finding unit '${record.unit_symbol}'`, { source: 'ProductSeeder', method: 'transformRecord', unit_symbol: record.unit_symbol, error: error instanceof Error ? error.message : error });
       }
     }
 
@@ -212,7 +213,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
         }
       });
     } catch (error) {
-      console.error('Error finding existing product:', error);
+      logger.error('Error finding existing product', { source: 'ProductSeeder', method: 'findExistingRecord', error: error instanceof Error ? error.message : error });
       return null;
     }
   }
@@ -267,7 +268,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
 
       return stats;
     } catch (error) {
-      console.error('Error getting product statistics:', error);
+      logger.error('Error getting product statistics', { source: 'ProductSeeder', method: 'getProductStatistics', error: error instanceof Error ? error.message : error });
       return {
         total: 0, active: 0, inactive: 0, digital: 0, physical: 0,
         tracked: 0, untracked: 0, avgPrice: 0, avgCost: 0, totalValue: 0
@@ -290,7 +291,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
         orderBy: { stock_quantity: 'asc' }
       });
     } catch (error) {
-      console.error('Error getting low stock products:', error);
+      logger.error('Error getting low stock products', { source: 'ProductSeeder', method: 'getLowStockProducts', error: error instanceof Error ? error.message : error });
       return [];
     }
   }
@@ -387,7 +388,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
 
       return result;
     } catch (error) {
-      console.error('Error validating product data:', error);
+      logger.error('Error validating product data', { source: 'ProductSeeder', method: 'validateProductData', error: error instanceof Error ? error.message : error });
       return {
         duplicateSKUs: [],
         duplicateBarcodes: [],

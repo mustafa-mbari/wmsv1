@@ -4,6 +4,7 @@
 import { PrismaClient } from '@prisma/client';
 import { JsonReader } from '../utils/JsonReader';
 import { SeedValidator } from '../utils/SeedValidator';
+import logger from '../../../src/utils/logger/logger';
 
 export interface SeedOptions {
   force?: boolean;           // Force re-seed even if data exists
@@ -70,11 +71,11 @@ export abstract class BaseSeed<T = any> {
     };
 
     try {
-      console.log(`🌱 Starting ${this.getModelName()} seeder...`);
+      logger.info(`Starting ${this.getModelName()} seeder`, { source: 'BaseSeed', method: 'seed', model: this.getModelName() });
 
       // Check if seeding is needed
       if (!this.options.force && await this.hasExistingData()) {
-        console.log(`⏭️ ${this.getModelName()} already has data, skipping...`);
+        logger.info(`${this.getModelName()} already has data, skipping`, { source: 'BaseSeed', method: 'seed', model: this.getModelName() });
         result.success = true;
         result.duration = Date.now() - startTime;
         return result;
@@ -83,7 +84,7 @@ export abstract class BaseSeed<T = any> {
       // Load and validate data
       const rawData = await this.loadData();
       if (!rawData || rawData.length === 0) {
-        console.log(`📭 No data found for ${this.getModelName()}`);
+        logger.info(`No data found for ${this.getModelName()}`, { source: 'BaseSeed', method: 'seed', model: this.getModelName() });
         result.success = true;
         result.duration = Date.now() - startTime;
         return result;
@@ -104,22 +105,23 @@ export abstract class BaseSeed<T = any> {
       result.success = result.errors.length === 0;
       result.duration = Date.now() - startTime;
 
-      console.log(`✅ ${this.getModelName()} seeder completed:`);
-      console.log(`   📊 Processed: ${result.recordsProcessed}`);
-      console.log(`   ➕ Created: ${result.recordsCreated}`);
-      console.log(`   ✏️ Updated: ${result.recordsUpdated}`);
-      console.log(`   ⏭️ Skipped: ${result.recordsSkipped}`);
-      console.log(`   ⏱️ Duration: ${result.duration}ms`);
-      
-      if (result.errors.length > 0) {
-        console.log(`   ❌ Errors: ${result.errors.length}`);
-      }
+      logger.info(`${this.getModelName()} seeder completed`, {
+        source: 'BaseSeed',
+        method: 'seed',
+        model: this.getModelName(),
+        processed: result.recordsProcessed,
+        created: result.recordsCreated,
+        updated: result.recordsUpdated,
+        skipped: result.recordsSkipped,
+        duration: result.duration,
+        errors: result.errors.length
+      });
 
     } catch (error) {
       result.errors.push(`Fatal error: ${error}`);
       result.success = false;
       result.duration = Date.now() - startTime;
-      console.error(`💥 ${this.getModelName()} seeder failed:`, error);
+      logger.error(`${this.getModelName()} seeder failed`, { source: 'BaseSeed', method: 'seed', model: this.getModelName(), error: error instanceof Error ? error.message : error });
     }
 
     return result;
@@ -129,10 +131,10 @@ export abstract class BaseSeed<T = any> {
   protected async loadData(): Promise<T[]> {
     try {
       const data = await this.jsonReader.readJsonFile<T>(this.getJsonFileName());
-      console.log(`📂 Loaded ${data.length} records from ${this.getJsonFileName()}`);
+      logger.info(`Loaded ${data.length} records from ${this.getJsonFileName()}`, { source: 'BaseSeed', method: 'loadData', model: this.getModelName(), recordCount: data.length, fileName: this.getJsonFileName() });
       return data;
     } catch (error) {
-      console.error(`❌ Failed to load ${this.getJsonFileName()}:`, error);
+      logger.error(`Failed to load ${this.getJsonFileName()}`, { source: 'BaseSeed', method: 'loadData', model: this.getModelName(), fileName: this.getJsonFileName(), error: error instanceof Error ? error.message : error });
       return [];
     }
   }
@@ -144,7 +146,7 @@ export abstract class BaseSeed<T = any> {
       const count = await model.count();
       return count > 0;
     } catch (error) {
-      console.error(`Error checking existing data for ${this.getModelName()}:`, error);
+      logger.error(`Error checking existing data for ${this.getModelName()}`, { source: 'BaseSeed', method: 'hasExistingData', model: this.getModelName(), error: error instanceof Error ? error.message : error });
       return false;
     }
   }
@@ -246,7 +248,7 @@ export abstract class BaseSeed<T = any> {
     try {
       return await operation();
     } catch (error) {
-      console.error(`Database operation failed:`, error);
+      logger.error('Database operation failed', { source: 'BaseSeed', method: 'safeExecute', error: error instanceof Error ? error.message : error });
       return null;
     }
   }

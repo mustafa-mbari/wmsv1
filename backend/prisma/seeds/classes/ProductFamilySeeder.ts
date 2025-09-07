@@ -1,6 +1,7 @@
 // prisma/seeds/classes/ProductFamilySeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface FamilySeedData {
   name: string;
@@ -43,7 +44,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
       
       // Type guard to check if it's an array
       if (Array.isArray(rawData)) {
-        console.log('📖 No families found in array format');
+        logger.info('No families found in array format', { source: 'ProductFamilySeeder', method: 'loadData' });
         return [];
       }
       
@@ -53,32 +54,32 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
         
         // Now TypeScript knows that structuredData has the families property
         if (structuredData.families) {
-          console.log(`📖 Loading ${structuredData.families.length || 0} families from structured format`);
+          logger.info(`Loading ${structuredData.families.length || 0} families from structured format`, { source: 'ProductFamilySeeder', method: 'loadData', familiesCount: structuredData.families.length || 0 });
           return structuredData.families;
         }
       }
       
-      console.warn('⚠️ No families found in products.json');
+      logger.warn('No families found in products.json', { source: 'ProductFamilySeeder', method: 'loadData' });
       return [];
     } catch (error) {
-      console.error(`❌ Failed to load families:`, error);
+      logger.error('Failed to load families', { source: 'ProductFamilySeeder', method: 'loadData', error: error instanceof Error ? error.message : error });
       return [];
     }
   }
 
   validateRecord(record: FamilySeedData): boolean {
     if (!record.name) {
-      console.error('Family missing required name:', record);
+      logger.error('Family missing required name', { source: 'ProductFamilySeeder', method: 'validateRecord', record });
       return false;
     }
 
     if (record.name.length > 100) {
-      console.error('Family name too long (max 100 characters):', record.name);
+      logger.error('Family name too long (max 100 characters)', { source: 'ProductFamilySeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     if (record.family_code && record.family_code.length > 10) {
-      console.error('Family code too long (max 10 characters):', record.family_code);
+      logger.error('Family code too long (max 10 characters)', { source: 'ProductFamilySeeder', method: 'validateRecord', family_code: record.family_code, length: record.family_code.length });
       return false;
     }
 
@@ -95,7 +96,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
       category_id = category?.id || null;
       
       if (!category) {
-        console.warn(`⚠️ Category '${record.category_slug}' not found for family '${record.name}'`);
+        logger.warn(`Category '${record.category_slug}' not found for family '${record.name}'`, { source: 'ProductFamilySeeder', method: 'transformRecord', category_slug: record.category_slug, family_name: record.name });
       }
     }
 

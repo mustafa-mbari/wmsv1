@@ -3,6 +3,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { SeedRunner } from './utils/SeedRunner';
+import logger from '../../src/utils/logger/logger';
 
 // Import all seeders from separate files
 import { UserSeeder } from './classes/UserSeeder';
@@ -19,7 +20,10 @@ async function main() {
   const prisma = new PrismaClient();
 
   try {
-    console.log('🌱 Initializing WMS Database Seeding System...\n');
+    logger.info('Initializing WMS Database Seeding System', {
+      source: 'seed',
+      method: 'main'
+    });
 
     // Parse command line arguments
     const args = process.argv.slice(2);
@@ -58,7 +62,10 @@ async function main() {
     });
 
     // Register all seeders in dependency order
-    console.log('📝 Registering seeders...');
+    logger.info('Registering seeders', {
+      source: 'seed',
+      method: 'main'
+    });
     
     // Foundation seeders (no dependencies)
     runner.registerSeeder('permissions', () => new PermissionSeeder(prisma, { systemUserId }));
@@ -78,85 +85,121 @@ async function main() {
     runner.registerSeeder('warehouses', () => new WarehouseSeeder(prisma, { systemUserId }));
 
     // Validate dependencies
-    console.log('🔗 Validating dependencies...');
+    logger.info('Validating dependencies', {
+      source: 'seed',
+      method: 'main'
+    });
     const validation = runner.validateDependencies();
     if (!validation.valid) {
-      console.error('❌ Dependency validation failed:');
-      validation.errors.forEach(error => console.error(`   • ${error}`));
+      logger.error('Dependency validation failed', {
+        source: 'seed',
+        method: 'main',
+        errors: validation.errors
+      });
       process.exit(1);
     }
 
     // Show available seeders
-    console.log('\n📋 Available Seeders:');
-    runner.getAvailableSeeders().forEach(seeder => {
-      console.log(`   • ${seeder}`);
+    logger.info('Available Seeders', {
+      source: 'seed',
+      method: 'main',
+      seeders: runner.getAvailableSeeders()
     });
-    console.log('');
 
     // Show command line options used
-    console.log('⚙️ Configuration:');
-    if (force) console.log('   🔄 Force mode: Will overwrite existing data');
-    if (dryRun) console.log('   🔍 Dry run: No actual seeding will be performed');
-    if (continueOnError) console.log('   🚀 Continue on error: Will not stop on individual seeder failures');
-    if (skipValidation) console.log('   ⚠️ Validation skipped');
-    if (runOnly) console.log(`   🎯 Running only: ${runOnly.join(', ')}`);
-    if (skipSeeders) console.log(`   ⏭️ Skipping: ${skipSeeders.join(', ')}`);
-    console.log(`   👤 System User ID: ${systemUserId}`);
-    console.log('');
+    logger.info('Configuration', {
+      source: 'seed',
+      method: 'main',
+      force,
+      dryRun,
+      continueOnError,
+      skipValidation,
+      runOnly,
+      skipSeeders,
+      systemUserId
+    });
 
     // Run seeders
-    console.log('🚀 Starting seeding process...\n');
+    logger.info('Starting seeding process', {
+      source: 'seed',
+      method: 'main'
+    });
     const startTime = Date.now();
     const result = await runner.run();
     const duration = Date.now() - startTime;
 
     // Show final summary
-    console.log('\n' + '='.repeat(60));
-    console.log('📊 FINAL SUMMARY');
-    console.log('='.repeat(60));
-    console.log(`⏱️  Total Duration: ${duration}ms`);
-    console.log(`📦 Total Seeders: ${result.totalSeeders}`);
-    console.log(`✅ Successful: ${result.successfulSeeders}`);
-    console.log(`❌ Failed: ${result.failedSeeders}`);
-    console.log(`⏭️  Skipped: ${result.skippedSeeders}`);
+    logger.info('FINAL SUMMARY', {
+      source: 'seed',
+      method: 'main',
+      totalDuration: duration,
+      totalSeeders: result.totalSeeders,
+      successful: result.successfulSeeders,
+      failed: result.failedSeeders,
+      skipped: result.skippedSeeders
+    });
     
     if (result.success) {
-      console.log('\n🎉 All seeders completed successfully!');
-      console.log('🎯 Your WMS database is now ready for use!');
-      console.log('💡 Next: Open Prisma Studio to view your data: npx prisma studio');
+      logger.info('All seeders completed successfully! Your WMS database is now ready for use!', {
+        source: 'seed',
+        method: 'main',
+        nextStep: 'Open Prisma Studio to view your data: npx prisma studio'
+      });
     } else {
-      console.log('\n⚠️  Some seeders failed. Check the logs above for details.');
-      console.log('💡 Try running with --continue-on-error to see all results.');
+      logger.warn('Some seeders failed. Check the logs above for details.', {
+        source: 'seed',
+        method: 'main',
+        suggestion: 'Try running with --continue-on-error to see all results'
+      });
     }
-    
-    console.log('='.repeat(60));
 
     // Exit with appropriate code
     process.exit(result.success ? 0 : 1);
 
   } catch (error) {
-    console.error('\n💥 Fatal error during seeding:', error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
+    logger.error('Fatal error during seeding', {
+      source: 'seed',
+      method: 'main',
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : 'No stack trace available'
+    });
     process.exit(1);
   } finally {
     try {
       await prisma.$disconnect();
-      console.log('🔌 Database connection closed.');
+      logger.info('Database connection closed', {
+        source: 'seed',
+        method: 'main'
+      });
     } catch (disconnectError) {
-      console.error('⚠️ Error disconnecting from database:', disconnectError);
+      logger.error('Error disconnecting from database', {
+        source: 'seed',
+        method: 'main',
+        error: disconnectError instanceof Error ? disconnectError.message : String(disconnectError)
+      });
     }
   }
 }
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection', {
+    source: 'seed',
+    method: 'unhandledRejection',
+    promise: String(promise),
+    reason: reason instanceof Error ? reason.message : String(reason)
+  });
   process.exit(1);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
-  console.error('💥 Uncaught Exception:', error);
+  logger.error('Uncaught Exception', {
+    source: 'seed',
+    method: 'uncaughtException',
+    error: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined
+  });
   process.exit(1);
 });
 
@@ -214,6 +257,11 @@ Data Sources:
 
 // Run main function
 main().catch((error) => {
-  console.error('💥 Seeding failed:', error);
+  logger.error('Seeding failed', {
+    source: 'seed',
+    method: 'main',
+    error: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined
+  });
   process.exit(1);
 });

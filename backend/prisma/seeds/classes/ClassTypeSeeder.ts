@@ -1,6 +1,7 @@
 // prisma/seeds/classes/ClassTypeSeeder.ts
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
+import logger from '../../../src/utils/logger/logger';
 
 export interface ClassTypeSeedData {
   name: string;
@@ -33,25 +34,25 @@ export class ClassTypeSeeder extends BaseSeed<ClassTypeSeedData> {
   validateRecord(record: ClassTypeSeedData): boolean {
     // Required fields validation
     if (!record.name) {
-      console.error('Class type record missing required name field:', record);
+      logger.error('Class type record missing required name field', { source: 'ClassTypeSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Name length validation
     if (record.name.length > 100) {
-      console.error('Class type name too long (max 100 characters):', record.name);
+      logger.error('Class type name too long (max 100 characters)', { source: 'ClassTypeSeeder', method: 'validateRecord', name: record.name, length: record.name.length });
       return false;
     }
 
     // Priority validation if provided
     if (record.priority !== undefined && (record.priority < 1 || record.priority > 10)) {
-      console.error('Priority must be between 1 and 10:', record.priority);
+      logger.error('Priority must be between 1 and 10', { source: 'ClassTypeSeeder', method: 'validateRecord', priority: record.priority });
       return false;
     }
 
     // Safety level validation if provided
     if (record.safety_level && !['low', 'medium', 'high', 'critical'].includes(record.safety_level)) {
-      console.error('Invalid safety level (must be: low, medium, high, critical):', record.safety_level);
+      logger.error('Invalid safety level (must be: low, medium, high, critical)', { source: 'ClassTypeSeeder', method: 'validateRecord', safety_level: record.safety_level });
       return false;
     }
 

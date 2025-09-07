@@ -4,6 +4,7 @@
 import { PrismaClient } from '@prisma/client';
 import { BaseSeed, SeedOptions } from './BaseSeed';
 import * as bcrypt from 'bcrypt';
+import logger from '../../../src/utils/logger/logger';
 
 export interface UserSeedData {
   username: string;
@@ -42,27 +43,27 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
   validateRecord(record: UserSeedData): boolean {
     // Required fields validation
     if (!record.username || !record.email || !record.password) {
-      console.error('User record missing required fields:', record);
+      logger.error('User record missing required fields', { source: 'UserSeeder', method: 'validateRecord', record });
       return false;
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(record.email)) {
-      console.error('Invalid email format:', record.email);
+      logger.error('Invalid email format', { source: 'UserSeeder', method: 'validateRecord', email: record.email });
       return false;
     }
 
     // Username validation (no spaces, special chars)
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
     if (!usernameRegex.test(record.username)) {
-      console.error('Invalid username format:', record.username);
+      logger.error('Invalid username format', { source: 'UserSeeder', method: 'validateRecord', username: record.username });
       return false;
     }
 
     // Password strength validation
     if (record.password.length < 6) {
-      console.error('Password too short:', record.username);
+      logger.error('Password too short', { source: 'UserSeeder', method: 'validateRecord', username: record.username });
       return false;
     }
 
@@ -79,7 +80,7 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
     if (record.birth_date) {
       birthDate = new Date(record.birth_date);
       if (isNaN(birthDate.getTime())) {
-        console.warn(`Invalid birth_date for user ${record.username}, skipping`);
+        logger.warn(`Invalid birth_date for user ${record.username}, skipping`, { source: 'UserSeeder', method: 'transformRecord', username: record.username, birth_date: record.birth_date });
         birthDate = null;
       }
     }
@@ -128,7 +129,7 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
   // Assign roles to users after seeding
   private async assignRolesToUsers(): Promise<void> {
     try {
-      console.log('🔗 Assigning roles to users...');
+      logger.info('Assigning roles to users', { source: 'UserSeeder', method: 'assignRolesToUsers' });
       
       const userData = await this.loadData();
       const usersWithRoles = userData.filter(user => user.roles && user.roles.length > 0);
@@ -146,7 +147,7 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
           });
 
           if (!role) {
-            console.warn(`⚠️ Role '${roleSlug}' not found for user '${userRecord.username}'`);
+            logger.warn(`Role '${roleSlug}' not found for user '${userRecord.username}'`, { source: 'UserSeeder', method: 'assignRolesToUsers', role_slug: roleSlug, username: userRecord.username });
             continue;
           }
 
@@ -170,13 +171,13 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
                 updated_by: this.options.systemUserId
               }
             });
-            console.log(`✅ Assigned role '${roleSlug}' to user '${userRecord.username}'`);
+            logger.info(`Assigned role '${roleSlug}' to user '${userRecord.username}'`, { source: 'UserSeeder', method: 'assignRolesToUsers', role_slug: roleSlug, username: userRecord.username });
           }
         }
       }
       
     } catch (error) {
-      console.error('❌ Error assigning roles to users:', error);
+      logger.error('Error assigning roles to users', { source: 'UserSeeder', method: 'assignRolesToUsers', error: error instanceof Error ? error.message : error });
     }
   }
 }
