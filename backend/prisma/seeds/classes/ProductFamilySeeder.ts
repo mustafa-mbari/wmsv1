@@ -132,7 +132,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
 
     const result: { [categoryName: string]: any[] } = {};
 
-    families.forEach(family => {
+    families.forEach((family: any) => {
       const categoryName = family.product_categories?.name || 'Uncategorized';
       if (!result[categoryName]) {
         result[categoryName] = [];
@@ -159,7 +159,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
       recommendations: [] as string[]
     };
 
-    families.forEach(family => {
+    families.forEach((family: any) => {
       if (!family.product_categories) {
         result.orphanFamilies.push(family.name);
       }
@@ -170,7 +170,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
     }
 
     const categoryUsage = new Map<string, number>();
-    families.forEach(family => {
+    families.forEach((family: any) => {
       if (family.product_categories) {
         const count = categoryUsage.get(family.product_categories.name) || 0;
         categoryUsage.set(family.product_categories.name, count + 1);

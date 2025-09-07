@@ -48,7 +48,7 @@ export abstract class BaseSeed<T = any> {
   abstract getModelName(): string;
   abstract getJsonFileName(): string;
   abstract validateRecord(record: T): boolean;
-  abstract transformRecord(record: T): any;
+  abstract transformRecord(record: T): any | Promise<any>;
   abstract findExistingRecord(record: T): Promise<any>;
 
   // Optional method to get dependencies (seeds that must run first)
@@ -182,7 +182,7 @@ export abstract class BaseSeed<T = any> {
         }
 
         // Transform record for database
-        const transformedRecord = this.transformRecord(record);
+        const transformedRecord = await this.transformRecord(record);
 
         // Add audit fields
         const recordWithAudit = this.addAuditFields(transformedRecord);
@@ -199,7 +199,7 @@ export abstract class BaseSeed<T = any> {
               where: { id: existingRecord.id },
               data: {
                 ...recordWithAudit,
-                updated_by: this.options.systemUserId,
+                updated_by: null, // Set to null to avoid foreign key constraint issues
                 updated_at: new Date()
               }
             });
@@ -229,8 +229,8 @@ export abstract class BaseSeed<T = any> {
   protected addAuditFields(record: any): any {
     return {
       ...record,
-      created_by: this.options.systemUserId,
-      updated_by: this.options.systemUserId,
+      created_by: null, // Set to null to avoid foreign key constraint issues
+      updated_by: null, // Set to null to avoid foreign key constraint issues
       created_at: new Date(),
       updated_at: new Date()
     };

@@ -125,11 +125,11 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
     const categoryMap = new Map();
     const roots: any[] = [];
 
-    categories.forEach(category => {
+    categories.forEach((category: any) => {
       categoryMap.set(category.id, { ...category, children: [] });
     });
 
-    categories.forEach(category => {
+    categories.forEach((category: any) => {
       const categoryNode = categoryMap.get(category.id);
       if (category.parent_id) {
         const parent = categoryMap.get(category.parent_id);

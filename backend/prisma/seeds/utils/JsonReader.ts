@@ -38,9 +38,7 @@ export class JsonReader {
       const content = await fs.readFile(filePath, { encoding: this.options.encoding });
       
       // Parse JSON
-      const data = JSON.parse(
-        typeof content === 'string' ? content : content.toString(this.options.encoding)
-      );
+      const data = JSON.parse(content as string);
       
       // Validate structure
       if (this.options.validateJson) {

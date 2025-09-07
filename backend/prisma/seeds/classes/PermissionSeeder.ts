@@ -90,7 +90,7 @@ export class PermissionSeeder extends BaseSeed<PermissionSeedData> {
 
     const groupedPermissions: { [module: string]: any[] } = {};
     
-    permissions.forEach(permission => {
+    permissions.forEach((permission: PermissionSeedData) => {
       const module = permission.module || 'general';
       if (!groupedPermissions[module]) {
         groupedPermissions[module] = [];
@@ -153,6 +153,6 @@ export class PermissionSeeder extends BaseSeed<PermissionSeedData> {
       });
     });
 
-    return result ? result.map(r => r.module).filter(Boolean).sort() : [];
+    return result ? result.map((r: { module: string }) => r.module).filter(Boolean).sort() : [];
   }
 }
