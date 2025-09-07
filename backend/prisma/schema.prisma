@@ -4,31 +4,27 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://mb_user:pass5432@localhost:5432/wms"
+  url      = "postgresql://mustafa:pass5432@localhost:5432/wmlab"
 }
 
 model class_types {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique(map: "class_types_name_unique") @db.VarChar(100)
+  id          Int       @id @default(autoincrement())
+  name        String    @unique(map: "class_types_name_unique") @db.VarChar(100)
   description String?
-  is_active   Boolean? @default(true)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  is_active   Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("class_types_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("class_types_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?    @relation("class_types_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
 }
 
-model knex_migrations {
-  id             Int       @id @default(autoincrement())
-  name           String?   @db.VarChar(255)
-  batch          Int?
-  migration_time DateTime? @db.Timestamptz(6)
-}
-
-model knex_migrations_lock {
-  index     Int  @id @default(autoincrement())
-  is_locked Int?
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model notifications {
   id            Int       @id @default(autoincrement())
   type          String    @db.VarChar(50)
@@ -38,7 +34,7 @@ model notifications {
   user_id       Int?
   email         String?   @db.VarChar(255)
   phone         String?   @db.VarChar(20)
-  status        String?   @default("pending")
+  status        String?   @default("pending") @db.VarChar(20)
   sent_at       DateTime? @db.Timestamptz(6)
   read_at       DateTime? @db.Timestamptz(6)
   retry_count   Int?      @default(0)
@@ -47,11 +43,19 @@ model notifications {
   metadata      Json?     @db.Json
   created_at    DateTime  @default(now()) @db.Timestamptz(6)
   updated_at    DateTime  @default(now()) @db.Timestamptz(6)
-  users         users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_user_id_foreign")
+  deleted_at    DateTime? @db.Timestamptz(6)
+  created_by    Int?
+  updated_by    Int?
+  deleted_by    Int?
+  creator       users?    @relation("notifications_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter       users?    @relation("notifications_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater       users?    @relation("notifications_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  users         users?    @relation("notifications_user", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_user_id_foreign")
 
   @@index([created_at, priority], map: "notifications_created_at_priority_index")
   @@index([type, status], map: "notifications_type_status_index")
   @@index([user_id, status], map: "notifications_user_id_status_index")
+  @@index([deleted_at])
 }
 
 model permissions {
@@ -63,7 +67,17 @@ model permissions {
   is_active        Boolean?           @default(true)
   created_at       DateTime           @default(now()) @db.Timestamptz(6)
   updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_by       Int?
+  updated_by       Int?
+  deleted_by       Int?
+  creator          users?             @relation("permissions_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter          users?             @relation("permissions_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater          users?             @relation("permissions_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   role_permissions role_permissions[]
+
+  @@index([is_active, deleted_at])
+  @@index([module, is_active])
 }
 
 model product_attribute_options {
@@ -75,10 +89,18 @@ model product_attribute_options {
   is_active                Boolean?                   @default(true)
   created_at               DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
   product_attributes       product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_options_attribute_id_foreign")
+  creator                  users?                     @relation("product_attribute_options_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("product_attribute_options_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                  users?                     @relation("product_attribute_options_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   product_attribute_values product_attribute_values[]
 
   @@unique([attribute_id, value], map: "product_attribute_options_attribute_id_value_unique")
+  @@index([is_active, deleted_at])
 }
 
 model product_attribute_values {
@@ -89,19 +111,26 @@ model product_attribute_values {
   option_id                 Int?
   created_at                DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                  @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
   product_attributes        product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_attribute_id_foreign")
+  creator                   users?                     @relation("product_attribute_values_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                     @relation("product_attribute_values_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
   product_attribute_options product_attribute_options? @relation(fields: [option_id], references: [id], onUpdate: NoAction, map: "product_attribute_values_option_id_foreign")
   products                  products                   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_product_id_foreign")
+  updater                   users?                     @relation("product_attribute_values_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@unique([product_id, attribute_id], map: "product_attribute_values_product_id_attribute_id_unique")
+  @@index([deleted_at])
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model product_attributes {
   id                        Int                         @id @default(autoincrement())
   name                      String                      @db.VarChar(100)
   slug                      String                      @unique(map: "product_attributes_slug_unique") @db.VarChar(100)
-  type                      String
+  type                      String                      @db.VarChar(50)
   description               String?
   is_required               Boolean?                    @default(false)
   is_filterable             Boolean?                    @default(false)
@@ -110,8 +139,18 @@ model product_attributes {
   is_active                 Boolean?                    @default(true)
   created_at                DateTime                    @default(now()) @db.Timestamptz(6)
   updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                   @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
   product_attribute_options product_attribute_options[]
   product_attribute_values  product_attribute_values[]
+  creator                   users?                      @relation("product_attributes_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                      @relation("product_attributes_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                   users?                      @relation("product_attributes_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@index([type, is_active])
 }
 
 model product_categories {
@@ -125,10 +164,20 @@ model product_categories {
   is_active                Boolean?             @default(true)
   created_at               DateTime             @default(now()) @db.Timestamptz(6)
   updated_at               DateTime             @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?            @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  creator                  users?               @relation("product_categories_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?               @relation("product_categories_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
   product_categories       product_categories?  @relation("product_categoriesToproduct_categories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "product_categories_parent_id_foreign")
   other_product_categories product_categories[] @relation("product_categoriesToproduct_categories")
+  updater                  users?               @relation("product_categories_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   product_families         product_families[]
   products                 products[]
+
+  @@index([is_active, deleted_at])
+  @@index([parent_id, is_active])
 }
 
 model product_families {
@@ -139,8 +188,18 @@ model product_families {
   is_active          Boolean?            @default(true)
   created_at         DateTime            @default(now()) @db.Timestamptz(6)
   updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  created_by         Int?
+  updated_by         Int?
+  deleted_by         Int?
   product_categories product_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "product_families_category_id_foreign")
+  creator            users?              @relation("product_families_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter            users?              @relation("product_families_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater            users?              @relation("product_families_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   products           products[]
+
+  @@index([is_active, deleted_at])
+  @@index([category_id, is_active])
 }
 
 model products {
@@ -169,13 +228,21 @@ model products {
   tags                     Json?                      @db.Json
   created_at               DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
   product_attribute_values product_attribute_values[]
   product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
+  creator                  users?                     @relation("products_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("products_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
   product_families         product_families?          @relation(fields: [family_id], references: [id], onUpdate: NoAction, map: "products_family_id_foreign")
   units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
+  updater                  users?                     @relation("products_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@index([category_id, status], map: "products_category_id_status_index")
   @@index([sku, status], map: "products_sku_status_index")
+  @@index([status, deleted_at])
 }
 
 model role_permissions {
@@ -184,10 +251,18 @@ model role_permissions {
   permission_id Int
   created_at    DateTime    @default(now()) @db.Timestamptz(6)
   updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+  deleted_at    DateTime?   @db.Timestamptz(6)
+  created_by    Int?
+  updated_by    Int?
+  deleted_by    Int?
+  creator       users?      @relation("role_permissions_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter       users?      @relation("role_permissions_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
   permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_permission_id_foreign")
   roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_role_id_foreign")
+  updater       users?      @relation("role_permissions_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@unique([role_id, permission_id], map: "role_permissions_role_id_permission_id_unique")
+  @@index([deleted_at])
 }
 
 model roles {
@@ -198,8 +273,17 @@ model roles {
   is_active        Boolean?           @default(true)
   created_at       DateTime           @default(now()) @db.Timestamptz(6)
   updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_by       Int?
+  updated_by       Int?
+  deleted_by       Int?
   role_permissions role_permissions[]
+  creator          users?             @relation("roles_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter          users?             @relation("roles_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater          users?             @relation("roles_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   user_roles       user_roles[]
+
+  @@index([is_active, deleted_at])
 }
 
 model system_logs {
@@ -215,24 +299,40 @@ model system_logs {
   entity_type String?   @db.VarChar(50)
   entity_id   Int?
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
-  users       users?    @relation(fields: [user_id], references: [id], onUpdate: NoAction, map: "system_logs_user_id_foreign")
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("system_logs_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("system_logs_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  users       users?    @relation("system_logs_user", fields: [user_id], references: [id], onUpdate: NoAction, map: "system_logs_user_id_foreign")
 
   @@index([entity_type, entity_id], map: "system_logs_entity_type_entity_id_index")
   @@index([level, created_at], map: "system_logs_level_created_at_index")
   @@index([user_id, created_at], map: "system_logs_user_id_created_at_index")
+  @@index([deleted_at])
 }
 
 model system_settings {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique(map: "system_settings_key_unique") @db.VarChar(100)
+  id          Int       @id @default(autoincrement())
+  key         String    @unique(map: "system_settings_key_unique") @db.VarChar(100)
   value       String?
-  type        String?  @default("string") @db.VarChar(20)
+  type        String?   @default("string") @db.VarChar(20)
   description String?
-  group       String?  @db.VarChar(50)
-  is_public   Boolean? @default(false)
-  is_editable Boolean? @default(true)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  group       String?   @db.VarChar(50)
+  is_public   Boolean?  @default(false)
+  is_editable Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("system_settings_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("system_settings_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?    @relation("system_settings_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([group, is_public])
+  @@index([deleted_at])
 }
 
 model units_of_measure {
@@ -243,7 +343,16 @@ model units_of_measure {
   is_active   Boolean?   @default(true)
   created_at  DateTime   @default(now()) @db.Timestamptz(6)
   updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime?  @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
   products    products[]
+  creator     users?     @relation("units_of_measure_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?     @relation("units_of_measure_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?     @relation("units_of_measure_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
 }
 
 model user_roles {
@@ -254,55 +363,132 @@ model user_roles {
   assigned_by                         Int?
   created_at                          DateTime  @default(now()) @db.Timestamptz(6)
   updated_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at                          DateTime? @db.Timestamptz(6)
+  created_by                          Int?
+  updated_by                          Int?
+  deleted_by                          Int?
   users_user_roles_assigned_byTousers users?    @relation("user_roles_assigned_byTousers", fields: [assigned_by], references: [id], onUpdate: NoAction, map: "user_roles_assigned_by_foreign")
+  creator                             users?    @relation("user_roles_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                             users?    @relation("user_roles_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
   roles                               roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_role_id_foreign")
+  updater                             users?    @relation("user_roles_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   users_user_roles_user_idTousers     users     @relation("user_roles_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_user_id_foreign")
 
   @@unique([user_id, role_id], map: "user_roles_user_id_role_id_unique")
+  @@index([deleted_at])
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
-  id                                       Int             @id @default(autoincrement())
-  username                                 String          @unique(map: "users_username_unique") @db.VarChar(50)
-  email                                    String          @unique(map: "users_email_unique") @db.VarChar(255)
-  password_hash                            String          @db.VarChar(255)
-  first_name                               String          @db.VarChar(100)
-  last_name                                String          @db.VarChar(100)
-  phone                                    String?         @db.VarChar(20)
+  id                                       Int                         @id @default(autoincrement())
+  username                                 String                      @unique(map: "users_username_unique") @db.VarChar(50)
+  email                                    String                      @unique(map: "users_email_unique") @db.VarChar(255)
+  password_hash                            String                      @db.VarChar(255)
+  first_name                               String                      @db.VarChar(100)
+  last_name                                String                      @db.VarChar(100)
+  phone                                    String?                     @db.VarChar(20)
   address                                  String?
-  birth_date                               DateTime?       @db.Date
-  gender                                   String?
-  avatar_url                               String?         @db.VarChar(255)
-  is_active                                Boolean?        @default(true)
-  email_verified                           Boolean?        @default(false)
-  email_verified_at                        DateTime?       @db.Timestamptz(6)
-  last_login_at                            DateTime?       @db.Timestamptz(6)
-  reset_token                              String?         @db.VarChar(255)
-  reset_token_expires_at                   DateTime?       @db.Timestamptz(6)
-  created_at                               DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at                               DateTime        @default(now()) @db.Timestamptz(6)
-  notifications                            notifications[]
-  system_logs                              system_logs[]
-  user_roles_user_roles_assigned_byTousers user_roles[]    @relation("user_roles_assigned_byTousers")
-  user_roles_user_roles_user_idTousers     user_roles[]    @relation("user_roles_user_idTousers")
+  birth_date                               DateTime?                   @db.Date
+  gender                                   String?                     @db.VarChar(10)
+  avatar_url                               String?                     @db.VarChar(255)
+  is_active                                Boolean?                    @default(true)
+  email_verified                           Boolean?                    @default(false)
+  email_verified_at                        DateTime?                   @db.Timestamptz(6)
+  last_login_at                            DateTime?                   @db.Timestamptz(6)
+  reset_token                              String?                     @db.VarChar(255)
+  reset_token_expires_at                   DateTime?                   @db.Timestamptz(6)
+  created_at                               DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                               DateTime                    @default(now()) @db.Timestamptz(6)
+  deleted_at                               DateTime?                   @db.Timestamptz(6)
+  created_by                               Int?
+  updated_by                               Int?
+  deleted_by                               Int?
+  created_class_types                      class_types[]               @relation("class_types_created_by")
+  deleted_class_types                      class_types[]               @relation("class_types_deleted_by")
+  updated_class_types                      class_types[]               @relation("class_types_updated_by")
+  created_notifications                    notifications[]             @relation("notifications_created_by")
+  deleted_notifications                    notifications[]             @relation("notifications_deleted_by")
+  updated_notifications                    notifications[]             @relation("notifications_updated_by")
+  notifications                            notifications[]             @relation("notifications_user")
+  created_permissions                      permissions[]               @relation("permissions_created_by")
+  deleted_permissions                      permissions[]               @relation("permissions_deleted_by")
+  updated_permissions                      permissions[]               @relation("permissions_updated_by")
+  created_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_created_by")
+  deleted_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_deleted_by")
+  updated_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_updated_by")
+  created_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_created_by")
+  deleted_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_deleted_by")
+  updated_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_updated_by")
+  created_product_attributes               product_attributes[]        @relation("product_attributes_created_by")
+  deleted_product_attributes               product_attributes[]        @relation("product_attributes_deleted_by")
+  updated_product_attributes               product_attributes[]        @relation("product_attributes_updated_by")
+  created_product_categories               product_categories[]        @relation("product_categories_created_by")
+  deleted_product_categories               product_categories[]        @relation("product_categories_deleted_by")
+  updated_product_categories               product_categories[]        @relation("product_categories_updated_by")
+  created_product_families                 product_families[]          @relation("product_families_created_by")
+  deleted_product_families                 product_families[]          @relation("product_families_deleted_by")
+  updated_product_families                 product_families[]          @relation("product_families_updated_by")
+  created_products                         products[]                  @relation("products_created_by")
+  deleted_products                         products[]                  @relation("products_deleted_by")
+  updated_products                         products[]                  @relation("products_updated_by")
+  created_role_permissions                 role_permissions[]          @relation("role_permissions_created_by")
+  deleted_role_permissions                 role_permissions[]          @relation("role_permissions_deleted_by")
+  updated_role_permissions                 role_permissions[]          @relation("role_permissions_updated_by")
+  created_roles                            roles[]                     @relation("roles_created_by")
+  deleted_roles                            roles[]                     @relation("roles_deleted_by")
+  updated_roles                            roles[]                     @relation("roles_updated_by")
+  created_system_logs                      system_logs[]               @relation("system_logs_created_by")
+  deleted_system_logs                      system_logs[]               @relation("system_logs_deleted_by")
+  system_logs                              system_logs[]               @relation("system_logs_user")
+  created_system_settings                  system_settings[]           @relation("system_settings_created_by")
+  deleted_system_settings                  system_settings[]           @relation("system_settings_deleted_by")
+  updated_system_settings                  system_settings[]           @relation("system_settings_updated_by")
+  created_units_of_measure                 units_of_measure[]          @relation("units_of_measure_created_by")
+  deleted_units_of_measure                 units_of_measure[]          @relation("units_of_measure_deleted_by")
+  updated_units_of_measure                 units_of_measure[]          @relation("units_of_measure_updated_by")
+  user_roles_user_roles_assigned_byTousers user_roles[]                @relation("user_roles_assigned_byTousers")
+  created_user_roles                       user_roles[]                @relation("user_roles_created_by")
+  deleted_user_roles                       user_roles[]                @relation("user_roles_deleted_by")
+  updated_user_roles                       user_roles[]                @relation("user_roles_updated_by")
+  user_roles_user_roles_user_idTousers     user_roles[]                @relation("user_roles_user_idTousers")
+  creator                                  users?                      @relation("users_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  created_users                            users[]                     @relation("users_created_by")
+  deleter                                  users?                      @relation("users_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  deleted_users                            users[]                     @relation("users_deleted_by")
+  updater                                  users?                      @relation("users_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  updated_users                            users[]                     @relation("users_updated_by")
+  created_warehouses                       warehouses[]                @relation("warehouses_created_by")
+  deleted_warehouses                       warehouses[]                @relation("warehouses_deleted_by")
   warehouses                               warehouses[]
+  updated_warehouses                       warehouses[]                @relation("warehouses_updated_by")
+
+  @@index([is_active, deleted_at])
+  @@index([email_verified, is_active])
 }
 
 model warehouses {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  code        String   @unique(map: "warehouses_code_unique") @db.VarChar(20)
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  code        String    @unique(map: "warehouses_code_unique") @db.VarChar(20)
   address     String?
-  city        String?  @db.VarChar(100)
-  state       String?  @db.VarChar(100)
-  country     String?  @db.VarChar(100)
-  postal_code String?  @db.VarChar(20)
-  phone       String?  @db.VarChar(20)
-  email       String?  @db.VarChar(255)
+  city        String?   @db.VarChar(100)
+  state       String?   @db.VarChar(100)
+  country     String?   @db.VarChar(100)
+  postal_code String?   @db.VarChar(20)
+  phone       String?   @db.VarChar(20)
+  email       String?   @db.VarChar(255)
   manager_id  Int?
-  is_active   Boolean? @default(true)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
-  users       users?   @relation(fields: [manager_id], references: [id], onUpdate: NoAction, map: "warehouses_manager_id_foreign")
+  is_active   Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("warehouses_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("warehouses_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  users       users?    @relation(fields: [manager_id], references: [id], onUpdate: NoAction, map: "warehouses_manager_id_foreign")
+  updater     users?    @relation("warehouses_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@index([manager_id, is_active])
 }
