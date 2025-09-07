@@ -1,92 +1,219 @@
-import { PrismaClient } from '@prisma/client';
-import { seedClassTypes } from './classTypes';
-import { seedPermissions } from './permissions';
-import { seedRoles } from './roles';
-import { seedUsers } from './users';
-import { seedUnitsOfMeasure } from './unitsOfMeasure';
-import { seedProductCategories } from './productCategories';
-import { seedProductFamilies } from './productFamilies';
-import { seedProductAttributes } from './productAttributes';
-import { seedProductAttributeOptions } from './productAttributeOptions';
-import { seedProducts } from './products';
-import { seedProductAttributeValues } from './productAttributeValues';
-import { seedWarehouses } from './warehouses';
-import { seedUserRoles } from './userRoles';
-import { seedRolePermissions } from './rolePermissions';
-import { seedNotifications } from './notifications';
-import { seedSystemSettings } from './systemSettings';
-import { seedSystemLogs } from './systemLogs';
+// prisma/seeds/seed.ts
+// Main entry point for running all seeds
 
-const prisma = new PrismaClient();
+import { PrismaClient } from '@prisma/client';
+import { SeedRunner } from './utils/SeedRunner';
+
+// Import all seeders from separate files
+import { UserSeeder } from './classes/UserSeeder';
+import { RoleSeeder } from './classes/RoleSeeder';
+import { PermissionSeeder } from './classes/PermissionSeeder';
+import { ProductCategorySeeder } from './classes/ProductCategorySeeder';
+import { ProductFamilySeeder } from './classes/ProductFamilySeeder';
+import { ProductSeeder } from './classes/ProductSeeder';
+import { UnitsOfMeasureSeeder } from './classes/UnitsOfMeasureSeeder';
+import { WarehouseSeeder } from './classes/WarehouseSeeder';
+import { ClassTypeSeeder } from './classes/ClassTypeSeeder';
 
 async function main() {
-  console.log('🌱 Starting database seeding...');
+  const prisma = new PrismaClient();
 
   try {
-    // Seed in order of dependencies
-    console.log('📚 Seeding class types...');
-    await seedClassTypes(prisma);
+    console.log('🌱 Initializing WMS Database Seeding System...\n');
 
-    console.log('🔐 Seeding permissions...');
-    await seedPermissions(prisma);
+    // Parse command line arguments
+    const args = process.argv.slice(2);
+    const force = args.includes('--force');
+    const dryRun = args.includes('--dry-run');
+    const continueOnError = args.includes('--continue-on-error');
+    const skipValidation = args.includes('--skip-validation');
+    
+    // Get specific seeders to run
+    const runOnlyIndex = args.indexOf('--only');
+    const runOnly = runOnlyIndex >= 0 && args[runOnlyIndex + 1] 
+      ? args[runOnlyIndex + 1].split(',') 
+      : undefined;
 
-    console.log('👥 Seeding roles...');
-    await seedRoles(prisma);
+    const skipIndex = args.indexOf('--skip');
+    const skipSeeders = skipIndex >= 0 && args[skipIndex + 1] 
+      ? args[skipIndex + 1].split(',') 
+      : undefined;
 
-    console.log('👤 Seeding users...');
-    await seedUsers(prisma);
+    // Get system user ID (default to 1)
+    const userIdIndex = args.indexOf('--user-id');
+    const systemUserId = userIdIndex >= 0 && args[userIdIndex + 1] 
+      ? parseInt(args[userIdIndex + 1]) 
+      : 1;
 
-    console.log('📏 Seeding units of measure...');
-    await seedUnitsOfMeasure(prisma);
+    // Create seed runner with options
+    const runner = new SeedRunner(prisma, {
+      force,
+      dryRun,
+      continueOnError,
+      validate: !skipValidation,
+      runOnly,
+      skipSeeders,
+      systemUserId,
+      batchSize: 50
+    });
 
-    console.log('📁 Seeding product categories...');
-    await seedProductCategories(prisma);
+    // Register all seeders in dependency order
+    console.log('📝 Registering seeders...');
+    
+    // Foundation seeders (no dependencies)
+    runner.registerSeeder('permissions', () => new PermissionSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('class_types', () => new ClassTypeSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('units_of_measure', () => new UnitsOfMeasureSeeder(prisma, { systemUserId }));
 
-    console.log('👨‍👩‍👧‍👦 Seeding product families...');
-    await seedProductFamilies(prisma);
+    // User management (permissions → roles → users)
+    runner.registerSeeder('roles', () => new RoleSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('users', () => new UserSeeder(prisma, { systemUserId }));
 
-    console.log('🏷️ Seeding product attributes...');
-    await seedProductAttributes(prisma);
+    // Product hierarchy (categories → families → products)
+    runner.registerSeeder('product_categories', () => new ProductCategorySeeder(prisma, { systemUserId }));
+    runner.registerSeeder('product_families', () => new ProductFamilySeeder(prisma, { systemUserId }));
+    runner.registerSeeder('products', () => new ProductSeeder(prisma, { systemUserId }));
 
-    console.log('⚙️ Seeding product attribute options...');
-    await seedProductAttributeOptions(prisma);
+    // Warehouse management (requires users for managers)
+    runner.registerSeeder('warehouses', () => new WarehouseSeeder(prisma, { systemUserId }));
 
-    console.log('📦 Seeding products...');
-    await seedProducts(prisma);
+    // Validate dependencies
+    console.log('🔗 Validating dependencies...');
+    const validation = runner.validateDependencies();
+    if (!validation.valid) {
+      console.error('❌ Dependency validation failed:');
+      validation.errors.forEach(error => console.error(`   • ${error}`));
+      process.exit(1);
+    }
 
-    console.log('🔗 Seeding product attribute values...');
-    await seedProductAttributeValues(prisma);
+    // Show available seeders
+    console.log('\n📋 Available Seeders:');
+    runner.getAvailableSeeders().forEach(seeder => {
+      console.log(`   • ${seeder}`);
+    });
+    console.log('');
 
-    console.log('🏭 Seeding warehouses...');
-    await seedWarehouses(prisma);
+    // Show command line options used
+    console.log('⚙️ Configuration:');
+    if (force) console.log('   🔄 Force mode: Will overwrite existing data');
+    if (dryRun) console.log('   🔍 Dry run: No actual seeding will be performed');
+    if (continueOnError) console.log('   🚀 Continue on error: Will not stop on individual seeder failures');
+    if (skipValidation) console.log('   ⚠️ Validation skipped');
+    if (runOnly) console.log(`   🎯 Running only: ${runOnly.join(', ')}`);
+    if (skipSeeders) console.log(`   ⏭️ Skipping: ${skipSeeders.join(', ')}`);
+    console.log(`   👤 System User ID: ${systemUserId}`);
+    console.log('');
 
-    console.log('👥🔐 Seeding user roles...');
-    await seedUserRoles(prisma);
+    // Run seeders
+    console.log('🚀 Starting seeding process...\n');
+    const startTime = Date.now();
+    const result = await runner.run();
+    const duration = Date.now() - startTime;
 
-    console.log('🔐👥 Seeding role permissions...');
-    await seedRolePermissions(prisma);
+    // Show final summary
+    console.log('\n' + '='.repeat(60));
+    console.log('📊 FINAL SUMMARY');
+    console.log('='.repeat(60));
+    console.log(`⏱️  Total Duration: ${duration}ms`);
+    console.log(`📦 Total Seeders: ${result.totalSeeders}`);
+    console.log(`✅ Successful: ${result.successfulSeeders}`);
+    console.log(`❌ Failed: ${result.failedSeeders}`);
+    console.log(`⏭️  Skipped: ${result.skippedSeeders}`);
+    
+    if (result.success) {
+      console.log('\n🎉 All seeders completed successfully!');
+      console.log('🎯 Your WMS database is now ready for use!');
+      console.log('💡 Next: Open Prisma Studio to view your data: npx prisma studio');
+    } else {
+      console.log('\n⚠️  Some seeders failed. Check the logs above for details.');
+      console.log('💡 Try running with --continue-on-error to see all results.');
+    }
+    
+    console.log('='.repeat(60));
 
-    console.log('🔔 Seeding notifications...');
-    await seedNotifications(prisma);
+    // Exit with appropriate code
+    process.exit(result.success ? 0 : 1);
 
-    console.log('⚙️ Seeding system settings...');
-    await seedSystemSettings(prisma);
-
-    console.log('📊 Seeding system logs...');
-    await seedSystemLogs(prisma);
-
-    console.log('✅ Database seeding completed successfully!');
   } catch (error) {
-    console.error('❌ Error during seeding:', error);
-    throw error;
+    console.error('\n💥 Fatal error during seeding:', error);
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
+    process.exit(1);
+  } finally {
+    try {
+      await prisma.$disconnect();
+      console.log('🔌 Database connection closed.');
+    } catch (disconnectError) {
+      console.error('⚠️ Error disconnecting from database:', disconnectError);
+    }
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('💥 Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Show help if requested
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log(`
+🌱 WMS Database Seeding System
+
+Usage: npm run seed [options]
+
+Options:
+  --force                Force re-seed even if data exists
+  --dry-run             Show what would be run without executing
+  --continue-on-error   Continue running other seeders if one fails
+  --skip-validation     Skip data validation before seeding
+  --only <seeders>      Run only specific seeders (comma-separated)
+  --skip <seeders>      Skip specific seeders (comma-separated)
+  --user-id <id>        System user ID for audit fields (default: 1)
+  --help, -h            Show this help message
+
+Examples:
+  npm run seed                          # Run all seeders
+  npm run seed -- --force               # Force re-seed all data
+  npm run seed -- --only users,roles    # Run only users and roles seeders
+  npm run seed -- --skip products       # Run all except products seeder
+  npm run seed -- --dry-run             # Preview what would be seeded
+  npm run seed -- --force --continue-on-error  # Force seed and continue on errors
+
+Available Seeders:
+  • permissions        - System permissions
+  • roles              - User roles (depends on permissions)
+  • users              - System users (depends on roles)
+  • class_types        - Classification types
+  • units_of_measure   - Units of measurement
+  • product_categories - Product categories (from products.json)
+  • product_families   - Product families (from products.json, depends on categories)
+  • products           - Products and inventory (from products.json, depends on categories, families, units)
+  • warehouses         - Warehouse locations (depends on users for managers)
+
+Execution Order:
+  1. permissions → roles → users
+  2. class_types, units_of_measure (parallel)
+  3. product_categories → product_families → products
+  4. warehouses (after users)
+
+Data Sources:
+  • Most seeders use individual JSON files in prisma/seeds/data/
+  • Product-related seeders all use products.json with sections:
+    - categories[] for product categories
+    - families[] for product families  
+    - products[] for actual products
+`);
+  process.exit(0);
+}
+
+// Run main function
+main().catch((error) => {
+  console.error('💥 Seeding failed:', error);
+  process.exit(1);
+});

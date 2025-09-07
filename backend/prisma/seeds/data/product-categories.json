@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Electronic devices and components",
+    "parent_id": null,
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "Computers",
+    "slug": "computers",
+    "description": "Desktop and laptop computers",
+    "parent_slug": "electronics",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "Mobile Devices",
+    "slug": "mobile-devices", 
+    "description": "Smartphones and tablets",
+    "parent_slug": "electronics",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "name": "Accessories",
+    "slug": "accessories",
+    "description": "Electronic accessories and peripherals",
+    "parent_slug": "electronics",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "name": "Clothing",
+    "slug": "clothing",
+    "description": "Apparel and fashion items",
+    "parent_id": null,
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "name": "Men's Clothing",
+    "slug": "mens-clothing",
+    "description": "Men's apparel",
+    "parent_slug": "clothing",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "Women's Clothing",
+    "slug": "womens-clothing",
+    "description": "Women's apparel",
+    "parent_slug": "clothing",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "name": "Home & Garden",
+    "slug": "home-garden",
+    "description": "Home and garden products",
+    "parent_id": null,
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "name": "Furniture",
+    "slug": "furniture",
+    "description": "Home furniture",
+    "parent_slug": "home-garden",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "Tools",
+    "slug": "tools",
+    "description": "Hand and power tools",
+    "parent_slug": "home-garden",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

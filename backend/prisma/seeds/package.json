@@ -1,15 +1,46 @@
 {
-  "name": "wms-seeds",
+  "name": "wmlab-seeds",
   "version": "1.0.0",
-  "description": "Seed data for WMS database",
-  "main": "seed.ts",
+  "description": "Database seeding system for WMLAB",
+  "main": "dist/seed.js",
   "scripts": {
-    "seed": "npx tsx seed.ts",
-    "seed:dev": "npx tsx seed.ts"
+    "build": "tsc",
+    "dev": "ts-node seed.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:reset": "prisma migrate reset",
+    "prisma:studio": "prisma studio",
+    "seed": "cd prisma/seeds && npm run seed",
+    "seed:full": "cd prisma/seeds && npm run seed:full",
+    "seed:users": "cd prisma/seeds && npm run seed -- --only users",
+    "seed:roles": "cd prisma/seeds && npm run seed -- --only roles",
+    "seed:permissions": "cd prisma/seeds && npm run seed -- --only permissions",
+    "seed:products": "cd prisma/seeds && npm run seed -- --only products,product-categories,product-families",
+    "seed:warehouses": "cd prisma/seeds && npm run seed -- --only warehouses",
+    "seed:inventory": "cd prisma/seeds && npm run seed -- --only products,warehouses,inventory",
+    "seed:basic": "cd prisma/seeds && npm run seed -- --only users,roles,permissions,units-of-measure",
+    "seed:reset": "cd prisma/seeds && npm run seed:reset",
+    "seed:validate": "cd prisma/seeds && npm run validate",
+    "validate": "ts-node utils/SeedValidator.ts",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean"
   },
-  "keywords": ["prisma", "seed", "database", "wms"],
   "dependencies": {
-    "@prisma/client": "^5.0.0",
-    "tsx": "^4.0.0"
+    "@prisma/client": "^5.6.0",
+    "bcrypt": "^5.1.1",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.9.0",
+    "prisma": "^5.6.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "prisma": {
+    "seed": "ts-node seed.ts"
   }
 }

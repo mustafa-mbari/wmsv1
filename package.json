@@ -17,7 +17,15 @@
     "shared:build": "cd shared && npm run build",
     "backend:start": "cd backend && npm start",
     "frontend:start": "cd frontend && npm start",
-    "clean": "rm -rf backend/dist frontend/.next shared/dist node_modules/*/node_modules"
+    "clean": "rm -rf backend/dist frontend/.next shared/dist node_modules/*/node_modules",
+    "seed": "cd backend && npm run seed",
+    "seed:full": "cd backend && npm run seed:full",
+    "seed:users": "cd backend && npm run seed:users",
+    "seed:roles": "cd backend && npm run seed:roles",
+    "seed:permissions": "cd backend && npm run seed:permissions",
+    "seed:products": "cd backend && npm run seed:products",
+    "seed:warehouses": "cd backend && npm run seed:warehouses",
+    "seed:reset": "cd backend && npm run seed:reset"
   },
   "workspaces": [
     "backend",
@@ -31,6 +39,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "pg": "^8.16.3",
     "prisma": "^6.15.0",

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Laptops",
+    "description": "Portable computers",
+    "category_slug": "computers",
+    "is_active": true
+  },
+  {
+    "name": "Desktops",
+    "description": "Desktop computers",
+    "category_slug": "computers", 
+    "is_active": true
+  },
+  {
+    "name": "Smartphones",
+    "description": "Mobile phones",
+    "category_slug": "mobile-devices",
+    "is_active": true
+  },
+  {
+    "name": "Tablets",
+    "description": "Tablet computers",
+    "category_slug": "mobile-devices",
+    "is_active": true
+  },
+  {
+    "name": "Keyboards",
+    "description": "Computer keyboards",
+    "category_slug": "accessories",
+    "is_active": true
+  },
+  {
+    "name": "Mice",
+    "description": "Computer mice",
+    "category_slug": "accessories",
+    "is_active": true
+  },
+  {
+    "name": "T-Shirts",
+    "description": "Casual t-shirts",
+    "category_slug": "mens-clothing",
+    "is_active": true
+  },
+  {
+    "name": "Jeans",
+    "description": "Denim jeans",
+    "category_slug": "mens-clothing",
+    "is_active": true
+  },
+  {
+    "name": "Dresses",
+    "description": "Women's dresses",
+    "category_slug": "womens-clothing",
+    "is_active": true
+  }
+]
