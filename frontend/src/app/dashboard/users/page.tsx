@@ -15,6 +15,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { HardDeleteConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Form,
@@ -85,6 +96,8 @@ export default function UsersPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [bulkDeleteUserIds, setBulkDeleteUserIds] = useState<string[]>([]);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserWithRoles | null>(null);
@@ -226,6 +239,25 @@ export default function UsersPage() {
     }
   };
 
+  const handleBulkDeleteConfirm = async () => {
+    if (!canPerformAdminActions) {
+      setBulkDeleteDialogOpen(false);
+      return;
+    }
+    
+    try {
+      for (const userId of bulkDeleteUserIds) {
+        await apiClient.delete(`/api/users/${userId}`);
+      }
+      setBulkDeleteDialogOpen(false);
+      setBulkDeleteUserIds([]);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      alert("Failed to delete some users");
+    }
+  };
+
   const handleEdit = (user: UserWithRoles) => {
     setCurrentUser(user);
     editForm.reset({
@@ -299,9 +331,11 @@ export default function UsersPage() {
         break;
       case "delete":
         if (canPerformAdminActions) {
-          alert(`Bulk delete for ${userIds.length} user(s) would be implemented here.`);
+          setBulkDeleteUserIds(userIds);
+        setBulkDeleteDialogOpen(true);
         } else {
-          alert("You don't have permission to delete users.");
+          setBulkDeleteUserIds(userIds);
+        setBulkDeleteDialogOpen(true);
         }
         break;
       default:
@@ -863,6 +897,34 @@ export default function UsersPage() {
         description={`Are you sure you want to permanently delete "${currentUser?.username}" (${currentUser?.email})? This action cannot be undone and will remove all associated data from the database.`}
         loading={isDeleteLoading}
       />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {!canPerformAdminActions ? "Permission Denied" : "Delete Multiple Users"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {!canPerformAdminActions 
+                ? "You don't have permission to delete users. Only Super Admins can perform this action."
+                : `Are you sure you want to permanently delete ${bulkDeleteUserIds.length} user(s)? This action cannot be undone and will remove all associated data from the database.`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {canPerformAdminActions && (
+              <AlertDialogAction 
+                onClick={handleBulkDeleteConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete {bulkDeleteUserIds.length} User(s)
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

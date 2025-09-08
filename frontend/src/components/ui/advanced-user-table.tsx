@@ -15,6 +15,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { TableSettings, ColumnVisibility } from "@/components/ui/table-settings"
 import {
   X,
@@ -249,9 +259,26 @@ export function AdvancedUserTable({
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false)
+  const [alertConfig, setAlertConfig] = useState<{
+    title: string;
+    description: string;
+    action?: () => void;
+  }>({ title: "", description: "" })
   // Row selection state with support for shift+click range selection
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null)
+
+  /**
+   * Helper function to show alert dialogs instead of browser alerts
+   * @param title - Dialog title
+   * @param description - Dialog description
+   * @param action - Optional action to perform when confirmed
+   */
+  const showAlert = (title: string, description: string, action?: () => void) => {
+    setAlertConfig({ title, description, action })
+    setAlertDialogOpen(true)
+  }
 
   /**
    * Handles mouse down event for column resizing
@@ -540,7 +567,10 @@ export function AdvancedUserTable({
     const selectedUserIds = Array.from(selectedRows)
     
     if (selectedUserIds.length === 0) {
-      alert("Please select users to delete.")
+      showAlert(
+        "No Users Selected",
+        "Please select users to delete."
+      )
       return
     }
     
@@ -557,8 +587,10 @@ export function AdvancedUserTable({
     const selectedUserIds = Array.from(selectedRows)
     
     if (selectedUserIds.length === 0) {
-      // Could replace with a toast notification instead of alert
-      alert("Please select users to email.")
+      showAlert(
+        "No Users Selected", 
+        "Please select users to email."
+      )
       return
     }
     
@@ -575,8 +607,10 @@ export function AdvancedUserTable({
     const selectedUserIds = Array.from(selectedRows)
     
     if (selectedUserIds.length === 0) {
-      // Could replace with a toast notification instead of alert
-      alert("Please select users to copy.")
+      showAlert(
+        "No Users Selected",
+        "Please select users to copy."
+      )
       return
     }
     
@@ -606,7 +640,10 @@ export function AdvancedUserTable({
       console.log(`Copied ${selectedUserIds.length} user${selectedUserIds.length > 1 ? 's' : ''} to clipboard!`)
     }).catch(() => {
       console.error("Failed to copy to clipboard")
-      alert("Failed to copy to clipboard. Please try again.")
+      showAlert(
+        "Copy Failed",
+        "Failed to copy to clipboard. Please try again."
+      )
     })
   }
   
@@ -618,8 +655,10 @@ export function AdvancedUserTable({
     const selectedUserIds = Array.from(selectedRows)
     
     if (selectedUserIds.length === 0) {
-      // Could replace with a toast notification instead of alert
-      alert("Please select users to export.")
+      showAlert(
+        "No Users Selected",
+        "Please select users to export."
+      )
       return
     }
     
@@ -1511,6 +1550,33 @@ export function AdvancedUserTable({
           </div>
         )}
       </CardContent>
+
+      {/* Alert Dialog for notifications */}
+      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alertConfig.title}</AlertDialogTitle>
+            <AlertDialogDescription>{alertConfig.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            {alertConfig.action ? (
+              <>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  alertConfig.action?.()
+                  setAlertDialogOpen(false)
+                }}>
+                  Confirm
+                </AlertDialogAction>
+              </>
+            ) : (
+              <AlertDialogAction onClick={() => setAlertDialogOpen(false)}>
+                OK
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }
