@@ -67,6 +67,19 @@
     "roles": ["supervisor"]
   },
   {
+    "username": "ali",
+    "email": "ali@wmlab.com",
+    "password": "asd123",
+    "first_name": "ali",
+    "last_name": "mbari",
+    "phone": "+1234567893",
+    "birth_date": "2009-12-10",
+    "gender": "male", 
+    "is_active": false,
+    "email_verified": false,
+    "roles": ["super-admin"]
+  },
+  {
     "username": "employee1",
     "email": "employee1@wmlab.com",
     "password": "Employee123!",

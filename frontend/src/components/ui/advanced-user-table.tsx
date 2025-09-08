@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { TableSettings, ColumnVisibility } from "@/components/ui/table-settings"
 import {
   X,
   ArrowUpDown,
@@ -28,18 +29,23 @@ import {
   ChevronsRight,
   ChevronDown,
   ChevronRightIcon,
-  // Moon,
-  // Sun,
   Edit,
   Trash2,
   MoreHorizontal,
   Eye,
   UserX,
   Shield,
+  Copy,
+  Download,
+  FileText,
+  Settings,
 } from "lucide-react"
-// Simplified stub components for missing dependencies
 import React from "react"
 
+/**
+ * Interface defining the structure of user data for the table
+ * This represents a standardized user object with all necessary fields
+ */
 export interface UserData {
   id: string
   username: string
@@ -101,19 +107,35 @@ const DEFAULT_COLUMN_WIDTHS: ColumnWidths = {
   actions: 120,
 }
 
+/**
+ * Props interface for the AdvancedUserTable component
+ * Defines all callback functions and data requirements
+ */
 interface AdvancedUserTableProps {
+  /** Array of user data to display in the table */
   data: UserData[]
+  /** Loading state indicator */
   loading?: boolean
+  /** Callback when user selection changes */
   onUserSelect?: (userIds: string[]) => void
+  /** Callback for bulk operations (delete, email, etc.) */
   onBulkAction?: (action: string, userIds: string[]) => void
+  /** Callback when editing a user */
   onUserEdit?: (user: UserData) => void
+  /** Callback when deleting a user */
   onUserDelete?: (user: UserData) => void
+  /** Callback when viewing user details */
   onUserView?: (user: UserData) => void
+  /** Callback when toggling user active status */
   onUserToggleStatus?: (user: UserData) => void
+  /** Callback when managing user roles */
   onUserManageRoles?: (user: UserData) => void
 }
 
-// Simple table settings hook replacement
+/**
+ * Simple table settings hook replacement
+ * Manages all table state including sorting, grouping, pagination, and column visibility
+ */
 function useTableSettings() {
   const [settings, setSettings] = useState({
     columnVisibility: {
@@ -132,6 +154,10 @@ function useTableSettings() {
     pageSize: 25
   });
 
+  /**
+   * Updates table settings with partial new settings
+   * @param newSettings - Partial settings to merge with current state
+   */
   const updateSettings = (newSettings: Partial<typeof settings>) => {
     setSettings(prev => ({
       ...prev,
@@ -139,6 +165,10 @@ function useTableSettings() {
     }));
   };
 
+  /**
+   * Resets all settings to their default values
+   * Useful for clearing all filters and customizations
+   */
   const resetSettings = () => {
     setSettings({
       columnVisibility: {
@@ -163,6 +193,25 @@ function useTableSettings() {
   return { settings, updateSettings, resetSettings, isLoaded };
 }
 
+/**
+ * Advanced User Table Component
+ * 
+ * A comprehensive, feature-rich table for displaying and managing user data.
+ * 
+ * Features:
+ * - Column visibility controls with persistent settings
+ * - Multi-row selection with shift+click support
+ * - Bulk operations (delete, email, copy, export)
+ * - Sortable and resizable columns
+ * - Advanced filtering capabilities
+ * - Row grouping functionality
+ * - Responsive design with mobile-friendly cards
+ * - Pagination with customizable page sizes
+ * - Individual user actions dropdown
+ * 
+ * @param props - Component properties as defined in AdvancedUserTableProps
+ * @returns JSX element representing the advanced user table
+ */
 export function AdvancedUserTable({ 
   data, 
   loading = false, 
@@ -200,8 +249,16 @@ export function AdvancedUserTable({
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
+  // Row selection state with support for shift+click range selection
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null)
 
+  /**
+   * Handles mouse down event for column resizing
+   * Initiates the column resize operation by capturing initial mouse position and column width
+   * @param e - Mouse event
+   * @param column - The column being resized
+   */
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, column: keyof ColumnWidths) => {
       e.preventDefault()
@@ -212,6 +269,12 @@ export function AdvancedUserTable({
     [columnWidths],
   )
 
+  /**
+   * Handles mouse move event during column resizing
+   * Calculates and applies new column width based on mouse movement
+   * Enforces minimum width constraint of 80px
+   * @param e - Mouse event
+   */
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isResizing) return
@@ -261,6 +324,11 @@ export function AdvancedUserTable({
     [data],
   )
 
+  /**
+   * Filters the user data based on current filter values
+   * Applies text search to name, email, phone fields and dropdown filters for roles and status
+   * @returns Filtered array of users matching all current filter criteria
+   */
   const filteredData = useMemo(() => {
     return data.filter((user) => {
       const fullName = `${user.first_name} ${user.last_name}`.toLowerCase()
@@ -280,12 +348,18 @@ export function AdvancedUserTable({
     })
   }, [data, filters])
 
+  /**
+   * Sorts the filtered data based on current sort configuration
+   * Handles different data types (string, date, boolean) with appropriate comparison logic
+   * @returns Sorted array of users according to current sort column and direction
+   */
   const sortedData = useMemo(() => {
     if (!sortColumn || !sortDirection) return filteredData
 
     return [...filteredData].sort((a, b) => {
       let aValue: any, bValue: any
 
+      // Extract values based on column type
       switch (sortColumn) {
         case "name":
           aValue = `${a.first_name} ${a.last_name}`.toLowerCase()
@@ -308,6 +382,7 @@ export function AdvancedUserTable({
           bValue = b.is_active ? "active" : "inactive"
           break
         case "lastLogin":
+          // Convert dates to timestamps for numeric comparison
           aValue = a.last_login_at ? new Date(a.last_login_at).getTime() : 0
           bValue = b.last_login_at ? new Date(b.last_login_at).getTime() : 0
           break
@@ -319,10 +394,12 @@ export function AdvancedUserTable({
           return 0
       }
 
+      // Handle numeric comparison for dates
       if (sortColumn === "lastLogin" || sortColumn === "created") {
         return sortDirection === "asc" ? aValue - bValue : bValue - aValue
       }
 
+      // Handle string comparison
       if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
       return 0
@@ -338,9 +415,15 @@ export function AdvancedUserTable({
     return data.filter((user) => selectedRows.has(user.id))
   }, [data, selectedRows])
 
+  /**
+   * Groups the sorted data by the selected group column
+   * Creates collapsible groups with user counts for better data organization
+   * @returns Array of group objects with group value, users array, and count
+   */
   const groupedData = useMemo(() => {
     if (!groupColumn) return null
 
+    // Reduce users into groups based on the selected column
     const groups = sortedData.reduce(
       (acc, user) => {
         let groupKey = ""
@@ -364,6 +447,7 @@ export function AdvancedUserTable({
       {} as Record<string, UserData[]>,
     )
 
+    // Transform groups into array with metadata
     return Object.entries(groups).map(([groupValue, users]) => ({
       groupValue,
       users,
@@ -378,6 +462,12 @@ export function AdvancedUserTable({
     }
   }, [selectedRows, onUserSelect])
 
+  /**
+   * Handles select all checkbox functionality
+   * When checked, selects all users on the current page/view
+   * When unchecked, clears all selections
+   * @param checked - Whether the select all checkbox is checked
+   */
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       const currentPageIds = new Set(paginatedData.map((user) => user.id))
@@ -385,31 +475,185 @@ export function AdvancedUserTable({
     } else {
       setSelectedRows(new Set())
     }
+    setLastSelectedIndex(null) // Reset shift+click tracking
   }
 
+  /**
+   * Handles individual row selection with basic functionality
+   * @param userId - The ID of the user to select/deselect
+   * @param checked - Whether the row should be selected
+   */
   const handleSelectRow = (userId: string, checked: boolean) => {
     setSelectedRows((prev) => {
       const newSet = new Set(prev)
+      
       if (checked) {
         newSet.add(userId)
       } else {
         newSet.delete(userId)
       }
+      
       return newSet
     })
   }
-
-  const handleBulkDelete = () => {
-    if (onBulkAction) {
-      onBulkAction("delete", Array.from(selectedRows))
+  
+  /**
+   * Handles row click with support for shift+click range selection
+   * @param userId - The ID of the user to select/deselect
+   * @param index - Row index for range selection
+   * @param event - Mouse event for detecting shift key
+   */
+  const handleRowClick = (userId: string, index: number, event: React.MouseEvent) => {
+    const isCurrentlySelected = selectedRows.has(userId)
+    
+    // Handle shift+click for range selection
+    if (event.shiftKey && lastSelectedIndex !== null) {
+      const startIndex = Math.min(lastSelectedIndex, index)
+      const endIndex = Math.max(lastSelectedIndex, index)
+      
+      setSelectedRows((prev) => {
+        const newSet = new Set(prev)
+        
+        // Select all users in the range
+        for (let i = startIndex; i <= endIndex; i++) {
+          if (paginatedData[i]) {
+            newSet.add(paginatedData[i].id)
+          }
+        }
+        
+        return newSet
+      })
+    } else {
+      // Normal toggle selection
+      handleSelectRow(userId, !isCurrentlySelected)
     }
-    setSelectedRows(new Set())
+    
+    // Update last selected index for shift+click functionality
+    setLastSelectedIndex(index)
   }
 
-  const handleBulkEmail = () => {
-    if (onBulkAction) {
-      onBulkAction("email", Array.from(selectedRows))
+  /**
+   * Handles bulk delete operation for selected users
+   * Delegates to parent component for confirmation and processing
+   */
+  const handleBulkDelete = () => {
+    const selectedUserIds = Array.from(selectedRows)
+    
+    if (selectedUserIds.length === 0) {
+      alert("Please select users to delete.")
+      return
     }
+    
+    if (onBulkAction) {
+      onBulkAction("delete", selectedUserIds)
+    }
+    setSelectedRows(new Set()) // Clear selection after action
+  }
+
+  /**
+   * Handles bulk email operation for selected users
+   */
+  const handleBulkEmail = () => {
+    const selectedUserIds = Array.from(selectedRows)
+    
+    if (selectedUserIds.length === 0) {
+      // Could replace with a toast notification instead of alert
+      alert("Please select users to email.")
+      return
+    }
+    
+    if (onBulkAction) {
+      onBulkAction("email", selectedUserIds)
+    }
+  }
+  
+  /**
+   * Handles copying selected user data to clipboard
+   * Formats data as tab-separated values for easy pasting into spreadsheets
+   */
+  const handleCopySelected = () => {
+    const selectedUserIds = Array.from(selectedRows)
+    
+    if (selectedUserIds.length === 0) {
+      // Could replace with a toast notification instead of alert
+      alert("Please select users to copy.")
+      return
+    }
+    
+    const selectedUsersData = data.filter(user => selectedUserIds.includes(user.id))
+    
+    // Create header row
+    const headers = ["Name", "Username", "Email", "Phone", "Status", "Roles", "Created", "Last Login"]
+    
+    // Create data rows
+    const rows = selectedUsersData.map(user => [
+      `${user.first_name} ${user.last_name}`,
+      user.username,
+      user.email,
+      user.phone || "N/A",
+      user.is_active ? "Active" : "Inactive",
+      user.role_names.join(", ") || "No roles",
+      formatDate(user.created_at),
+      user.last_login_at ? formatDate(user.last_login_at) : "Never"
+    ])
+    
+    // Combine headers and rows with tab separation
+    const tsvData = [headers, ...rows].map(row => row.join("\t")).join("\n")
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(tsvData).then(() => {
+      // Could replace with a toast notification for better UX
+      console.log(`Copied ${selectedUserIds.length} user${selectedUserIds.length > 1 ? 's' : ''} to clipboard!`)
+    }).catch(() => {
+      console.error("Failed to copy to clipboard")
+      alert("Failed to copy to clipboard. Please try again.")
+    })
+  }
+  
+  /**
+   * Handles exporting selected user data as CSV
+   * Downloads a CSV file with the selected users' information
+   */
+  const handleExportSelected = () => {
+    const selectedUserIds = Array.from(selectedRows)
+    
+    if (selectedUserIds.length === 0) {
+      // Could replace with a toast notification instead of alert
+      alert("Please select users to export.")
+      return
+    }
+    
+    const selectedUsersData = data.filter(user => selectedUserIds.includes(user.id))
+    
+    // Create CSV content
+    const headers = ["Name", "Username", "Email", "Phone", "Status", "Roles", "Created", "Last Login"]
+    
+    const csvRows = [
+      headers.join(","), // Header row
+      ...selectedUsersData.map(user => [
+        `"${user.first_name} ${user.last_name}"`,
+        `"${user.username}"`,
+        `"${user.email}"`,
+        `"${user.phone || "N/A"}"`,
+        `"${user.is_active ? "Active" : "Inactive"}"`,
+        `"${user.role_names.join(", ") || "No roles"}"`,
+        `"${formatDate(user.created_at)}"`,
+        `"${user.last_login_at ? formatDate(user.last_login_at) : "Never"}"`
+      ].join(","))
+    ]
+    
+    const csvContent = csvRows.join("\n")
+    
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    link.setAttribute("href", url)
+    link.setAttribute("download", `users-export-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const isAllSelected = paginatedData.length > 0 && paginatedData.every((user) => selectedRows.has(user.id))
@@ -475,6 +719,11 @@ export function AdvancedUserTable({
     return isActive ? "default" : "destructive"
   }
 
+  /**
+   * Renders a sortable and resizable column header with grouping capability
+   * @param column - The column key
+   * @param label - The display label for the column
+   */
   const renderColumnHeader = (column: SortableColumn, label: string) => (
     <th
       className="h-12 px-4 text-left align-middle font-medium text-muted-foreground relative border-r border-border/50"
@@ -486,6 +735,7 @@ export function AdvancedUserTable({
           size="sm"
           className="h-auto p-0 font-medium text-muted-foreground hover:text-foreground"
           onClick={() => handleSort(column)}
+          title={`Sort by ${label}`}
         >
           {label}
           {getSortIcon(column)}
@@ -505,6 +755,7 @@ export function AdvancedUserTable({
           </Badge>
         )}
       </div>
+      {/* Column resize handle */}
       <div
         className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/20 active:bg-primary/30 transition-colors"
         onMouseDown={(e) => handleMouseDown(e, column)}
@@ -513,6 +764,10 @@ export function AdvancedUserTable({
     </th>
   )
 
+  /**
+   * Column configuration object defining how each column should be rendered
+   * Each column has a key, label, and render function
+   */
   const columnConfig = {
     name: {
       key: "name" as const,
@@ -593,45 +848,69 @@ export function AdvancedUserTable({
       render: (user: UserData) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button 
+              variant="ghost" 
+              className="h-8 w-8 p-0 hover:bg-muted"
+              title="User actions"
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+            {/* View action */}
             <DropdownMenuItem
-              onClick={() => onUserView?.(user)}
-              className="cursor-pointer"
+              onClick={() => {
+                console.log("Viewing user:", user.username)
+                onUserView?.(user)
+              }}
+              className="cursor-pointer hover:bg-muted focus:bg-muted"
             >
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
+            {/* Edit action */}
             <DropdownMenuItem
-              onClick={() => onUserEdit?.(user)}
-              className="cursor-pointer"
+              onClick={() => {
+                console.log("Editing user:", user.username)
+                onUserEdit?.(user)
+              }}
+              className="cursor-pointer hover:bg-muted focus:bg-muted"
             >
               <Edit className="mr-2 h-4 w-4" />
               Edit User
             </DropdownMenuItem>
+            {/* Role management action */}
             <DropdownMenuItem
-              onClick={() => onUserManageRoles?.(user)}
-              className="cursor-pointer"
+              onClick={() => {
+                console.log("Managing roles for user:", user.username)
+                onUserManageRoles?.(user)
+              }}
+              className="cursor-pointer hover:bg-muted focus:bg-muted"
             >
               <Shield className="mr-2 h-4 w-4" />
               Manage Roles
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            {/* Toggle status action */}
             <DropdownMenuItem
-              onClick={() => onUserToggleStatus?.(user)}
-              className="cursor-pointer"
+              onClick={() => {
+                console.log(`${user.is_active ? 'Deactivating' : 'Activating'} user:`, user.username)
+                onUserToggleStatus?.(user)
+              }}
+              className="cursor-pointer hover:bg-muted focus:bg-muted"
             >
               <UserX className="mr-2 h-4 w-4" />
               {user.is_active ? "Deactivate" : "Activate"} User
             </DropdownMenuItem>
+            {/* Delete action */}
             <DropdownMenuItem
-              onClick={() => onUserDelete?.(user)}
-              className="cursor-pointer text-red-600 focus:text-red-600"
+              onClick={() => {
+                console.log("Deleting user:", user.username)
+                onUserDelete?.(user)
+              }}
+              className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50 focus:bg-red-50 dark:hover:bg-red-950/20 dark:focus:bg-red-950/20"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete User
@@ -642,6 +921,10 @@ export function AdvancedUserTable({
     },
   }
 
+  /**
+   * Resets all filters, sorting, grouping, and selection to default state
+   * Provides a clean slate for data viewing
+   */
   const clearAllFilters = () => {
     setFilters({
       name: "",
@@ -776,6 +1059,11 @@ export function AdvancedUserTable({
     </div>
   )
 
+  /**
+   * Updates a specific filter value and triggers data re-filtering
+   * @param column - The column to update the filter for
+   * @param value - The new filter value
+   */
   const updateFilter = (column: keyof ColumnFilters, value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -812,6 +1100,25 @@ export function AdvancedUserTable({
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
         <CardTitle className="text-2xl font-bold">User Directory</CardTitle>
         <div className="flex flex-wrap items-center gap-2">
+          {/* Table Settings Button */}
+          <TableSettings
+            columnVisibility={columnVisibility as ColumnVisibility}
+            onVisibilityChange={(newVisibility) => {
+              const typedVisibility = newVisibility as typeof columnVisibility
+              updateSettings({ columnVisibility: typedVisibility })
+            }}
+            columns={[
+              { key: 'name', label: 'Name' },
+              { key: 'email', label: 'Email' },
+              { key: 'roles', label: 'Roles' },
+              { key: 'phone', label: 'Phone' },
+              { key: 'status', label: 'Status' },
+              { key: 'lastLogin', label: 'Last Login' },
+              { key: 'created', label: 'Created' },
+              { key: 'actions', label: 'Actions' }
+            ]}
+          />
+          {/* Clear filters button */}
           {hasActiveFilters && (
             <Button variant="outline" size="sm" onClick={clearAllFilters}>
               <X className="h-4 w-4 mr-2" />
@@ -822,19 +1129,53 @@ export function AdvancedUserTable({
       </CardHeader>
 
       <CardContent className="p-0">
-        {/* Bulk Actions Bar */}
+        {/* Enhanced Bulk Actions Bar */}
         {selectedRows.size > 0 && (
           <div className="bg-muted/50 border-b px-4 py-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                {selectedRows.size} row{selectedRows.size !== 1 ? "s" : ""} selected
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <span className="text-sm text-muted-foreground font-medium">
+                {selectedRows.size} user{selectedRows.size !== 1 ? "s" : ""} selected
               </span>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleBulkEmail}>
-                  Email Selected
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Copy selected users */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCopySelected}
+                  title="Copy selected users to clipboard"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
                 </Button>
-                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-                  Delete Selected
+                {/* Export selected users */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleExportSelected}
+                  title="Export selected users as CSV"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+                {/* Email selected users */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleBulkEmail}
+                  title="Send email to selected users"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                {/* Delete selected users */}
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={handleBulkDelete}
+                  title="Delete selected users"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
                 </Button>
               </div>
             </div>
@@ -942,9 +1283,13 @@ export function AdvancedUserTable({
                           </td>
                         </tr>
                         {expandedGroups.has(groupValue) &&
-                          users.map((user) => (
-                            <tr key={user.id} className="border-b hover:bg-muted/50">
-                              <td className="h-12 px-4 border-r border-border/50">
+                          users.map((user, groupIndex) => (
+                            <tr 
+                              key={user.id} 
+                              className="border-b hover:bg-muted/50 cursor-pointer" 
+                              onClick={(e) => handleRowClick(user.id, groupIndex, e)}
+                            >
+                              <td className="h-12 px-4 border-r border-border/50" onClick={(e) => e.stopPropagation()}>
                                 <Checkbox
                                   checked={selectedRows.has(user.id)}
                                   onCheckedChange={(checked) => handleSelectRow(user.id, checked as boolean)}
@@ -967,9 +1312,13 @@ export function AdvancedUserTable({
                           ))}
                       </React.Fragment>
                     ))
-                  : paginatedData.map((user) => (
-                      <tr key={user.id} className="border-b hover:bg-muted/50">
-                        <td className="h-12 px-4 border-r border-border/50">
+                  : paginatedData.map((user, index) => (
+                      <tr 
+                        key={user.id} 
+                        className="border-b hover:bg-muted/50 transition-colors cursor-pointer"
+                        onClick={(e) => handleRowClick(user.id, index, e)}
+                      >
+                        <td className="h-12 px-4 border-r border-border/50" onClick={(e) => e.stopPropagation()}>
                           <Checkbox
                             checked={selectedRows.has(user.id)}
                             onCheckedChange={(checked) => handleSelectRow(user.id, checked as boolean)}
