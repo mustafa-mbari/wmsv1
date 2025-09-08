@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { HardDeleteConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Form,
   FormControl,
@@ -83,6 +84,7 @@ export default function UsersPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserWithRoles | null>(null);
@@ -179,7 +181,7 @@ export default function UsersPage() {
         return;
       }
       const { confirmPassword, ...userData } = data;
-      await apiClient.post("/api/register", userData);
+      await apiClient.post("/api/auth/register", userData);
       alert("User created successfully");
       setIsCreateDialogOpen(false);
       createForm.reset();
@@ -210,14 +212,16 @@ export default function UsersPage() {
   const confirmDelete = async () => {
     if (currentUser) {
       try {
+        setIsDeleteLoading(true);
         await apiClient.delete(`/api/users/${currentUser.id}`);
-        alert("User deleted successfully");
         setIsDeleteDialogOpen(false);
         setCurrentUser(null);
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
         alert("Failed to delete user");
+      } finally {
+        setIsDeleteLoading(false);
       }
     }
   };
@@ -851,34 +855,14 @@ export default function UsersPage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete the user "{currentUser?.username}"? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="my-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-md border border-yellow-200 dark:border-yellow-900">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              Warning: This will permanently remove the user account and all associated data.
-              Consider deactivating the account instead.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete User
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <HardDeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        title="Delete User Permanently"
+        description={`Are you sure you want to permanently delete "${currentUser?.username}" (${currentUser?.email})? This action cannot be undone and will remove all associated data from the database.`}
+        loading={isDeleteLoading}
+      />
     </div>
   );
 }

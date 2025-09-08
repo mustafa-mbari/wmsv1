@@ -174,4 +174,142 @@ router.get('/me', async (req: Request, res: Response) => {
   res.json(createApiResponse(true, { user: mockUser }, 'User retrieved successfully'));
 });
 
+// POST /api/auth/register
+router.post('/register', async (req: Request, res: Response) => {
+  try {
+    const { 
+      username, 
+      email, 
+      firstName, 
+      lastName, 
+      phone, 
+      address, 
+      password, 
+      isActive = true, 
+      isAdmin = false 
+    } = req.body;
+
+    logger.info('User registration attempt', { 
+      source: 'authRoutes', 
+      method: 'register',
+      email,
+      username
+    });
+
+    // Validation
+    if (!username || !email || !firstName || !lastName || !password) {
+      logger.warn('Registration failed: missing required fields', { 
+        source: 'authRoutes', 
+        method: 'register',
+        email: email || 'undefined',
+        username: username || 'undefined'
+      });
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Username, email, first name, last name, and password are required')
+      );
+    }
+
+    if (!validateEmail(email)) {
+      logger.warn('Registration failed: invalid email format', { 
+        source: 'authRoutes', 
+        method: 'register', 
+        email 
+      });
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Invalid email format')
+      );
+    }
+
+    if (password.length < 6) {
+      logger.warn('Registration failed: password too short', { 
+        source: 'authRoutes', 
+        method: 'register', 
+        email 
+      });
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Password must be at least 6 characters long')
+      );
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.users.findFirst({
+      where: {
+        OR: [
+          { email },
+          { username }
+        ],
+        deleted_at: null
+      }
+    });
+
+    if (existingUser) {
+      logger.warn('Registration failed: user already exists', { 
+        source: 'authRoutes', 
+        method: 'register',
+        email,
+        username
+      });
+      return res.status(HttpStatus.CONFLICT).json(
+        createApiResponse(false, null, 'User with this email or username already exists')
+      );
+    }
+
+    // Hash password
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Create user
+    const newUser = await prisma.users.create({
+      data: {
+        username,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone || null,
+        address: address || null,
+        password_hash: passwordHash,
+        is_active: isActive,
+        email_verified: false,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+    });
+
+    // Create clean user object for response (no password hash)
+    const userResponse = {
+      id: newUser.id.toString(),
+      email: newUser.email,
+      username: newUser.username,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      is_active: newUser.is_active,
+      role_names: [], // New users have no roles initially
+      created_at: newUser.created_at,
+      updated_at: newUser.updated_at
+    };
+
+    logger.info('User registered successfully', { 
+      source: 'authRoutes', 
+      method: 'register',
+      userId: newUser.id.toString(),
+      email: newUser.email
+    });
+
+    res.status(HttpStatus.CREATED).json(
+      createApiResponse(true, { user: userResponse }, 'User registered successfully')
+    );
+  } catch (error) {
+    logger.error('Error during user registration', {
+      source: 'authRoutes',
+      method: 'register',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to register user')
+    );
+  }
+});
+
 export default router;
