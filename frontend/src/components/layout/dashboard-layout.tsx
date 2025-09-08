@@ -276,8 +276,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const displayTheme = mounted ? theme : "light";
 
   const getUserInitials = (user: any) => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
     }
     if (user?.username) {
       return user.username.slice(0, 2).toUpperCase();
@@ -286,8 +286,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const getUserDisplayName = (user: any) => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
     }
     return user?.username || 'User';
   };

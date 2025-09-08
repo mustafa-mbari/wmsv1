@@ -14,11 +14,17 @@ router.get('/', async (req: Request, res: Response) => {
       method: 'getUsers'
     });
 
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
+      where: {
+        deleted_at: null, // Only get non-deleted users
+      },
       include: {
-        UserRole: {
+        user_roles_user_roles_user_idTousers: {
+          where: {
+            deleted_at: null, // Only get non-deleted role assignments
+          },
           include: {
-            role: true
+            roles: true
           }
         }
       }
@@ -26,23 +32,20 @@ router.get('/', async (req: Request, res: Response) => {
 
     // Transform the data to match frontend expectations
     const transformedUsers = users.map(user => ({
-      id: user.id,
+      id: user.id.toString(),
       username: user.username,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
       phone: user.phone,
       address: user.address,
-      city: user.city,
-      country: user.country,
-      isActive: user.isActive,
-      isAdmin: user.isAdmin,
-      emailVerified: user.emailVerified,
-      lastLogin: user.lastLogin,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      role_names: user.UserRole.map(ur => ur.role.name),
-      role_slugs: user.UserRole.map(ur => ur.role.slug)
+      is_active: user.is_active,
+      email_verified: user.email_verified,
+      last_login_at: user.last_login_at?.toISOString() || null,
+      created_at: user.created_at.toISOString(),
+      updated_at: user.updated_at.toISOString(),
+      role_names: user.user_roles_user_roles_user_idTousers.map(ur => ur.roles.name),
+      role_slugs: user.user_roles_user_roles_user_idTousers.map(ur => ur.roles.slug)
     }));
 
     logger.info('Users retrieved successfully from database', { 
@@ -56,7 +59,8 @@ router.get('/', async (req: Request, res: Response) => {
     logger.error('Error fetching users from database', {
       source: 'userRoutes',
       method: 'getUsers',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     });
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
@@ -75,12 +79,18 @@ router.get('/:id', async (req: Request, res: Response) => {
       userId: id
     });
     
-    const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) },
+    const user = await prisma.users.findUnique({
+      where: { 
+        id: parseInt(id),
+        deleted_at: null // Only get non-deleted user
+      },
       include: {
-        UserRole: {
+        user_roles_user_roles_user_idTousers: {
+          where: {
+            deleted_at: null, // Only get non-deleted role assignments
+          },
           include: {
-            role: true
+            roles: true
           }
         }
       }
@@ -99,23 +109,23 @@ router.get('/:id', async (req: Request, res: Response) => {
 
     // Transform the data to match frontend expectations
     const transformedUser = {
-      id: user.id,
+      id: user.id.toString(),
       username: user.username,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
       phone: user.phone,
       address: user.address,
-      city: user.city,
-      country: user.country,
-      isActive: user.isActive,
-      isAdmin: user.isAdmin,
-      emailVerified: user.emailVerified,
-      lastLogin: user.lastLogin,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      role_names: user.UserRole.map(ur => ur.role.name),
-      role_slugs: user.UserRole.map(ur => ur.role.slug)
+      birth_date: user.birth_date?.toISOString() || null,
+      gender: user.gender,
+      is_active: user.is_active,
+      email_verified: user.email_verified,
+      email_verified_at: user.email_verified_at?.toISOString() || null,
+      last_login_at: user.last_login_at?.toISOString() || null,
+      created_at: user.created_at.toISOString(),
+      updated_at: user.updated_at.toISOString(),
+      role_names: user.user_roles_user_roles_user_idTousers.map(ur => ur.roles.name),
+      role_slugs: user.user_roles_user_roles_user_idTousers.map(ur => ur.roles.slug)
     };
     
     logger.info('User retrieved successfully from database', { 
@@ -131,7 +141,8 @@ router.get('/:id', async (req: Request, res: Response) => {
       source: 'userRoutes',
       method: 'getUserById',
       userId: req.params.id,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     });
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(

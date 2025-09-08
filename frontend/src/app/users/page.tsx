@@ -49,24 +49,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
 
-// Extended User type with role information from the API
+// Extended User type with role information from the API (matching backend response)
 export interface UserWithRoles {
   id: number;
   username: string;
   email: string;
-  firstName?: string;
-  lastName?: string;
+  first_name?: string;
+  last_name?: string;
   phone?: string;
   address?: string;
   city?: string;
   country?: string;
-  isActive: boolean;
-  isAdmin?: boolean;
+  is_active: boolean;
+  is_admin?: boolean;
   defaultWarehouseId?: string;
-  lastLogin?: string | Date;
-  createdAt?: string | Date;
+  last_login_at?: string;
+  created_at?: string;
+  updated_at?: string;
   role_names?: string[];
   role_slugs?: string[];
+  email_verified?: boolean;
 }
 
 export default function UsersPage() {
@@ -89,33 +91,6 @@ export default function UsersPage() {
   
   // Check if user can perform admin actions (create, edit, delete, role management)
   const canPerformAdminActions = isSuperAdmin();
-
-  // If user doesn't have access to users page, show access denied
-  if (!canAccessUsersPage) {
-    return (
-      <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-6">
-        <Card className="w-full max-w-md border-destructive/20 bg-destructive/5">
-          <CardHeader className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <XCircle className="h-6 w-6 text-destructive" />
-            </div>
-            <CardTitle className="mt-4 text-xl">Access Denied</CardTitle>
-            <CardDescription className="mt-2">
-              You don't have permission to access the Users page.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground mb-6">
-              Only Super Admins, Admins, and Managers can view user information.
-            </p>
-            <Button variant="outline" onClick={() => window.history.back()}>
-              Go Back
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Define form schema with zod
   const userFormSchema = z.object({
@@ -143,8 +118,10 @@ export default function UsersPage() {
   });
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (canAccessUsersPage) {
+      fetchUsers();
+    }
+  }, [canAccessUsersPage]);
 
   const fetchUsers = async () => {
     try {
@@ -247,14 +224,14 @@ export default function UsersPage() {
     editForm.reset({
       username: user.username,
       email: user.email,
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
+      firstName: user.first_name || "",
+      lastName: user.last_name || "",
       phone: user.phone || "",
       address: user.address || "",
       city: user.city || "",
       country: user.country || "",
-      isActive: user.isActive,
-      isAdmin: user.isAdmin || false,
+      isActive: user.is_active,
+      isAdmin: user.is_admin || false,
       defaultWarehouseId: user.defaultWarehouseId || "",
     });
     setIsEditDialogOpen(true);
@@ -273,13 +250,13 @@ export default function UsersPage() {
       id: String(user.id),
       username: user.username || "",
       email: user.email || "",
-      first_name: user.firstName || "",
-      last_name: user.lastName || "",
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
       phone: user.phone || "",
-      is_active: user.isActive ?? true,
-      email_verified: false, // This field doesn't exist in the schema, set default
-      last_login_at: user.lastLogin ? (typeof user.lastLogin === 'string' ? user.lastLogin : new Date(user.lastLogin).toISOString()) : undefined,
-      created_at: user.createdAt ? (typeof user.createdAt === 'string' ? user.createdAt : new Date(user.createdAt).toISOString()) : new Date().toISOString(),
+      is_active: user.is_active ?? true,
+      email_verified: user.email_verified ?? false,
+      last_login_at: user.last_login_at || undefined,
+      created_at: user.created_at || new Date().toISOString(),
       role_names: user.role_names || [],
       role_slugs: user.role_slugs || []
     }));
@@ -357,11 +334,38 @@ export default function UsersPage() {
   };
 
   const getDisplayName = (user: UserWithRoles) => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName} ${user.lastName}`;
+    if (user.first_name && user.last_name) {
+      return `${user.first_name} ${user.last_name}`;
     }
     return user.username;
   };
+
+  // If user doesn't have access to users page, show access denied
+  if (!canAccessUsersPage) {
+    return (
+      <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-6">
+        <Card className="w-full max-w-md border-destructive/20 bg-destructive/5">
+          <CardHeader className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <XCircle className="h-6 w-6 text-destructive" />
+            </div>
+            <CardTitle className="mt-4 text-xl">Access Denied</CardTitle>
+            <CardDescription className="mt-2">
+              You don't have permission to access the Users page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-sm text-muted-foreground mb-6">
+              Only Super Admins, Admins, and Managers can view user information.
+            </p>
+            <Button variant="outline" onClick={() => window.history.back()}>
+              Go Back
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
