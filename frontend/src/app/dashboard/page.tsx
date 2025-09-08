@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Users, Package, Warehouse } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 
 const stats = [
   {
@@ -38,10 +39,10 @@ const stats = [
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to your warehouse management system</p>
-      </div>
+      <PageHeader 
+        title="Dashboard"
+        description="Welcome to your warehouse management system"
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

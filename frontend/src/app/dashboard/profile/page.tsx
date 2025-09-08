@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { apiClient } from "@/lib/api-client";
+import { PageHeader } from "@/components/layout/page-header";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -180,17 +181,11 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            My Profile
-          </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Manage your account information and preferences
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0">
-          {!editMode ? (
+      <PageHeader 
+        title="My Profile"
+        description="Manage your account information and preferences"
+        actions={
+          !editMode ? (
             <Button onClick={() => setEditMode(true)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Profile
@@ -212,9 +207,9 @@ export default function ProfilePage() {
                 Save Changes
               </Button>
             </div>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Personal Information */}

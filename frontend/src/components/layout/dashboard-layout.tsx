@@ -64,31 +64,31 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { 
     name: "Products", 
-    href: "/products", 
+    href: "/dashboard/products", 
     icon: Package,
     children: [
-      { name: "Products", href: "/products" },
-      { name: "Categories", href: "/products/categories" },
-      { name: "Product Families", href: "/products/families" },
-      { name: "Attributes", href: "/products/attributes" },
-      { name: "Attribute Options", href: "/products/attribute-options" },
-      { name: "Attribute Values", href: "/products/attribute-values" },
-      { name: "Units of Measure", href: "/products/uom" },
+      { name: "Products", href: "/dashboard/products" },
+      { name: "Categories", href: "/dashboard/products/categories" },
+      { name: "Product Families", href: "/dashboard/products/families" },
+      { name: "Attributes", href: "/dashboard/products/attributes" },
+      { name: "Attribute Options", href: "/dashboard/products/attribute-options" },
+      { name: "Attribute Values", href: "/dashboard/products/attribute-values" },
+      { name: "Units of Measure", href: "/dashboard/products/uom" },
     ]
   },
   { 
     name: "Inventory", 
-    href: "/inventory", 
+    href: "/dashboard/inventory", 
     icon: BarChart3,
     children: [
-      { name: "Current Stock", href: "/inventory" },
-      { name: "Adjustments", href: "/inventory/adjustments" },
-      { name: "Movements", href: "/inventory/movements" },
+      { name: "Current Stock", href: "/dashboard/inventory" },
+      { name: "Adjustments", href: "/dashboard/inventory/adjustments" },
+      { name: "Movements", href: "/dashboard/inventory/movements" },
     ]
   },
-  { name: "Warehouses", href: "/warehouses", icon: Warehouse },
-  { name: "Users", href: "/users", icon: Users },
-  { name: "System", href: "/settings", icon: Settings },
+  { name: "Warehouses", href: "/dashboard/warehouses", icon: Warehouse },
+  { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: "System", href: "/dashboard/settings", icon: Settings },
 ];
 
 function AppSidebar() {
@@ -112,9 +112,9 @@ function AppSidebar() {
 
   // Calculate which menus should be open based on current location
   const getAutoOpenMenus = () => {
-    if (pathname.startsWith('/products')) {
+    if (pathname.startsWith('/dashboard/products')) {
       return ['Products'];
-    } else if (pathname.startsWith('/inventory')) {
+    } else if (pathname.startsWith('/dashboard/inventory')) {
       return ['Inventory'];
     }
     return [];
@@ -375,13 +375,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   My Account
                 </DropdownMenuLabel>
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
+                  <Link href="/dashboard/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/settings">
+                  <Link href="/dashboard/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>
