@@ -4,6 +4,7 @@ node_modules
 
 # Ignore compiled TypeScript files
 backend/dist/
+shared/dist/
 
 # Ignore shared log files
 shared/logs/
