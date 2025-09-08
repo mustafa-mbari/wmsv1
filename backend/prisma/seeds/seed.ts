@@ -9,6 +9,8 @@ import logger from '../../src/utils/logger/logger';
 import { UserSeeder } from './classes/UserSeeder';
 import { RoleSeeder } from './classes/RoleSeeder';
 import { PermissionSeeder } from './classes/PermissionSeeder';
+import { RolePermissionSeeder } from './classes/RolePermissionSeeder';
+import { UserRoleSeeder } from './classes/UserRoleSeeder';
 import { ProductCategorySeeder } from './classes/ProductCategorySeeder';
 import { ProductFamilySeeder } from './classes/ProductFamilySeeder';
 import { ProductSeeder } from './classes/ProductSeeder';
@@ -72,9 +74,11 @@ async function main() {
     runner.registerSeeder('class_types', () => new ClassTypeSeeder(prisma, { systemUserId }));
     runner.registerSeeder('units_of_measure', () => new UnitsOfMeasureSeeder(prisma, { systemUserId }));
 
-    // User management (permissions → roles → users)
+    // User management (permissions → roles → role_permissions → users → user_roles)
     runner.registerSeeder('roles', () => new RoleSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('role_permissions', () => new RolePermissionSeeder(prisma, { systemUserId }));
     runner.registerSeeder('users', () => new UserSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('user_roles', () => new UserRoleSeeder(prisma, { systemUserId }));
 
     // Product hierarchy (categories → families → products)
     runner.registerSeeder('product_categories', () => new ProductCategorySeeder(prisma, { systemUserId }));
@@ -231,7 +235,9 @@ Examples:
 Available Seeders:
   • permissions        - System permissions
   • roles              - User roles (depends on permissions)
+  • role_permissions   - Role-permission assignments (depends on roles, permissions)
   • users              - System users (depends on roles)
+  • user_roles         - User-role assignments (depends on users, roles)
   • class_types        - Classification types
   • units_of_measure   - Units of measurement
   • product_categories - Product categories (from products.json)
@@ -240,7 +246,7 @@ Available Seeders:
   • warehouses         - Warehouse locations (depends on users for managers)
 
 Execution Order:
-  1. permissions → roles → users
+  1. permissions → roles → role_permissions → users → user_roles
   2. class_types, units_of_measure (parallel)
   3. product_categories → product_families → products
   4. warehouses (after users)

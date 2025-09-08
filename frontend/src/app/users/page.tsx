@@ -93,20 +93,22 @@ export default function UsersPage() {
   // If user doesn't have access to users page, show access denied
   if (!canAccessUsersPage) {
     return (
-      <div className="space-y-6">
-        <Card className="border-red-200 dark:border-red-800">
-          <CardHeader>
-            <div className="flex items-center">
-              <XCircle className="h-5 w-5 text-red-500 mr-2" />
-              <CardTitle>Access Denied</CardTitle>
+      <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-6">
+        <Card className="w-full max-w-md border-destructive/20 bg-destructive/5">
+          <CardHeader className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <XCircle className="h-6 w-6 text-destructive" />
             </div>
-            <CardDescription>
+            <CardTitle className="mt-4 text-xl">Access Denied</CardTitle>
+            <CardDescription className="mt-2">
               You don't have permission to access the Users page.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p>Only Super Admins, Admins, and Managers can view user information.</p>
-            <Button variant="outline" className="mt-4" onClick={() => window.history.back()}>
+          <CardContent className="text-center">
+            <p className="text-sm text-muted-foreground mb-6">
+              Only Super Admins, Admins, and Managers can view user information.
+            </p>
+            <Button variant="outline" onClick={() => window.history.back()}>
               Go Back
             </Button>
           </CardContent>
@@ -363,34 +365,42 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading users...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            User Management {!canPerformAdminActions && "(Read Only)"}
-          </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {canPerformAdminActions 
-              ? "Manage users and their permissions" 
-              : "View user information (read-only access)"
-            }
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-          {canPerformAdminActions && (
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" /> New User
-                </Button>
-              </DialogTrigger>
+      {/* Page Header */}
+      <div className="border-b border-border pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              User Management {!canPerformAdminActions && <span className="text-muted-foreground text-xl">(Read Only)</span>}
+            </h1>
+            <p className="text-muted-foreground">
+              {canPerformAdminActions 
+                ? "Manage users and their permissions" 
+                : "View user information (read-only access)"
+              }
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={fetchUsers} variant="outline" className="sm:w-auto">
+              <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+            </Button>
+            {canPerformAdminActions && (
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="sm:w-auto">
+                    <Plus className="mr-2 h-4 w-4" /> Add User
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>Create New User</DialogTitle>
@@ -552,32 +562,46 @@ export default function UsersPage() {
                 </Form>
               </DialogContent>
             </Dialog>
-          )}
+              )}
+          </div>
         </div>
       </div>
 
-      {/* Show read-only notice for non-Super Admins */}
+      {/* Read-only notice for non-Super Admins */}
       {!canPerformAdminActions && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-900">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>Read-Only Access:</strong> You can view user information but cannot create, edit, or delete users. 
-            Contact a Super Admin to make changes to user accounts.
-          </p>
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <div className="h-2 w-2 rounded-full bg-blue-500 mt-2"></div>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Read-Only Access
+              </h3>
+              <p className="mt-1 text-sm text-blue-700 dark:text-blue-200">
+                You can view user information but cannot create, edit, or delete users. Contact a Super Admin to make changes to user accounts.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Enhanced Table with Search, Filter, and Column Controls */}
-      <AdvancedUserTable
-        data={transformedUsers}
-        loading={loading}
-        onUserSelect={handleUserSelection}
-        onBulkAction={handleBulkAction}
-        onUserEdit={handleUserEdit}
-        onUserDelete={handleUserDelete}
-        onUserView={handleUserView}
-        onUserManageRoles={handleUserManageRoles}
-        onUserToggleStatus={handleUserToggleStatus}
-      />
+      {/* Main Content Area */}
+      <div className="bg-card rounded-lg border border-border shadow-sm">
+        <div className="p-6">
+          <AdvancedUserTable
+            data={transformedUsers}
+            loading={loading}
+            onUserSelect={handleUserSelection}
+            onBulkAction={handleBulkAction}
+            onUserEdit={handleUserEdit}
+            onUserDelete={handleUserDelete}
+            onUserView={handleUserView}
+            onUserManageRoles={handleUserManageRoles}
+            onUserToggleStatus={handleUserToggleStatus}
+          />
+        </div>
+      </div>
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

@@ -51,25 +51,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    console.log("Login attempt started", { email });
+    console.log("Login attempt started", { email, password });
+    console.log("API Client base URL:", apiClient.defaults.baseURL);
+    
     try {
+      console.log("Sending request to:", `${apiClient.defaults.baseURL}/api/auth/login`);
       const response = await apiClient.post("/api/auth/login", { email, password });
-      console.log("API Response:", response);
+      console.log("Full API Response:", response);
       console.log("Response data:", response.data);
+      console.log("Response status:", response.status);
       
-      const { data: { user: userData } } = response.data;
-      console.log("User data:", userData);
+      if (response.data && response.data.success) {
+        const userData = response.data.data.user;
+        console.log("User data extracted:", userData);
+        
+        // Store token if provided, otherwise create mock token
+        const token = response.data.data.token || `mock_token_${userData.id}_${Date.now()}`;
+        localStorage.setItem("auth-token", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+        
+        console.log("Login successful, redirecting to dashboard");
+        router.push("/dashboard");
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error: any) {
+      console.error("Login error details:", error);
+      console.error("Error response:", error.response);
+      console.error("Error response data:", error.response?.data);
       
-      // For now, create a mock token since backend doesn't return one yet
-      const mockToken = `mock_token_${userData.id}_${Date.now()}`;
-      localStorage.setItem("auth-token", mockToken);
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
+      // Create a more specific error message
+      let errorMessage = "Login failed. Please check your credentials.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
+      const customError = new Error(errorMessage);
+      (customError as any).response = error.response;
+      throw customError;
     }
   };
 

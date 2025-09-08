@@ -40,6 +40,21 @@ import {
 // Simplified stub components for missing dependencies
 import React from "react"
 
+export interface UserData {
+  id: string
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  phone?: string
+  is_active: boolean
+  email_verified: boolean
+  last_login_at?: string
+  created_at: string
+  role_names: string[]
+  role_slugs: string[]
+}
+
 interface ColumnFilters {
   name: string
   email: string
@@ -100,7 +115,7 @@ interface AdvancedUserTableProps {
 
 // Simple table settings hook replacement
 function useTableSettings() {
-  const [settings] = useState({
+  const [settings, setSettings] = useState({
     columnVisibility: {
       name: true,
       email: true,
@@ -117,8 +132,32 @@ function useTableSettings() {
     pageSize: 25
   });
 
-  const updateSettings = () => {};
-  const resetSettings = () => {};
+  const updateSettings = (newSettings: Partial<typeof settings>) => {
+    setSettings(prev => ({
+      ...prev,
+      ...newSettings
+    }));
+  };
+
+  const resetSettings = () => {
+    setSettings({
+      columnVisibility: {
+        name: true,
+        email: true,
+        roles: true,
+        phone: true,
+        status: true,
+        lastLogin: true,
+        created: true,
+        actions: true
+      },
+      sortColumn: null,
+      sortDirection: null,
+      groupColumn: null,
+      pageSize: 25
+    });
+  };
+  
   const isLoaded = true;
 
   return { settings, updateSettings, resetSettings, isLoaded };
@@ -385,15 +424,15 @@ export function AdvancedUserTable({
     }
 
     updateSettings({
-      sortColumn: newDirection ? column : null,
-      sortDirection: newDirection,
+      sortColumn: newDirection ? column : null as any,
+      sortDirection: newDirection as any,
     })
     setCurrentPage(1)
   }
 
   const handleGroup = (column: SortableColumn) => {
     const newGroupColumn = groupColumn === column ? null : column
-    updateSettings({ groupColumn: newGroupColumn })
+    updateSettings({ groupColumn: newGroupColumn as any })
     setExpandedGroups(new Set())
     setCurrentPage(1)
   }
@@ -613,8 +652,8 @@ export function AdvancedUserTable({
       lastLogin: "",
       created: "",
     })
-    updateSettings({ sortColumn: null, sortDirection: null })
-    updateSettings({ groupColumn: null })
+    updateSettings({ sortColumn: null as any, sortDirection: null as any })
+    updateSettings({ groupColumn: null as any })
     setExpandedGroups(new Set())
     setSelectedRows(new Set())
     setCurrentPage(1)

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Package, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Package, Eye, EyeOff, Loader2, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/components/ui/theme-provider";
 
@@ -17,13 +17,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { login } = useAuth();
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const testAPI = async () => {
     try {
       console.log("Testing API connection...");
-      const response = await fetch("http://localhost:8000/api/health");
+      const response = await fetch("http://localhost:8001/api/health");
       const data = await response.json();
       console.log("API Health test:", data);
       alert("API connection works!");
@@ -58,13 +63,19 @@ export default function LoginPage() {
             </div>
             <span className="text-xl font-bold">WMS v1</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? "🌙" : "☀️"}
-          </Button>
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+          )}
         </div>
 
         <Card>
