@@ -13,3 +13,6 @@ backend/.env
 
 # Ignore Claude Code local settings
 .claude/
+
+# Ignore frontend project directories
+frontendProjectTwo/
