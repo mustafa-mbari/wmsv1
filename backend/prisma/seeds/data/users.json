@@ -8,6 +8,8 @@
     "phone": "+1234567890",
     "address": "123 Admin Street, Tech City",
     "gender": "other",
+    "language": "en",
+    "time_zone": "UTC",
     "is_active": true,
     "email_verified": true,
     "roles": ["super-admin"]
@@ -21,6 +23,8 @@
     "phone": "+1234567890",
     "address": "123 Admin Street, Tech City",
     "gender": "other",
+    "language": "en",
+    "time_zone": "America/New_York",
     "is_active": true,
     "email_verified": true,
     "roles": ["super-admin"]
@@ -34,6 +38,8 @@
     "phone": "+1234567890",
     "address": "123 Admin Street, Tech City",
     "gender": "other",
+    "language": "en",
+    "time_zone": "UTC",
     "is_active": true,
     "email_verified": true,
     "roles": ["super-admin"]
@@ -48,6 +54,8 @@
     "address": "456 Manager Ave, Business District",
     "birth_date": "1985-05-15",
     "gender": "male",
+    "language": "en",
+    "time_zone": "America/Chicago",
     "is_active": true,
     "email_verified": true,
     "roles": ["manager"]
@@ -62,6 +70,8 @@
     "address": "789 Supervisor Blvd, Industrial Zone",
     "birth_date": "1990-08-22",
     "gender": "female",
+    "language": "en",
+    "time_zone": "America/Los_Angeles",
     "is_active": true,
     "email_verified": true,
     "roles": ["supervisor"]
@@ -74,7 +84,9 @@
     "last_name": "mbari",
     "phone": "+1234567893",
     "birth_date": "2009-12-10",
-    "gender": "male", 
+    "gender": "male",
+    "language": "ar",
+    "time_zone": "Asia/Dubai",
     "is_active": false,
     "email_verified": false,
     "roles": ["super-admin"]
@@ -87,7 +99,9 @@
     "last_name": "Wilson",
     "phone": "+1234567893",
     "birth_date": "1995-12-10",
-    "gender": "male", 
+    "gender": "male",
+    "language": "en",
+    "time_zone": "Europe/London",
     "is_active": true,
     "email_verified": true,
     "roles": ["employee"]
@@ -101,6 +115,8 @@
     "phone": "+1234567894",
     "birth_date": "1988-03-18",
     "gender": "female",
+    "language": "fr",
+    "time_zone": "Europe/Paris",
     "is_active": true,
     "email_verified": true,
     "roles": ["viewer"]

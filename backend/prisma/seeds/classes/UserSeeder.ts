@@ -17,6 +17,8 @@ export interface UserSeedData {
   birth_date?: string;
   gender?: string;
   avatar_url?: string;
+  language?: string; // ISO 639-1 language code
+  time_zone?: string; // IANA timezone identifier
   is_active?: boolean;
   email_verified?: boolean;
   roles?: string[]; // Role slugs to assign
@@ -96,6 +98,8 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
       birth_date: birthDate,
       gender: record.gender || null,
       avatar_url: record.avatar_url || null,
+      language: record.language || 'en', // Default to English
+      time_zone: record.time_zone || 'UTC', // Default to UTC
       is_active: record.is_active !== false, // Default to true
       email_verified: record.email_verified || false,
       email_verified_at: record.email_verified ? new Date() : null

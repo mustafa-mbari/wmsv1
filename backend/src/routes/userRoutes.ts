@@ -1,11 +1,50 @@
 import { Router, Request, Response } from 'express';
-import { createApiResponse, HttpStatus } from '../../../shared/dist'
+import { createApiResponse, HttpStatus } from '@my-app/shared'
 import logger from '../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs/promises';
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// Configure multer for avatar uploads
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), 'uploads/avatars');
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (error) {
+      cb(error as Error, '');
+    }
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = path.extname(file.originalname);
+    cb(null, `avatar-${req.params.id}-${uniqueSuffix}${extension}`);
+  }
+});
+
+const avatarUpload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only JPEG and PNG files are allowed'));
+    }
+  }
+});
 
 // GET /api/users
 router.get('/', async (req: Request, res: Response) => {
@@ -109,6 +148,9 @@ router.get('/:id', async (req: Request, res: Response) => {
       address: user.address,
       birth_date: user.birth_date?.toISOString() || null,
       gender: user.gender,
+      avatar_url: user.avatar_url,
+      language: user.language,
+      time_zone: user.time_zone,
       is_active: user.is_active,
       email_verified: user.email_verified,
       email_verified_at: user.email_verified_at?.toISOString() || null,
@@ -274,7 +316,11 @@ router.put('/:id', async (req: Request, res: Response) => {
       address, 
       password, 
       isActive, 
-      isAdmin
+      isAdmin,
+      birthDate,
+      gender,
+      language,
+      timeZone
     } = req.body;
 
     logger.info('Updating user', { 
@@ -338,6 +384,10 @@ router.put('/:id', async (req: Request, res: Response) => {
     if (lastName) updateData.last_name = lastName;
     if (phone !== undefined) updateData.phone = phone || null;
     if (address !== undefined) updateData.address = address || null;
+    if (birthDate !== undefined) updateData.birth_date = birthDate ? new Date(birthDate) : null;
+    if (gender !== undefined) updateData.gender = gender || null;
+    if (language !== undefined) updateData.language = language || 'en';
+    if (timeZone !== undefined) updateData.time_zone = timeZone || 'UTC';
     if (typeof isActive === 'boolean') updateData.is_active = isActive;
 
     // Hash password if provided
@@ -368,6 +418,11 @@ router.put('/:id', async (req: Request, res: Response) => {
       last_name: updatedUser.last_name,
       phone: updatedUser.phone,
       address: updatedUser.address,
+      birth_date: updatedUser.birth_date?.toISOString() || null,
+      gender: updatedUser.gender,
+      avatar_url: updatedUser.avatar_url,
+      language: updatedUser.language,
+      time_zone: updatedUser.time_zone,
       is_active: updatedUser.is_active,
       email_verified: updatedUser.email_verified,
       last_login_at: updatedUser.last_login_at?.toISOString() || null,
@@ -464,6 +519,169 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
       createApiResponse(false, null, 'Failed to delete user')
+    );
+  }
+});
+
+// POST /api/users/:id/avatar (Upload avatar)
+router.post('/:id/avatar', avatarUpload.single('avatar') as any, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    logger.info('Uploading avatar for user', { 
+      source: 'userRoutes', 
+      method: 'uploadAvatar',
+      userId: id
+    });
+
+    if (!req.file) {
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'No file uploaded')
+      );
+    }
+
+    // Check if user exists
+    const existingUser = await prisma.users.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingUser) {
+      // Clean up uploaded file
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(HttpStatus.NOT_FOUND).json(
+        createApiResponse(false, null, 'User not found')
+      );
+    }
+
+    // Clean up old avatar if exists
+    if (existingUser.avatar_url) {
+      const oldAvatarPath = path.join(process.cwd(), existingUser.avatar_url);
+      await fs.unlink(oldAvatarPath).catch(() => {});
+    }
+
+    // Generate relative URL for the uploaded file
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    // Update user with new avatar URL
+    const updatedUser = await prisma.users.update({
+      where: { id: parseInt(id) },
+      data: {
+        avatar_url: avatarUrl,
+        updated_at: new Date()
+      }
+    });
+
+    logger.info('Avatar uploaded successfully', { 
+      source: 'userRoutes', 
+      method: 'uploadAvatar',
+      userId: id,
+      filename: req.file.filename
+    });
+
+    res.json(createApiResponse(true, {
+      avatar_url: avatarUrl,
+      message: 'Avatar uploaded successfully'
+    }, 'Avatar uploaded successfully'));
+  } catch (error) {
+    // Clean up uploaded file on error
+    if (req.file) {
+      await fs.unlink(req.file.path).catch(() => {});
+    }
+
+    logger.error('Error uploading avatar', {
+      source: 'userRoutes',
+      method: 'uploadAvatar',
+      userId: req.params.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to upload avatar')
+    );
+  }
+});
+
+// PUT /api/users/:id/password (Change password)
+router.put('/:id/password', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, password } = req.body;
+
+    logger.info('Changing password for user', { 
+      source: 'userRoutes', 
+      method: 'changePassword',
+      userId: id
+    });
+
+    if (!currentPassword || !password) {
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Current password and new password are required')
+      );
+    }
+
+    // Check if user exists
+    const existingUser = await prisma.users.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingUser) {
+      return res.status(HttpStatus.NOT_FOUND).json(
+        createApiResponse(false, null, 'User not found')
+      );
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, existingUser.password_hash);
+    if (!isCurrentPasswordValid) {
+      logger.warn('Password change failed: invalid current password', { 
+        source: 'userRoutes', 
+        method: 'changePassword',
+        userId: id
+      });
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Current password is incorrect')
+      );
+    }
+
+    // Validate new password strength
+    if (password.length < 8) {
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'New password must be at least 8 characters long')
+      );
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const newPasswordHash = await bcrypt.hash(password, saltRounds);
+
+    // Update password
+    await prisma.users.update({
+      where: { id: parseInt(id) },
+      data: {
+        password_hash: newPasswordHash,
+        updated_at: new Date()
+      }
+    });
+
+    logger.info('Password changed successfully', { 
+      source: 'userRoutes', 
+      method: 'changePassword',
+      userId: id
+    });
+
+    res.json(createApiResponse(true, null, 'Password changed successfully'));
+  } catch (error) {
+    logger.error('Error changing password', {
+      source: 'userRoutes',
+      method: 'changePassword',
+      userId: req.params.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to change password')
     );
   }
 });
