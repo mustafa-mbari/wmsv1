@@ -12,6 +12,9 @@ shared/logs/
 # Ignore backend environment file
 backend/.env
 
+# Ignore backend uploads directory
+backend/uploads/
+
 # Ignore Claude Code local settings
 .claude/
 
