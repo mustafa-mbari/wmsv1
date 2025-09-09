@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://mustafa:pass5432@localhost:5432/wmlab"
+  url      = env("DATABASE_URL")
 }
 
 model class_types {

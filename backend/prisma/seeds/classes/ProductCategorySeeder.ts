@@ -31,7 +31,7 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
   }
 
   getJsonFileName(): string {
-    return 'products.json';
+    return 'product-categories.json';
   }
 
   getDependencies(): string[] {
@@ -40,43 +40,63 @@ export class ProductCategorySeeder extends BaseSeed<CategorySeedData> {
 
   protected async loadData(): Promise<CategorySeedData[]> {
     try {
-      // Cast the result to our expected types - this fixes the TypeScript error
-      const rawData = await this.jsonReader.readJsonFile<ProductsJsonStructure | CategorySeedData[]>('products.json');
+      // Read from product-categories.json which is a simple array
+      const rawData = await this.jsonReader.readJsonFile('product-categories.json');
       
-      // Type guard to check if it's an array
       if (Array.isArray(rawData)) {
-        logger.info('Loading categories from array format', { source: 'ProductCategorySeeder', method: 'loadData' });
+        logger.info(`Loading ${rawData.length} categories from product-categories.json`, { 
+          source: 'ProductCategorySeeder', 
+          method: 'loadData', 
+          categoriesCount: rawData.length 
+        });
         return rawData as CategorySeedData[];
       }
       
-      // Type guard to check if it's an object with categories property
-      if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
-        const structuredData = rawData as ProductsJsonStructure;
-        
-        // Now TypeScript knows that structuredData has the categories property
-        if (structuredData.categories) {
-          logger.info(`Loading ${structuredData.categories.length || 0} categories from structured format`, { source: 'ProductCategorySeeder', method: 'loadData', categoriesCount: structuredData.categories.length || 0 });
-          return structuredData.categories;
-        }
-      }
-      
-      logger.warn('No categories found in products.json', { source: 'ProductCategorySeeder', method: 'loadData' });
+      logger.warn('No categories found in product-categories.json or invalid format', { 
+        source: 'ProductCategorySeeder', 
+        method: 'loadData' 
+      });
       return [];
     } catch (error) {
-      logger.error('Failed to load categories', { source: 'ProductCategorySeeder', method: 'loadData', error: error instanceof Error ? error.message : error });
+      logger.error('Failed to load categories', { 
+        source: 'ProductCategorySeeder', 
+        method: 'loadData', 
+        error: error instanceof Error ? error.message : error 
+      });
       return [];
     }
   }
 
   validateRecord(record: CategorySeedData): boolean {
-    if (!record.name || !record.slug) {
-      logger.error('Category missing required fields', { source: 'ProductCategorySeeder', method: 'validateRecord', record });
+    const missingFields: string[] = [];
+    
+    if (!record.name) {
+      missingFields.push('name');
+    }
+    if (!record.slug) {
+      missingFields.push('slug');
+    }
+    
+    if (missingFields.length > 0) {
+      logger.error(`Category missing required fields: ${missingFields.join(', ')}`, { 
+        source: 'ProductCategorySeeder', 
+        method: 'validateRecord', 
+        record,
+        missingFields 
+      });
+      console.error(`[ProductCategorySeeder]: Category missing required fields: ${missingFields.join(', ')}`, record);
       return false;
     }
     
     const slugRegex = /^[a-z0-9_-]+$/;
     if (!slugRegex.test(record.slug)) {
-      logger.error('Invalid category slug', { source: 'ProductCategorySeeder', method: 'validateRecord', slug: record.slug });
+      logger.error('Invalid category slug format', { 
+        source: 'ProductCategorySeeder', 
+        method: 'validateRecord', 
+        slug: record.slug,
+        expected: 'lowercase letters, numbers, underscores, and hyphens only'
+      });
+      console.error(`[ProductCategorySeeder]: Invalid category slug format: '${record.slug}'. Expected lowercase letters, numbers, underscores, and hyphens only.`);
       return false;
     }
     

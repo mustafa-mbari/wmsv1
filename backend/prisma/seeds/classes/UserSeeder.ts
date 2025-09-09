@@ -115,14 +115,126 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
     });
   }
 
-  // Override seed method to handle role assignments
+  // Override seed method to handle role assignments and existing data better
   async seed() {
-    const result = await super.seed();
-    
-    if (result.success && (result.recordsCreated > 0 || result.recordsUpdated > 0)) {
-      await this.assignRolesToUsers();
+    const startTime = Date.now();
+    const result = {
+      success: false,
+      recordsProcessed: 0,
+      recordsCreated: 0,
+      recordsUpdated: 0,
+      recordsSkipped: 0,
+      errors: [],
+      duration: 0
+    };
+
+    try {
+      logger.info(`Starting ${this.getModelName()} seeder`, { source: 'UserSeeder', method: 'seed' });
+
+      // Load data regardless of existing data
+      const rawData = await this.loadData();
+      if (!rawData || rawData.length === 0) {
+        logger.info(`No data found for ${this.getModelName()}`, { source: 'UserSeeder', method: 'seed' });
+        result.success = true;
+        result.duration = Date.now() - startTime;
+        return result;
+      }
+
+      logger.info(`Processing ${rawData.length} user records`, { source: 'UserSeeder', method: 'seed', recordCount: rawData.length });
+
+      // Process each user individually
+      for (const userRecord of rawData) {
+        try {
+          result.recordsProcessed++;
+
+          // Validate record
+          if (this.options.validate && !this.validateRecord(userRecord)) {
+            result.recordsSkipped++;
+            result.errors.push(`Invalid user record: ${userRecord.username || 'unknown'}`);
+            logger.warn(`Skipping invalid user record`, { source: 'UserSeeder', method: 'seed', username: userRecord.username });
+            continue;
+          }
+
+          // Check if user already exists
+          const existingUser = await this.findExistingRecord(userRecord);
+          
+          if (existingUser && !this.options.force) {
+            result.recordsSkipped++;
+            logger.info(`User '${userRecord.username}' already exists, skipping`, { source: 'UserSeeder', method: 'seed', username: userRecord.username });
+            continue;
+          }
+
+          // Transform record
+          const transformedRecord = await this.transformRecord(userRecord);
+
+          if (existingUser && this.options.force) {
+            // Update existing user
+            await this.getModel().update({
+              where: { id: existingUser.id },
+              data: {
+                ...transformedRecord,
+                updated_at: new Date(),
+                updated_by: this.options.systemUserId
+              }
+            });
+            result.recordsUpdated++;
+            logger.info(`Updated user '${userRecord.username}'`, { source: 'UserSeeder', method: 'seed', username: userRecord.username });
+          } else {
+            // Create new user
+            await this.getModel().create({
+              data: {
+                ...transformedRecord,
+                created_at: new Date(),
+                updated_at: new Date(),
+                created_by: this.options.systemUserId,
+                updated_by: this.options.systemUserId
+              }
+            });
+            result.recordsCreated++;
+            logger.info(`Created user '${userRecord.username}'`, { source: 'UserSeeder', method: 'seed', username: userRecord.username });
+          }
+
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          result.errors.push(`Error processing user '${userRecord.username}': ${errorMessage}`);
+          logger.error(`Error processing user record`, { 
+            source: 'UserSeeder', 
+            method: 'seed', 
+            username: userRecord.username,
+            error: errorMessage 
+          });
+          console.error(`[UserSeeder]: Error processing user '${userRecord.username}':`, errorMessage);
+        }
+      }
+
+      result.success = result.errors.length === 0 || result.recordsCreated > 0 || result.recordsUpdated > 0;
+      
+      // Assign roles to users after seeding
+      if (result.success && (result.recordsCreated > 0 || result.recordsUpdated > 0)) {
+        await this.assignRolesToUsers();
+      }
+
+      result.duration = Date.now() - startTime;
+      
+      logger.info(`User seeding completed`, { 
+        source: 'UserSeeder', 
+        method: 'seed',
+        recordsProcessed: result.recordsProcessed,
+        recordsCreated: result.recordsCreated,
+        recordsUpdated: result.recordsUpdated,
+        recordsSkipped: result.recordsSkipped,
+        errors: result.errors.length
+      });
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      result.errors.push(`Fatal error in UserSeeder: ${errorMessage}`);
+      result.success = false;
+      logger.error(`Fatal error in UserSeeder`, { source: 'UserSeeder', method: 'seed', error: errorMessage });
+      console.error(`[UserSeeder]: Fatal error:`, errorMessage);
     }
-    
+
+    result.duration = Date.now() - startTime;
     return result;
   }
 
@@ -152,12 +264,10 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
           }
 
           // Check if user already has this role
-          const existingUserRole = await this.prisma.user_roles.findUnique({
+          const existingUserRole = await this.prisma.user_roles.findFirst({
             where: {
-              user_id_role_id_unique: {
-                user_id: user.id,
-                role_id: role.id
-              }
+              user_id: user.id,
+              role_id: role.id
             }
           });
 
@@ -167,11 +277,12 @@ export class UserSeeder extends BaseSeed<UserSeedData> {
                 user_id: user.id,
                 role_id: role.id,
                 assigned_by: this.options.systemUserId,
-                created_by: this.options.systemUserId,
-                updated_by: this.options.systemUserId
+                assigned_at: new Date()
               }
             });
             logger.info(`Assigned role '${roleSlug}' to user '${userRecord.username}'`, { source: 'UserSeeder', method: 'assignRolesToUsers', role_slug: roleSlug, username: userRecord.username });
+          } else {
+            logger.info(`User '${userRecord.username}' already has role '${roleSlug}'`, { source: 'UserSeeder', method: 'assignRolesToUsers', role_slug: roleSlug, username: userRecord.username });
           }
         }
       }

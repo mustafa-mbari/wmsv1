@@ -43,34 +43,43 @@ export class RolePermissionSeeder extends BaseSeed<RolePermissionSeedData> {
   }
 
   async transformRecord(record: RolePermissionSeedData): Promise<any[]> {
-    const role = await this.prisma.roles.findUnique({
-      where: { slug: record.role_slug.toLowerCase() }
-    });
-
-    if (!role) {
-      logger.error(`Role '${record.role_slug}' not found`, { source: 'RolePermissionSeeder', method: 'transformRecord', role_slug: record.role_slug });
-      return [];
-    }
-
-    const rolePermissions: any[] = [];
-
-    for (const permissionSlug of record.permissions) {
-      const permission = await this.prisma.permissions.findUnique({
-        where: { slug: permissionSlug.toLowerCase() }
+    try {
+      const role = await this.prisma.roles.findUnique({
+        where: { slug: record.role_slug.toLowerCase() }
       });
 
-      if (!permission) {
-        logger.warn(`Permission '${permissionSlug}' not found for role '${record.role_slug}'`, { source: 'RolePermissionSeeder', method: 'transformRecord', permission_slug: permissionSlug, role_slug: record.role_slug });
-        continue;
+      if (!role) {
+        logger.error(`Role '${record.role_slug}' not found`, { source: 'RolePermissionSeeder', method: 'transformRecord', role_slug: record.role_slug });
+        console.error(`[RolePermissionSeeder]: Role '${record.role_slug}' not found`);
+        return [];
       }
 
-      rolePermissions.push({
-        role_id: role.id,
-        permission_id: permission.id
-      });
-    }
+      const rolePermissions: any[] = [];
 
-    return rolePermissions;
+      for (const permissionSlug of record.permissions) {
+        const permission = await this.prisma.permissions.findUnique({
+          where: { slug: permissionSlug.toLowerCase() }
+        });
+
+        if (!permission) {
+          logger.warn(`Permission '${permissionSlug}' not found for role '${record.role_slug}'`, { source: 'RolePermissionSeeder', method: 'transformRecord', permission_slug: permissionSlug, role_slug: record.role_slug });
+          console.warn(`[RolePermissionSeeder]: Permission '${permissionSlug}' not found for role '${record.role_slug}'`);
+          continue;
+        }
+
+        rolePermissions.push({
+          role_id: role.id,
+          permission_id: permission.id
+        });
+      }
+
+      return rolePermissions;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error(`Error in transformRecord for role '${record.role_slug}': ${errorMessage}`, { source: 'RolePermissionSeeder', method: 'transformRecord', record, error: errorMessage });
+      console.error(`[RolePermissionSeeder]: Error in transformRecord for role '${record.role_slug}':`, errorMessage);
+      throw error;
+    }
   }
 
   async findExistingRecord(record: RolePermissionSeedData): Promise<any> {
@@ -172,9 +181,17 @@ export class RolePermissionSeeder extends BaseSeed<RolePermissionSeedData> {
         });
 
       } catch (error) {
-        result.errors.push(`Error processing record: ${error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        result.errors.push(`Error processing record for role '${record.role_slug}': ${errorMessage}`);
         result.success = false;
-        logger.error('Error processing role permission record', { source: 'RolePermissionSeeder', record, error: error instanceof Error ? error.message : error });
+        logger.error('Error processing role permission record', { 
+          source: 'RolePermissionSeeder', 
+          method: 'processBatch',
+          record, 
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        console.error(`[RolePermissionSeeder]: Error processing role permission record for '${record.role_slug}':`, errorMessage);
       }
     }
 
