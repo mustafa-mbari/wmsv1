@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { createApiResponse, HttpStatus } from '../../shared/dist';
+import { createApiResponse, HttpStatus } from '../../shared/src';
 import logger from './utils/logger/logger';
 import { requestLogger } from './middleware/requestLogger';
 
