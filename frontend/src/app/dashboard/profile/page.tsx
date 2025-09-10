@@ -346,7 +346,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
         <div className="space-y-2">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-4 w-96" />
@@ -374,7 +374,7 @@ export default function ProfilePage() {
 
   if (!profileData) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
         <Card className="border-red-200 dark:border-red-800">
           <CardHeader>
             <CardTitle>{intl.formatMessage({ id: 'profile.title' })} {intl.formatMessage({ id: 'pages.notFound.title' })}</CardTitle>
@@ -388,7 +388,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
       <PageHeader 
         title={intl.formatMessage({ id: 'profile.title' })}
         description={intl.formatMessage({ id: 'profile.description', defaultMessage: 'Manage your account information and preferences' })}
@@ -433,7 +433,7 @@ export default function ProfilePage() {
       )}
       
       {/* Profile Header Section */}
-      <Card className="bg-muted/50">
+      <Card className="bg-background/95 backdrop-blur shadow-lg">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <AvatarUpload 
@@ -481,7 +481,7 @@ export default function ProfilePage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Personal Information */}
-        <Card className="bg-muted/70">
+        <Card className="bg-background/95 backdrop-blur shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <User className="mr-2 h-5 w-5" />
@@ -579,7 +579,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Preferences */}
-        <Card className="bg-muted/70">
+        <Card className="bg-background/95 backdrop-blur shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Globe className="mr-2 h-5 w-5" />
@@ -660,7 +660,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Security Section */}
-        <Card className="bg-muted/70">
+        <Card className="bg-background/95 backdrop-blur shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Lock className="mr-2 h-5 w-5" />
@@ -833,7 +833,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Account Information */}
-        <Card className="bg-muted/70">
+        <Card className="bg-background/95 backdrop-blur shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Shield className="mr-2 h-5 w-5" />
@@ -891,7 +891,7 @@ export default function ProfilePage() {
         </Card>
         
         {/* Activity Information */}
-        <Card className="bg-muted/70">
+        <Card className="bg-background/95 backdrop-blur shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Clock className="mr-2 h-5 w-5" />
