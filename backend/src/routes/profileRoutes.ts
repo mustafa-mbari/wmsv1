@@ -314,84 +314,6 @@ router.post('/password', authenticateToken, async (req: Request, res: Response) 
   }
 });
 
-// POST /api/profile/profile-picture/upload-url - Get signed upload URL for profile picture
-router.post('/profile-picture/upload-url', authenticateToken, async (req: Request, res: Response) => {
-  try {
-
-    const { fileName, fileType } = req.body;
-
-    logger.info('Generating profile picture upload URL', { 
-      source: 'profileRoutes', 
-      method: 'getProfilePictureUploadUrl',
-      userId: req.user!.id.toString(),
-      fileName,
-      fileType
-    });
-
-    if (!fileName || !fileType) {
-      return res.status(HttpStatus.BAD_REQUEST).json(
-        createApiResponse(false, null, 'File name and type are required')
-      );
-    }
-
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!allowedTypes.includes(fileType)) {
-      return res.status(HttpStatus.BAD_REQUEST).json(
-        createApiResponse(false, null, 'Only JPEG and PNG files are allowed')
-      );
-    }
-
-    // For now, we'll use a simple local upload approach
-    // In production, you would generate a signed URL for S3/Cloudinary
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const fileExtension = fileName.split('.').pop();
-    const newFileName = `avatar-${req.user!.id}-${uniqueSuffix}.${fileExtension}`;
-    const imageUrl = `/uploads/profile-pictures/${newFileName}`;
-
-    // Create upload directory if it doesn't exist
-    const path = require('path');
-    const fs = require('fs/promises');
-    const uploadDir = path.join(process.cwd(), 'uploads/profile-pictures');
-    
-    try {
-      await fs.mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, ignore error
-    }
-
-    logger.info('Profile picture upload URL generated', { 
-      source: 'profileRoutes', 
-      method: 'getProfilePictureUploadUrl',
-      userId: req.user!.id.toString(),
-      imageUrl
-    });
-
-    // Return mock signed URL response
-    // In production, replace this with actual cloud storage signed URL
-    res.json(createApiResponse(true, {
-      url: '/api/profile/profile-picture/upload', // Mock upload endpoint
-      imageUrl: imageUrl,
-      fields: {
-        key: newFileName,
-        'Content-Type': fileType
-      }
-    }, 'Profile picture upload URL generated successfully'));
-
-  } catch (error) {
-    logger.error('Error generating profile picture upload URL', {
-      source: 'profileRoutes',
-      method: 'getProfilePictureUploadUrl',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
-
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
-      createApiResponse(false, null, 'Failed to generate profile picture upload URL')
-    );
-  }
-});
-
 // Configure multer for profile picture uploads
 const storage = multer.diskStorage({
   destination: async (req: any, file: any, cb: any) => {
@@ -411,7 +333,7 @@ const storage = multer.diskStorage({
     
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const fileExtension = path.extname(file.originalname);
-    const newFileName = `profile-picture-${req.user.id}-${uniqueSuffix}${fileExtension}`;
+    const newFileName = `avatar-${req.user.id}-${uniqueSuffix}${fileExtension}`;
     cb(null, newFileName);
   }
 });
@@ -431,58 +353,180 @@ const upload = multer({
   }
 });
 
-// POST /api/profile/profile-picture/upload - Upload profile picture file
-router.post('/profile-picture/upload', authenticateToken, upload.single('profilePicture') as any, async (req: Request, res: Response) => {
+// POST /api/profile/avatar - Upload profile picture
+router.post('/avatar', authenticateToken, upload.single('avatar') as any, async (req: Request, res: Response) => {
   try {
-
     if (!req.file) {
       return res.status(HttpStatus.BAD_REQUEST).json(
         createApiResponse(false, null, 'No file uploaded')
       );
     }
 
-    logger.info('Processing profile picture upload', { 
+    logger.info('Processing avatar upload', { 
       source: 'profileRoutes', 
-      method: 'uploadProfilePicture',
+      method: 'uploadAvatar',
       userId: req.user!.id.toString(),
       fileName: req.file.filename,
       fileSize: req.file.size
     });
 
+    // Delete old avatar file if it exists
+    const existingUser = await prisma.users.findUnique({
+      where: { id: parseInt(req.user!.id.toString()) }
+    });
+
+    if (existingUser?.avatar_url) {
+      try {
+        const oldFilePath = path.join(process.cwd(), existingUser.avatar_url.substring(1)); // Remove leading slash
+        await fs.unlink(oldFilePath);
+        logger.info('Old avatar file deleted', { 
+          source: 'profileRoutes', 
+          method: 'uploadAvatar',
+          userId: req.user!.id.toString(),
+          oldFile: oldFilePath
+        });
+      } catch (error) {
+        logger.warn('Failed to delete old avatar file', { 
+          source: 'profileRoutes', 
+          method: 'uploadAvatar',
+          userId: req.user!.id.toString(),
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+
     // Generate the URL for the uploaded file
-    const imageUrl = `/uploads/profile-pictures/${req.file.filename}`;
+    const avatarUrl = `/uploads/profile-pictures/${req.file.filename}`;
 
     // Update user's avatar_url in database
     const updatedUser = await prisma.users.update({
       where: { id: parseInt(req.user!.id.toString()) },
       data: {
-        avatar_url: imageUrl,
+        avatar_url: avatarUrl,
         updated_at: new Date()
       }
     });
 
-    logger.info('Profile picture uploaded successfully', { 
+    logger.info('Avatar uploaded successfully', { 
       source: 'profileRoutes', 
-      method: 'uploadProfilePicture',
+      method: 'uploadAvatar',
       userId: req.user!.id.toString(),
-      imageUrl
+      avatarUrl
     });
 
     res.json(createApiResponse(true, {
-      imageUrl: imageUrl,
-      message: 'Profile picture uploaded successfully'
-    }, 'Profile picture uploaded successfully'));
+      avatarUrl: avatarUrl,
+      user: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        name: `${updatedUser.first_name} ${updatedUser.last_name}`.trim(),
+        profilePicture: updatedUser.avatar_url
+      }
+    }, 'Avatar uploaded successfully'));
 
   } catch (error) {
-    logger.error('Error uploading profile picture', {
+    logger.error('Error uploading avatar', {
       source: 'profileRoutes',
-      method: 'uploadProfilePicture',
+      method: 'uploadAvatar',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    // Clean up uploaded file if database update failed
+    if (req.file) {
+      try {
+        await fs.unlink(req.file.path);
+      } catch (unlinkError) {
+        logger.error('Failed to clean up uploaded file after error', {
+          source: 'profileRoutes',
+          method: 'uploadAvatar',
+          error: unlinkError instanceof Error ? unlinkError.message : 'Unknown error'
+        });
+      }
+    }
+
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      createApiResponse(false, null, 'Failed to upload avatar')
+    );
+  }
+});
+
+// DELETE /api/profile/avatar - Remove profile picture
+router.delete('/avatar', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    logger.info('Removing avatar', { 
+      source: 'profileRoutes', 
+      method: 'removeAvatar',
+      userId: req.user!.id.toString()
+    });
+
+    const existingUser = await prisma.users.findUnique({
+      where: { id: parseInt(req.user!.id.toString()) }
+    });
+
+    if (!existingUser) {
+      return res.status(HttpStatus.NOT_FOUND).json(
+        createApiResponse(false, null, 'User not found')
+      );
+    }
+
+    // Delete avatar file if it exists
+    if (existingUser.avatar_url) {
+      try {
+        const filePath = path.join(process.cwd(), existingUser.avatar_url.substring(1)); // Remove leading slash
+        await fs.unlink(filePath);
+        logger.info('Avatar file deleted', { 
+          source: 'profileRoutes', 
+          method: 'removeAvatar',
+          userId: req.user!.id.toString(),
+          filePath
+        });
+      } catch (error) {
+        logger.warn('Failed to delete avatar file', { 
+          source: 'profileRoutes', 
+          method: 'removeAvatar',
+          userId: req.user!.id.toString(),
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+
+    // Update user's avatar_url to null in database
+    const updatedUser = await prisma.users.update({
+      where: { id: parseInt(req.user!.id.toString()) },
+      data: {
+        avatar_url: null,
+        updated_at: new Date()
+      }
+    });
+
+    logger.info('Avatar removed successfully', { 
+      source: 'profileRoutes', 
+      method: 'removeAvatar',
+      userId: req.user!.id.toString()
+    });
+
+    res.json(createApiResponse(true, {
+      user: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        name: `${updatedUser.first_name} ${updatedUser.last_name}`.trim(),
+        profilePicture: null
+      }
+    }, 'Avatar removed successfully'));
+
+  } catch (error) {
+    logger.error('Error removing avatar', {
+      source: 'profileRoutes',
+      method: 'removeAvatar',
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined
     });
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
-      createApiResponse(false, null, 'Failed to upload profile picture')
+      createApiResponse(false, null, 'Failed to remove avatar')
     );
   }
 });

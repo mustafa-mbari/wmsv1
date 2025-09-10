@@ -29,8 +29,19 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static('uploads'));
+// Serve static files from uploads directory with proper headers
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path) => {
+    // Allow images to be loaded from frontend
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    
+    // Set proper cache headers for images
+    if (path.includes('profile-pictures') || path.includes('avatar')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+    }
+  }
+}));
 
 // Request logging middleware
 app.use(requestLogger);

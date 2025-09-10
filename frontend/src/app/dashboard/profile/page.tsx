@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
@@ -141,14 +141,11 @@ export default function ProfilePage() {
   const [passwordChanging, setPasswordChanging] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [profilePictureUploading, setProfilePictureUploading] = useState(false);
-  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [completeness, setCompleteness] = useState<ProfileCompleteness>({ percentage: 0, missing: [] });
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -177,12 +174,6 @@ export default function ProfilePage() {
     }
   }, [currentUser]);
 
-  // Debug log for image URL
-  useEffect(() => {
-    if (profileData?.profilePicture) {
-      console.log('Profile picture URL:', `${process.env.NEXT_PUBLIC_API_URL}${profileData.profilePicture}`);
-    }
-  }, [profileData]);
 
   const fetchUserProfile = async () => {
     if (!currentUser) return;
@@ -316,70 +307,9 @@ export default function ProfilePage() {
     }
   };
   
-  const handleProfilePictureUpload = async (file: File) => {
-    if (!file) return;
-    
-    // Validate file
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Image must be less than 5MB",
-      });
-      return;
-    }
-    
-    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Only JPG and PNG files are allowed",
-      });
-      return;
-    }
-    
-    try {
-      setProfilePictureUploading(true);
-      
-      // Create preview
-      const previewUrl = URL.createObjectURL(file);
-      setProfilePicturePreview(previewUrl);
-      
-      // Upload directly to backend
-      const formData = new FormData();
-      formData.append('profilePicture', file);
-      
-      const uploadResponse = await apiClient.post('/api/profile/profile-picture/upload', formData);
-      
-      if (!uploadResponse.data.success) {
-        throw new Error(uploadResponse.data.message || 'Upload failed');
-      }
-      
-      await fetchUserProfile();
-      await refreshUser(); // Refresh user data in auth provider
-      setProfilePicturePreview(null);
-      toast({
-        title: "Success",
-        description: "Profile picture updated successfully!",
-      });
-    } catch (error: any) {
-      console.error("Error uploading profile picture:", error);
-      setProfilePicturePreview(null);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.response?.data?.message || "Failed to upload profile picture",
-      });
-    } finally {
-      setProfilePictureUploading(false);
-    }
-  };
-  
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleProfilePictureUpload(file);
-    }
+  const handleAvatarChange = async (avatarUrl: string | null) => {
+    // Refresh profile data when avatar changes
+    await fetchUserProfile();
   };
 
   const formatDate = (dateString?: string) => {
@@ -453,14 +383,6 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        accept="image/jpeg,image/png,image/jpg"
-        className="hidden"
-      />
-      
       <PageHeader 
         title="My Profile"
         description="Manage your account information and preferences"
@@ -508,59 +430,10 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarImage 
-                  src={profilePicturePreview || (profileData?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${profileData.profilePicture}` : undefined)} 
-                  alt={profileData?.name || 'Profile'}
-                  onLoad={() => {
-                    console.log('Profile image loaded successfully:', profileData?.profilePicture);
-                  }}
-                  onError={(e) => {
-                    console.log('Profile image failed to load:', profileData?.profilePicture);
-                    console.log('Full URL attempted:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${profileData?.profilePicture}`);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <AvatarFallback className="text-2xl font-semibold bg-primary text-primary-foreground">
-                  {(() => {
-                    // Try to get initials from name first
-                    if (profileData?.name) {
-                      const nameParts = profileData.name.trim().split(' ');
-                      if (nameParts.length >= 2) {
-                        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
-                      } else {
-                        return nameParts[0][0].toUpperCase();
-                      }
-                    }
-                    // Fallback to first and last name
-                    if (profileData?.first_name && profileData?.last_name) {
-                      return `${profileData.first_name[0]}${profileData.last_name[0]}`.toUpperCase();
-                    }
-                    // Fallback to username
-                    if (profileData?.username) {
-                      return profileData.username[0].toUpperCase();
-                    }
-                    // Final fallback
-                    return 'U';
-                  })()}
-                </AvatarFallback>
-              </Avatar>
-              
-              <Button
-                size="sm"
-                variant="secondary"
-                className="absolute -bottom-2 -right-2 rounded-full p-2 h-8 w-8"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={profilePictureUploading}
-              >
-                {profilePictureUploading ? (
-                  <RefreshCw className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Camera className="h-3 w-3" />
-                )}
-              </Button>
-            </div>
+            <AvatarUpload 
+              size="xl"
+              onAvatarChange={handleAvatarChange}
+            />
             
             <div className="space-y-2 flex-1">
               <div>
