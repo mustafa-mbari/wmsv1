@@ -57,8 +57,8 @@ export class Logger {
   };
 
   constructor(logsDirectory?: string) {
-    // Determine logs directory
-    this.logsDir = logsDirectory || path.resolve(process.cwd(), '..', 'shared', 'logs');
+    // Determine logs directory - use local logs directory instead of shared
+    this.logsDir = logsDirectory || path.resolve(process.cwd(), 'logs');
     
     // Ensure logs directory exists
     this.ensureLogsDirectory();

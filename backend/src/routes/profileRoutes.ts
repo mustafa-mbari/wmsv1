@@ -23,7 +23,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     
     const user = await prisma.users.findUnique({
       where: { 
-        id: req.user!.id
+        id: parseInt(req.user!.id.toString())
       },
       include: {
         user_roles_user_roles_user_idTousers: {
@@ -113,7 +113,7 @@ router.patch('/', authenticateToken, async (req: Request, res: Response) => {
     // Check if user exists
     const existingUser = await prisma.users.findUnique({
       where: { 
-        id: req.user!.id
+        id: parseInt(req.user!.id.toString())
       }
     });
 
@@ -136,7 +136,7 @@ router.patch('/', authenticateToken, async (req: Request, res: Response) => {
             ...(email ? [{ email }] : []),
             ...(username ? [{ username }] : [])
           ],
-          id: { not: req.user!.id }
+          id: { not: parseInt(req.user!.id.toString()) }
         }
       });
 
@@ -175,7 +175,7 @@ router.patch('/', authenticateToken, async (req: Request, res: Response) => {
 
     // Update user
     const updatedUser = await prisma.users.update({
-      where: { id: req.user!.id },
+      where: { id: parseInt(req.user!.id.toString()) },
       data: updateData,
       include: {
         user_roles_user_roles_user_idTousers: {
@@ -251,7 +251,7 @@ router.post('/password', authenticateToken, async (req: Request, res: Response) 
 
     // Check if user exists
     const existingUser = await prisma.users.findUnique({
-      where: { id: req.user!.id }
+      where: { id: parseInt(req.user!.id.toString()) }
     });
 
     if (!existingUser) {
@@ -286,7 +286,7 @@ router.post('/password', authenticateToken, async (req: Request, res: Response) 
 
     // Update password
     await prisma.users.update({
-      where: { id: req.user!.id },
+      where: { id: parseInt(req.user!.id.toString()) },
       data: {
         password_hash: newPasswordHash,
         updated_at: new Date()
@@ -454,7 +454,7 @@ router.post('/profile-picture/upload', authenticateToken, upload.single('profile
 
     // Update user's avatar_url in database
     const updatedUser = await prisma.users.update({
-      where: { id: req.user!.id },
+      where: { id: parseInt(req.user!.id.toString()) },
       data: {
         avatar_url: imageUrl,
         updated_at: new Date()
