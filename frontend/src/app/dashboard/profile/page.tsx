@@ -433,7 +433,7 @@ export default function ProfilePage() {
       )}
       
       {/* Profile Header Section */}
-      <Card>
+      <Card className="bg-muted/20">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <AvatarUpload 
@@ -482,7 +482,7 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Personal Information */}
         <Card>
-          <CardHeader>
+          <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <User className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.personalInfo' })}
@@ -580,7 +580,7 @@ export default function ProfilePage() {
 
         {/* Preferences */}
         <Card>
-          <CardHeader>
+          <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <Globe className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.preferences' })}
@@ -661,7 +661,7 @@ export default function ProfilePage() {
 
         {/* Security Section */}
         <Card>
-          <CardHeader>
+          <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <Lock className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.security' })}
@@ -834,7 +834,7 @@ export default function ProfilePage() {
 
         {/* Account Information */}
         <Card>
-          <CardHeader>
+          <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <Shield className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.accountInfo' })}
@@ -892,7 +892,7 @@ export default function ProfilePage() {
         
         {/* Activity Information */}
         <Card>
-          <CardHeader>
+          <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <Clock className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.activityInfo' })}
