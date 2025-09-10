@@ -387,7 +387,7 @@ export default function ProfilePage() {
     <div className="space-y-6">
       <PageHeader 
         title={intl.formatMessage({ id: 'profile.title' })}
-        description="Manage your account information and preferences"
+        description={intl.formatMessage({ id: 'profile.description', defaultMessage: 'Manage your account information and preferences' })}
         actions={
           <div className="flex space-x-2">
             {!editMode ? (

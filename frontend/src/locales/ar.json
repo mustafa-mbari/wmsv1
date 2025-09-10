@@ -20,10 +20,31 @@
   },
   "navigation": {
     "dashboard": "لوحة التحكم",
+    "products": "المنتجات",
+    "inventory": "المخزون",
+    "warehouses": "المستودعات",
+    "users": "المستخدمون",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
-    "home": "الرئيسية"
+    "home": "الرئيسية",
+    "system": "النظام"
+  },
+  "menu": {
+    "products": {
+      "products": "المنتجات",
+      "categories": "الفئات",
+      "families": "عائلات المنتجات",
+      "attributes": "الخصائص",
+      "attributeOptions": "خيارات الخصائص",
+      "attributeValues": "قيم الخصائص",
+      "uom": "وحدات القياس"
+    },
+    "inventory": {
+      "currentStock": "المخزون الحالي",
+      "adjustments": "التسويات",
+      "movements": "الحركات"
+    }
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -41,10 +62,12 @@
     "welcome": "مرحباً بك!",
     "overview": "نظرة عامة",
     "recentActivity": "النشاط الأخير",
-    "statistics": "الإحصائيات"
+    "statistics": "الإحصائيات",
+    "warehouseManagementSystem": "نظام إدارة المستودعات"
   },
   "profile": {
-    "title": "الملف الشخصي",
+    "title": "ملفي الشخصي",
+    "description": "إدارة معلومات حسابك وتفضيلاتك",
     "editProfile": "تحرير الملف الشخصي",
     "personalInfo": "المعلومات الشخصية",
     "firstName": "الاسم الأول",
@@ -53,12 +76,16 @@
     "address": "العنوان",
     "avatar": "الصورة الشخصية",
     "changeAvatar": "تغيير الصورة الشخصية",
-    "profileUpdated": "تم تحديث الملف الشخصي بنجاح"
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "myAccount": "حسابي"
   },
   "language": {
     "selectLanguage": "اختر اللغة",
     "english": "الإنجليزية",
     "german": "الألمانية",
     "arabic": "العربية"
+  },
+  "footer": {
+    "version": "نظام إدارة المستودعات ﺩ1.0"
   }
 }

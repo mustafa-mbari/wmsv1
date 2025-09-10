@@ -20,10 +20,31 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "products": "Produkte",
+    "inventory": "Inventar",
+    "warehouses": "Lagerhäuser",
+    "users": "Benutzer",
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden",
-    "home": "Startseite"
+    "home": "Startseite",
+    "system": "System"
+  },
+  "menu": {
+    "products": {
+      "products": "Produkte",
+      "categories": "Kategorien",
+      "families": "Produktfamilien",
+      "attributes": "Attribute",
+      "attributeOptions": "Attributoptionen",
+      "attributeValues": "Attributwerte",
+      "uom": "Maßeinheiten"
+    },
+    "inventory": {
+      "currentStock": "Aktueller Bestand",
+      "adjustments": "Anpassungen",
+      "movements": "Bewegungen"
+    }
   },
   "auth": {
     "login": "Anmelden",
@@ -41,10 +62,12 @@
     "welcome": "Willkommen zurück!",
     "overview": "Übersicht",
     "recentActivity": "Kürzliche Aktivitäten",
-    "statistics": "Statistiken"
+    "statistics": "Statistiken",
+    "warehouseManagementSystem": "Lagerverwaltungssystem"
   },
   "profile": {
-    "title": "Profil",
+    "title": "Mein Profil",
+    "description": "Verwalten Sie Ihre Kontoinformationen und Einstellungen",
     "editProfile": "Profil bearbeiten",
     "personalInfo": "Persönliche Informationen",
     "firstName": "Vorname",
@@ -53,12 +76,16 @@
     "address": "Adresse",
     "avatar": "Avatar",
     "changeAvatar": "Avatar ändern",
-    "profileUpdated": "Profil erfolgreich aktualisiert"
+    "profileUpdated": "Profil erfolgreich aktualisiert",
+    "myAccount": "Mein Konto"
   },
   "language": {
     "selectLanguage": "Sprache auswählen",
     "english": "Englisch",
     "german": "Deutsch",
     "arabic": "Arabisch"
+  },
+  "footer": {
+    "version": "Lagerverwaltungssystem v1.0"
   }
 }

@@ -20,10 +20,31 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "products": "Products",
+    "inventory": "Inventory",
+    "warehouses": "Warehouses",
+    "users": "Users",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
-    "home": "Home"
+    "home": "Home",
+    "system": "System"
+  },
+  "menu": {
+    "products": {
+      "products": "Products",
+      "categories": "Categories",
+      "families": "Product Families",
+      "attributes": "Attributes",
+      "attributeOptions": "Attribute Options",
+      "attributeValues": "Attribute Values",
+      "uom": "Units of Measure"
+    },
+    "inventory": {
+      "currentStock": "Current Stock",
+      "adjustments": "Adjustments",
+      "movements": "Movements"
+    }
   },
   "auth": {
     "login": "Login",
@@ -41,10 +62,12 @@
     "welcome": "Welcome back!",
     "overview": "Overview",
     "recentActivity": "Recent Activity",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "warehouseManagementSystem": "Warehouse Management System"
   },
   "profile": {
-    "title": "Profile",
+    "title": "My Profile",
+    "description": "Manage your account information and preferences",
     "editProfile": "Edit Profile",
     "personalInfo": "Personal Information",
     "firstName": "First Name",
@@ -53,12 +76,16 @@
     "address": "Address",
     "avatar": "Avatar",
     "changeAvatar": "Change Avatar",
-    "profileUpdated": "Profile updated successfully"
+    "profileUpdated": "Profile updated successfully",
+    "myAccount": "My Account"
   },
   "language": {
     "selectLanguage": "Select Language",
     "english": "English",
     "german": "German",
     "arabic": "Arabic"
+  },
+  "footer": {
+    "version": "Warehouse Management System v1.0"
   }
 }

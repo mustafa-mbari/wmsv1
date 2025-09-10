@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useIntl } from 'react-intl';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,21 +9,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { type Locale, locales, localeNames } from '@/lib/i18n';
+import { useLocale } from '@/components/providers/intl-provider';
 
 export function LanguageSwitcher() {
-  const intl = useIntl();
-  const [currentLocale, setCurrentLocale] = useState<Locale>('en');
-
-  useEffect(() => {
-    setCurrentLocale(intl.locale as Locale);
-  }, [intl.locale]);
+  const { locale: currentLocale, changeLocale } = useLocale();
 
   const handleLocaleChange = (locale: Locale) => {
-    setCurrentLocale(locale);
-    // Use the global changeLocale function
-    if (typeof window !== 'undefined' && (window as any).changeLocale) {
-      (window as any).changeLocale(locale);
-    }
+    changeLocale(locale);
   };
 
   return (

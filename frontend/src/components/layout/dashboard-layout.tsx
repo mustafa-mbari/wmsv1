@@ -65,31 +65,31 @@ interface DashboardLayoutProps {
 const getNavigation = (intl: any) => [
   { name: intl.formatMessage({ id: 'navigation.dashboard' }), href: "/dashboard", icon: Home },
   { 
-    name: "Products", 
+    name: intl.formatMessage({ id: 'navigation.products' }), 
     href: "/dashboard/products", 
     icon: Package,
     children: [
-      { name: "Products", href: "/dashboard/products" },
-      { name: "Categories", href: "/dashboard/products/categories" },
-      { name: "Product Families", href: "/dashboard/products/families" },
-      { name: "Attributes", href: "/dashboard/products/attributes" },
-      { name: "Attribute Options", href: "/dashboard/products/attribute-options" },
-      { name: "Attribute Values", href: "/dashboard/products/attribute-values" },
-      { name: "Units of Measure", href: "/dashboard/products/uom" },
+      { name: intl.formatMessage({ id: 'menu.products.products' }), href: "/dashboard/products" },
+      { name: intl.formatMessage({ id: 'menu.products.categories' }), href: "/dashboard/products/categories" },
+      { name: intl.formatMessage({ id: 'menu.products.families' }), href: "/dashboard/products/families" },
+      { name: intl.formatMessage({ id: 'menu.products.attributes' }), href: "/dashboard/products/attributes" },
+      { name: intl.formatMessage({ id: 'menu.products.attributeOptions' }), href: "/dashboard/products/attribute-options" },
+      { name: intl.formatMessage({ id: 'menu.products.attributeValues' }), href: "/dashboard/products/attribute-values" },
+      { name: intl.formatMessage({ id: 'menu.products.uom' }), href: "/dashboard/products/uom" },
     ]
   },
   { 
-    name: "Inventory", 
+    name: intl.formatMessage({ id: 'navigation.inventory' }), 
     href: "/dashboard/inventory", 
     icon: BarChart3,
     children: [
-      { name: "Current Stock", href: "/dashboard/inventory" },
-      { name: "Adjustments", href: "/dashboard/inventory/adjustments" },
-      { name: "Movements", href: "/dashboard/inventory/movements" },
+      { name: intl.formatMessage({ id: 'menu.inventory.currentStock' }), href: "/dashboard/inventory" },
+      { name: intl.formatMessage({ id: 'menu.inventory.adjustments' }), href: "/dashboard/inventory/adjustments" },
+      { name: intl.formatMessage({ id: 'menu.inventory.movements' }), href: "/dashboard/inventory/movements" },
     ]
   },
-  { name: "Warehouses", href: "/dashboard/warehouses", icon: Warehouse },
-  { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: intl.formatMessage({ id: 'navigation.warehouses' }), href: "/dashboard/warehouses", icon: Warehouse },
+  { name: intl.formatMessage({ id: 'navigation.users' }), href: "/dashboard/users", icon: Users },
   { name: intl.formatMessage({ id: 'navigation.settings' }), href: "/dashboard/settings", icon: Settings },
 ];
 
@@ -248,7 +248,7 @@ function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-4 text-xs text-muted-foreground border-t">
-          Warehouse Management System v1.0
+          {intl.formatMessage({ id: 'footer.version' })}
         </div>
       </SidebarFooter>
       <SidebarRail />
@@ -309,7 +309,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <div className="h-4 w-px bg-sidebar-border" />
-            <h1 className="text-lg font-semibold">Warehouse Management System</h1>
+            <h1 className="text-lg font-semibold">{intl.formatMessage({ id: 'dashboard.warehouseManagementSystem' })}</h1>
           </div>
           <div className="ml-auto flex items-center gap-2 px-4">
             {/* Notifications */}
@@ -369,7 +369,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="font-normal text-muted-foreground">
-                  My Account
+                  {intl.formatMessage({ id: 'profile.myAccount' })}
                 </DropdownMenuLabel>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/profile">
