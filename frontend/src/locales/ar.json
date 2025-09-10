@@ -145,7 +145,40 @@
     "lastPasswordChange": "آخر تغيير",
     "never": "أبداً",
     "notSet": "غير محدد",
-    "notProvided": "غير متوفر"
+    "notProvided": "غير متوفر",
+    "selectLanguage": "اختر اللغة",
+    "selectTimeZone": "اختر المنطقة الزمنية",
+    "enterCurrentPassword": "أدخل كلمة المرور الحالية",
+    "enterNewPassword": "أدخل كلمة المرور الجديدة",
+    "confirmNewPassword": "أكد كلمة المرور الجديدة",
+    "enterDisplayName": "أدخل اسم العرض",
+    "failedToLoadProfile": "فشل في تحميل الملف الشخصي",
+    "failedToUpdateProfile": "فشل في تحديث الملف الشخصي",
+    "failedToChangePassword": "فشل في تغيير كلمة المرور",
+    "loadProfileError": "فشل في تحميل بيانات الملف الشخصي",
+    "updateProfileSuccess": "تم تحديث الملف الشخصي بنجاح!",
+    "changePasswordSuccess": "تم تغيير كلمة المرور بنجاح!",
+    "languages": {
+      "en": "الإنجليزية",
+      "es": "الإسبانية",
+      "fr": "الفرنسية",
+      "de": "الألمانية",
+      "it": "الإيطالية",
+      "pt": "البرتغالية",
+      "zh": "الصينية",
+      "ja": "اليابانية",
+      "ko": "الكورية",
+      "ar": "العربية"
+    },
+    "validation": {
+      "emailRequired": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+      "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
+      "passwordLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل",
+      "passwordUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+      "passwordNumber": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+      "passwordSpecial": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل",
+      "passwordMismatch": "كلمات المرور غير متطابقة"
+    }
   },
   "language": {
     "selectLanguage": "اختر اللغة",

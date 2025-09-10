@@ -83,40 +83,40 @@ interface ProfileCompleteness {
   missing: string[];
 }
 
-const profileSchema = z.object({
-  name: z.string().min(2, "Display name must be at least 2 characters").max(50, "Display name must be less than 50 characters"),
-  username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number in E.164 format").optional().or(z.literal("")),
+const getProfileSchema = (intl: any) => z.object({
+  name: z.string().min(2, intl.formatMessage({ id: 'forms.validation.minLength', defaultMessage: 'Display name must be at least 2 characters' }, { min: 2 })).max(50, intl.formatMessage({ id: 'forms.validation.maxLength', defaultMessage: 'Display name must be less than 50 characters' }, { max: 50 })),
+  username: z.string().min(3, intl.formatMessage({ id: 'forms.validation.minLength', defaultMessage: 'Username must be at least 3 characters' }, { min: 3 })).max(20, intl.formatMessage({ id: 'forms.validation.maxLength', defaultMessage: 'Username must be less than 20 characters' }, { max: 20 })).regex(/^[a-zA-Z0-9_]+$/, intl.formatMessage({ id: 'forms.validation.username', defaultMessage: 'Username can only contain letters, numbers, and underscores' })),
+  email: z.string().email(intl.formatMessage({ id: 'profile.validation.emailRequired' })),
+  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, intl.formatMessage({ id: 'forms.validation.invalidPhone' })).optional().or(z.literal("")),
   language: z.string().optional(),
   timeZone: z.string().optional(),
 });
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
+const getPasswordSchema = (intl: any) => z.object({
+  currentPassword: z.string().min(1, intl.formatMessage({ id: 'profile.validation.currentPasswordRequired' })),
   newPassword: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/(?=.*[a-z])/, "Password must contain at least one lowercase letter")
-    .regex(/(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
-    .regex(/(?=.*\d)/, "Password must contain at least one number")
-    .regex(/(?=.*[^\w\s])/, "Password must contain at least one special character"),
+    .min(8, intl.formatMessage({ id: 'forms.validation.minLength', defaultMessage: 'Password must be at least 8 characters' }, { min: 8 }))
+    .regex(/(?=.*[a-z])/, intl.formatMessage({ id: 'profile.validation.passwordLowercase' }))
+    .regex(/(?=.*[A-Z])/, intl.formatMessage({ id: 'profile.validation.passwordUppercase' }))
+    .regex(/(?=.*\d)/, intl.formatMessage({ id: 'profile.validation.passwordNumber' }))
+    .regex(/(?=.*[^\w\s])/, intl.formatMessage({ id: 'profile.validation.passwordSpecial' })),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: intl.formatMessage({ id: 'profile.validation.passwordMismatch' }),
   path: ["confirmPassword"],
 });
 
-const languages = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Spanish" },
-  { code: "fr", name: "French" },
-  { code: "de", name: "German" },
-  { code: "it", name: "Italian" },
-  { code: "pt", name: "Portuguese" },
-  { code: "zh", name: "Chinese" },
-  { code: "ja", name: "Japanese" },
-  { code: "ko", name: "Korean" },
-  { code: "ar", name: "Arabic" },
+const getLanguages = (intl: any) => [
+  { code: "en", name: intl.formatMessage({ id: 'profile.languages.en' }) },
+  { code: "es", name: intl.formatMessage({ id: 'profile.languages.es' }) },
+  { code: "fr", name: intl.formatMessage({ id: 'profile.languages.fr' }) },
+  { code: "de", name: intl.formatMessage({ id: 'profile.languages.de' }) },
+  { code: "it", name: intl.formatMessage({ id: 'profile.languages.it' }) },
+  { code: "pt", name: intl.formatMessage({ id: 'profile.languages.pt' }) },
+  { code: "zh", name: intl.formatMessage({ id: 'profile.languages.zh' }) },
+  { code: "ja", name: intl.formatMessage({ id: 'profile.languages.ja' }) },
+  { code: "ko", name: intl.formatMessage({ id: 'profile.languages.ko' }) },
+  { code: "ar", name: intl.formatMessage({ id: 'profile.languages.ar' }) },
 ];
 
 const commonTimeZones = [
@@ -148,6 +148,10 @@ export default function ProfilePage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [completeness, setCompleteness] = useState<ProfileCompleteness>({ percentage: 0, missing: [] });
   const [error, setError] = useState<string | null>(null);
+
+  const profileSchema = getProfileSchema(intl);
+  const passwordSchema = getPasswordSchema(intl);
+  const languages = getLanguages(intl);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -200,11 +204,11 @@ export default function ProfilePage() {
       calculateCompleteness(userData);
     } catch (error: any) {
       console.error("Error fetching user profile:", error);
-      setError(error.response?.data?.message || "Failed to load profile");
+      setError(error.response?.data?.message || intl.formatMessage({ id: 'profile.failedToLoadProfile' }));
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to load profile data",
+        title: intl.formatMessage({ id: 'common.error' }),
+        description: intl.formatMessage({ id: 'profile.loadProfileError' }),
       });
     } finally {
       setLoading(false);
@@ -253,8 +257,8 @@ export default function ProfilePage() {
       await fetchUserProfile(); // Refresh to get server state
       setEditMode(false);
       toast({
-        title: "Success",
-        description: "Profile updated successfully!",
+        title: intl.formatMessage({ id: 'common.success' }),
+        description: intl.formatMessage({ id: 'profile.updateProfileSuccess' }),
       });
     } catch (error: any) {
       console.error("Error updating profile:", error);
@@ -262,11 +266,11 @@ export default function ProfilePage() {
       // Rollback optimistic update
       await fetchUserProfile();
       
-      const errorMessage = error.response?.data?.message || "Failed to update profile";
+      const errorMessage = error.response?.data?.message || intl.formatMessage({ id: 'profile.failedToUpdateProfile' });
       setError(errorMessage);
       toast({
         variant: "destructive",
-        title: "Error",
+        title: intl.formatMessage({ id: 'common.error' }),
         description: errorMessage,
       });
     } finally {
@@ -292,16 +296,16 @@ export default function ProfilePage() {
       
       await fetchUserProfile(); // Refresh to update last password change
       toast({
-        title: "Success",
-        description: "Password changed successfully!",
+        title: intl.formatMessage({ id: 'common.success' }),
+        description: intl.formatMessage({ id: 'profile.changePasswordSuccess' }),
       });
     } catch (error: any) {
       console.error("Error changing password:", error);
-      const errorMessage = error.response?.data?.message || "Failed to change password";
+      const errorMessage = error.response?.data?.message || intl.formatMessage({ id: 'profile.failedToChangePassword' });
       setError(errorMessage);
       toast({
         variant: "destructive",
-        title: "Error",
+        title: intl.formatMessage({ id: 'common.error' }),
         description: errorMessage,
       });
     } finally {
@@ -315,7 +319,7 @@ export default function ProfilePage() {
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "Not set";
+    if (!dateString) return intl.formatMessage({ id: 'profile.notSet' });
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long", 
@@ -373,9 +377,9 @@ export default function ProfilePage() {
       <div className="space-y-6">
         <Card className="border-red-200 dark:border-red-800">
           <CardHeader>
-            <CardTitle>Profile Not Found</CardTitle>
+            <CardTitle>{intl.formatMessage({ id: 'profile.title' })} {intl.formatMessage({ id: 'pages.notFound.title' })}</CardTitle>
             <CardDescription>
-              Unable to load your profile information.
+              {intl.formatMessage({ id: 'profile.loadProfileError' })}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -413,7 +417,7 @@ export default function ProfilePage() {
                   ) : (
                     <Save className="mr-2 h-4 w-4" />
                   )}
-                  {intl.formatMessage({ id: 'common.save' })} {intl.formatMessage({ id: 'common.update', defaultMessage: 'Changes' })}
+                  {intl.formatMessage({ id: 'common.update' })}
                 </Button>
               </>
             )}
@@ -447,11 +451,11 @@ export default function ProfilePage() {
                 {profileData?.email_verified && (
                   <Badge variant="outline" className="text-green-600">
                     <CheckCircle className="mr-1 h-3 w-3" />
-                    Verified
+                    {intl.formatMessage({ id: 'profile.verified' })}
                   </Badge>
                 )}
                 <Badge variant={profileData?.is_active ? "default" : "destructive"}>
-                  {profileData?.is_active ? "Active" : "Inactive"}
+                  {profileData?.is_active ? intl.formatMessage({ id: 'common.active' }) : intl.formatMessage({ id: 'common.inactive' })}
                 </Badge>
               </div>
             </div>
@@ -495,7 +499,7 @@ export default function ProfilePage() {
                       <FormItem>
                         <FormLabel>{intl.formatMessage({ id: 'profile.displayName' })}</FormLabel>
                         <FormControl>
-                          <Input placeholder={intl.formatMessage({ id: 'profile.displayName', defaultMessage: 'Enter your display name' })} {...field} />
+                          <Input placeholder={intl.formatMessage({ id: 'profile.enterDisplayName' })} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -579,7 +583,7 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Globe className="mr-2 h-5 w-5" />
-              Preferences
+              {intl.formatMessage({ id: 'profile.preferences' })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -591,11 +595,11 @@ export default function ProfilePage() {
                     name="language"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Language</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.language' })}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a language" />
+                              <SelectValue placeholder={intl.formatMessage({ id: 'profile.selectLanguage' })} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -615,11 +619,11 @@ export default function ProfilePage() {
                     name="timeZone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Time Zone</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.timeZone' })}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a time zone" />
+                              <SelectValue placeholder={intl.formatMessage({ id: 'profile.selectTimeZone' })} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -639,13 +643,13 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <Label>Language:</Label>
+                  <Label>{intl.formatMessage({ id: 'profile.language' })}:</Label>
                   <span className="font-medium">
-                    {languages.find(l => l.code === profileData?.language)?.name || 'English'}
+                    {languages.find(l => l.code === profileData?.language)?.name || intl.formatMessage({ id: 'profile.languages.en' })}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <Label>Time Zone:</Label>
+                  <Label>{intl.formatMessage({ id: 'profile.timeZone' })}:</Label>
                   <span className="font-medium">
                     {profileData?.timeZone?.replace('_', ' ') || Intl.DateTimeFormat().resolvedOptions().timeZone}
                   </span>
@@ -660,19 +664,19 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Lock className="mr-2 h-5 w-5" />
-              Security
+              {intl.formatMessage({ id: 'profile.security' })}
             </CardTitle>
             <CardDescription>
-              Manage your password and security settings
+              {intl.formatMessage({ id: 'profile.security' })} {intl.formatMessage({ id: 'profile.description', defaultMessage: 'settings' })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
-                <Label>Password</Label>
+                <Label>{intl.formatMessage({ id: 'profile.newPassword' })}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Last changed: {profileData?.last_password_change ? 
-                    formatDate(profileData.last_password_change) : 'Never'}
+                  {intl.formatMessage({ id: 'profile.lastPasswordChange' })}: {profileData?.last_password_change ? 
+                    formatDate(profileData.last_password_change) : intl.formatMessage({ id: 'profile.never' })}
                 </p>
               </div>
               <Button
@@ -680,14 +684,14 @@ export default function ProfilePage() {
                 size="sm"
                 onClick={() => setShowPasswordForm(!showPasswordForm)}
               >
-                Change Password
+                {intl.formatMessage({ id: 'profile.changePassword' })}
               </Button>
             </div>
             
             {showPasswordForm && (
               <div className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Change Password</h4>
+                  <h4 className="font-medium">{intl.formatMessage({ id: 'profile.changePassword' })}</h4>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -707,12 +711,12 @@ export default function ProfilePage() {
                       name="currentPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Current Password</FormLabel>
+                          <FormLabel>{intl.formatMessage({ id: 'profile.currentPassword' })}</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Input
                                 type={showCurrentPassword ? "text" : "password"}
-                                placeholder="Enter current password"
+                                placeholder={intl.formatMessage({ id: 'profile.enterCurrentPassword' })}
                                 {...field}
                               />
                               <Button
@@ -740,12 +744,12 @@ export default function ProfilePage() {
                       name="newPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>New Password</FormLabel>
+                          <FormLabel>{intl.formatMessage({ id: 'profile.newPassword' })}</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Input
                                 type={showNewPassword ? "text" : "password"}
-                                placeholder="Enter new password"
+                                placeholder={intl.formatMessage({ id: 'profile.enterNewPassword' })}
                                 {...field}
                               />
                               <Button
@@ -773,12 +777,12 @@ export default function ProfilePage() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Confirm New Password</FormLabel>
+                          <FormLabel>{intl.formatMessage({ id: 'profile.confirmPassword' })}</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Input
                                 type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm new password"
+                                placeholder={intl.formatMessage({ id: 'profile.confirmNewPassword' })}
                                 {...field}
                               />
                               <Button
@@ -810,7 +814,7 @@ export default function ProfilePage() {
                           passwordForm.reset();
                         }}
                       >
-                        Cancel
+                        {intl.formatMessage({ id: 'common.cancel' })}
                       </Button>
                       <Button type="submit" disabled={passwordChanging}>
                         {passwordChanging ? (
@@ -818,7 +822,7 @@ export default function ProfilePage() {
                         ) : (
                           <Lock className="mr-2 h-4 w-4" />
                         )}
-                        Update Password
+                        {intl.formatMessage({ id: 'profile.updatePassword' })}
                       </Button>
                     </div>
                   </form>
@@ -833,25 +837,25 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Shield className="mr-2 h-5 w-5" />
-              Account Information
+              {intl.formatMessage({ id: 'profile.accountInfo' })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between">
-              <Label>Account Status:</Label>
+              <Label>{intl.formatMessage({ id: 'common.status' })}:</Label>
               <Badge variant={profileData?.is_active ? "default" : "destructive"}>
-                {profileData?.is_active ? "Active" : "Inactive"}
+                {profileData?.is_active ? intl.formatMessage({ id: 'common.active' }) : intl.formatMessage({ id: 'common.inactive' })}
               </Badge>
             </div>
             <div className="flex justify-between">
-              <Label>Email Verified:</Label>
+              <Label>{intl.formatMessage({ id: 'profile.emailVerified' })}:</Label>
               <Badge variant={profileData?.email_verified ? "default" : "secondary"}>
-                {profileData?.email_verified ? "Verified" : "Not Verified"}
+                {profileData?.email_verified ? intl.formatMessage({ id: 'profile.verified' }) : intl.formatMessage({ id: 'profile.notVerified' })}
               </Badge>
             </div>
             {profileData?.email_verified_at && (
               <div className="flex justify-between items-center">
-                <Label>Verified At:</Label>
+                <Label>{intl.formatMessage({ id: 'profile.verifiedAt' })}:</Label>
                 <span className="text-sm text-muted-foreground">
                   {formatDate(profileData.email_verified_at)}
                 </span>
@@ -862,7 +866,7 @@ export default function ProfilePage() {
             
             <div className="space-y-3">
               <div>
-                <Label className="text-sm font-medium">Assigned Roles:</Label>
+                <Label className="text-sm font-medium">{intl.formatMessage({ id: 'profile.assignedRoles' })}:</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {profileData?.role_names && profileData.role_names.length > 0 ? (
                     profileData.role_names.map((role, index) => (
@@ -875,13 +879,12 @@ export default function ProfilePage() {
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-muted-foreground">No roles assigned</span>
+                    <span className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.noRoles' })}</span>
                   )}
                 </div>
               </div>
               <div className="text-xs text-muted-foreground">
-                Your roles determine what actions you can perform in the system.
-                Contact your administrator to request role changes.
+                {intl.formatMessage({ id: 'profile.roleInfo' })}
               </div>
             </div>
           </CardContent>
@@ -892,31 +895,31 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Clock className="mr-2 h-5 w-5" />
-              Activity Information
+              {intl.formatMessage({ id: 'profile.activityInfo' })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
-              <Label>Last Login:</Label>
+              <Label>{intl.formatMessage({ id: 'profile.lastLogin' })}:</Label>
               <span className="text-sm text-muted-foreground">
                 {formatDate(profileData?.last_login_at)}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <Label>Account Created:</Label>
+              <Label>{intl.formatMessage({ id: 'profile.accountCreated' })}:</Label>
               <span className="text-sm text-muted-foreground">
                 {formatDate(profileData?.created_at)}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <Label>Last Updated:</Label>
+              <Label>{intl.formatMessage({ id: 'profile.lastUpdated' })}:</Label>
               <span className="text-sm text-muted-foreground">
                 {formatDate(profileData?.updated_at)}
               </span>
             </div>
             <Separator />
             <div className="text-xs text-muted-foreground">
-              User ID: {profileData?.id}
+              {intl.formatMessage({ id: 'profile.userId' })}: {profileData?.id}
             </div>
           </CardContent>
         </Card>

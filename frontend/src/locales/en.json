@@ -145,7 +145,40 @@
     "lastPasswordChange": "Last changed",
     "never": "Never",
     "notSet": "Not set",
-    "notProvided": "Not provided"
+    "notProvided": "Not provided",
+    "selectLanguage": "Select a language",
+    "selectTimeZone": "Select a time zone",
+    "enterCurrentPassword": "Enter current password",
+    "enterNewPassword": "Enter new password",
+    "confirmNewPassword": "Confirm new password",
+    "enterDisplayName": "Enter your display name",
+    "failedToLoadProfile": "Failed to load profile",
+    "failedToUpdateProfile": "Failed to update profile",
+    "failedToChangePassword": "Failed to change password",
+    "loadProfileError": "Failed to load profile data",
+    "updateProfileSuccess": "Profile updated successfully!",
+    "changePasswordSuccess": "Password changed successfully!",
+    "languages": {
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French", 
+      "de": "German",
+      "it": "Italian",
+      "pt": "Portuguese",
+      "zh": "Chinese",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "ar": "Arabic"
+    },
+    "validation": {
+      "emailRequired": "Please enter a valid email address",
+      "currentPasswordRequired": "Current password is required",
+      "passwordLowercase": "Password must contain at least one lowercase letter",
+      "passwordUppercase": "Password must contain at least one uppercase letter",
+      "passwordNumber": "Password must contain at least one number",
+      "passwordSpecial": "Password must contain at least one special character",
+      "passwordMismatch": "Passwords don't match"
+    }
   },
   "language": {
     "selectLanguage": "Select Language",

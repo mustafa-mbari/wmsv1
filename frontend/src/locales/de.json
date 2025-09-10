@@ -145,7 +145,40 @@
     "lastPasswordChange": "Zuletzt geändert",
     "never": "Nie",
     "notSet": "Nicht gesetzt",
-    "notProvided": "Nicht angegeben"
+    "notProvided": "Nicht angegeben",
+    "selectLanguage": "Sprache auswählen",
+    "selectTimeZone": "Zeitzone auswählen",
+    "enterCurrentPassword": "Aktuelles Passwort eingeben",
+    "enterNewPassword": "Neues Passwort eingeben",
+    "confirmNewPassword": "Neues Passwort bestätigen",
+    "enterDisplayName": "Anzeigename eingeben",
+    "failedToLoadProfile": "Profil konnte nicht geladen werden",
+    "failedToUpdateProfile": "Profil konnte nicht aktualisiert werden",
+    "failedToChangePassword": "Passwort konnte nicht geändert werden",
+    "loadProfileError": "Profildaten konnten nicht geladen werden",
+    "updateProfileSuccess": "Profil erfolgreich aktualisiert!",
+    "changePasswordSuccess": "Passwort erfolgreich geändert!",
+    "languages": {
+      "en": "Englisch",
+      "es": "Spanisch",
+      "fr": "Französisch",
+      "de": "Deutsch",
+      "it": "Italienisch",
+      "pt": "Portugiesisch",
+      "zh": "Chinesisch",
+      "ja": "Japanisch",
+      "ko": "Koreanisch",
+      "ar": "Arabisch"
+    },
+    "validation": {
+      "emailRequired": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
+      "passwordLowercase": "Passwort muss mindestens einen Kleinbuchstaben enthalten",
+      "passwordUppercase": "Passwort muss mindestens einen Großbuchstaben enthalten",
+      "passwordNumber": "Passwort muss mindestens eine Zahl enthalten",
+      "passwordSpecial": "Passwort muss mindestens ein Sonderzeichen enthalten",
+      "passwordMismatch": "Passwörter stimmen nicht überein"
+    }
   },
   "language": {
     "selectLanguage": "Sprache auswählen",
