@@ -78,7 +78,27 @@
     "overview": "نظرة عامة",
     "recentActivity": "النشاط الأخير",
     "statistics": "الإحصائيات",
-    "warehouseManagementSystem": "نظام إدارة المستودعات"
+    "warehouseManagementSystem": "نظام إدارة المستودعات",
+    "fromLastMonth": "من الشهر الماضي",
+    "stats": {
+      "totalProducts": "إجمالي المنتجات",
+      "activeUsers": "المستخدمون النشطون",
+      "warehouses": "المستودعات",
+      "inventoryValue": "قيمة المخزون"
+    },
+    "activity": {
+      "newProduct": "تم إضافة منتج جديد: \"سماعات لاسلكية\"",
+      "addedBy": "أضافه جون دو • منذ ساعتين",
+      "inventoryAdjustment": "تسوية مخزون: مستودع أ",
+      "adjustedBy": "عدلته سارة سميث • منذ 4 ساعات",
+      "newUser": "مستخدم جديد مسجل: مايك جونسون",
+      "registered": "مسجل • منذ 6 ساعات"
+    },
+    "actions": {
+      "addProduct": "إضافة منتج جديد",
+      "inventoryAdjustment": "تسوية المخزون",
+      "generateReport": "إنشاء تقرير"
+    }
   },
   "profile": {
     "title": "ملفي الشخصي",

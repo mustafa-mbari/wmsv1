@@ -78,7 +78,27 @@
     "overview": "Overview",
     "recentActivity": "Recent Activity",
     "statistics": "Statistics",
-    "warehouseManagementSystem": "Warehouse Management System"
+    "warehouseManagementSystem": "Warehouse Management System",
+    "fromLastMonth": "from last month",
+    "stats": {
+      "totalProducts": "Total Products",
+      "activeUsers": "Active Users",
+      "warehouses": "Warehouses",
+      "inventoryValue": "Inventory Value"
+    },
+    "activity": {
+      "newProduct": "New product added: \"Wireless Headphones\"",
+      "addedBy": "Added by John Doe • 2 hours ago",
+      "inventoryAdjustment": "Inventory adjustment: Warehouse A",
+      "adjustedBy": "Adjusted by Sarah Smith • 4 hours ago",
+      "newUser": "New user registered: Mike Johnson",
+      "registered": "Registered • 6 hours ago"
+    },
+    "actions": {
+      "addProduct": "Add New Product",
+      "inventoryAdjustment": "Inventory Adjustment",
+      "generateReport": "Generate Report"
+    }
   },
   "profile": {
     "title": "My Profile",

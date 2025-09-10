@@ -78,7 +78,27 @@
     "overview": "Übersicht",
     "recentActivity": "Kürzliche Aktivitäten",
     "statistics": "Statistiken",
-    "warehouseManagementSystem": "Lagerverwaltungssystem"
+    "warehouseManagementSystem": "Lagerverwaltungssystem",
+    "fromLastMonth": "vom letzten Monat",
+    "stats": {
+      "totalProducts": "Produkte gesamt",
+      "activeUsers": "Aktive Benutzer",
+      "warehouses": "Lagerhäuser",
+      "inventoryValue": "Inventarwert"
+    },
+    "activity": {
+      "newProduct": "Neues Produkt hinzugefügt: \"Kabellose Kopfhörer\"",
+      "addedBy": "Hinzugefügt von John Doe • vor 2 Stunden",
+      "inventoryAdjustment": "Inventaranpassung: Lagerhaus A",
+      "adjustedBy": "Angepasst von Sarah Smith • vor 4 Stunden",
+      "newUser": "Neuer Benutzer registriert: Mike Johnson",
+      "registered": "Registriert • vor 6 Stunden"
+    },
+    "actions": {
+      "addProduct": "Neues Produkt hinzufügen",
+      "inventoryAdjustment": "Inventaranpassung",
+      "generateReport": "Bericht erstellen"
+    }
   },
   "profile": {
     "title": "Mein Profil",
