@@ -393,7 +393,7 @@ export default function ProfilePage() {
             {!editMode ? (
               <Button onClick={() => setEditMode(true)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Profile
+                {intl.formatMessage({ id: 'profile.editProfile' })}
               </Button>
             ) : (
               <>
@@ -402,7 +402,7 @@ export default function ProfilePage() {
                   setError(null);
                   form.reset();
                 }}>
-                  Cancel
+                  {intl.formatMessage({ id: 'common.cancel' })}
                 </Button>
                 <Button 
                   onClick={form.handleSubmit(onSubmit)}
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                   ) : (
                     <Save className="mr-2 h-4 w-4" />
                   )}
-                  Save Changes
+                  {intl.formatMessage({ id: 'common.save' })} {intl.formatMessage({ id: 'common.update', defaultMessage: 'Changes' })}
                 </Button>
               </>
             )}
@@ -458,7 +458,7 @@ export default function ProfilePage() {
             
             <div className="text-right">
               <div className="mb-2">
-                <span className="text-sm text-muted-foreground">Profile Completeness</span>
+                <span className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.profileCompleteness' })}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Progress value={completeness.percentage} className="w-20" />
@@ -466,7 +466,7 @@ export default function ProfilePage() {
               </div>
               {completeness.missing.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Missing: {completeness.missing.slice(0, 2).join(', ')}
+                  {intl.formatMessage({ id: 'profile.missing' })}: {completeness.missing.slice(0, 2).join(', ')}
                   {completeness.missing.length > 2 && ` +${completeness.missing.length - 2} more`}
                 </p>
               )}
@@ -481,7 +481,7 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <User className="mr-2 h-5 w-5" />
-              Personal Information
+              {intl.formatMessage({ id: 'profile.personalInfo' })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -493,9 +493,9 @@ export default function ProfilePage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Display Name</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.displayName' })}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your display name" {...field} />
+                          <Input placeholder={intl.formatMessage({ id: 'profile.displayName', defaultMessage: 'Enter your display name' })} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -506,9 +506,9 @@ export default function ProfilePage() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.username' })}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your username" {...field} />
+                          <Input placeholder={intl.formatMessage({ id: 'profile.username', defaultMessage: 'Enter your username' })} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -519,9 +519,9 @@ export default function ProfilePage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email Address</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.email' })}</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="Enter your email" {...field} />
+                          <Input type="email" placeholder={intl.formatMessage({ id: 'profile.email', defaultMessage: 'Enter your email' })} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -532,7 +532,7 @@ export default function ProfilePage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{intl.formatMessage({ id: 'profile.phoneNumber' })}</FormLabel>
                         <FormControl>
                           <Input placeholder="+1234567890" {...field} />
                         </FormControl>
@@ -545,15 +545,15 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <Label>Display Name:</Label>
-                  <span className="font-medium">{profileData?.name || 'Not set'}</span>
+                  <Label>{intl.formatMessage({ id: 'profile.displayName' })}:</Label>
+                  <span className="font-medium">{profileData?.name || intl.formatMessage({ id: 'profile.notSet' })}</span>
                 </div>
                 <div className="flex justify-between">
-                  <Label>Username:</Label>
+                  <Label>{intl.formatMessage({ id: 'profile.username' })}:</Label>
                   <span className="font-medium">@{profileData?.username}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <Label>Email:</Label>
+                  <Label>{intl.formatMessage({ id: 'profile.email' })}:</Label>
                   <span className="flex items-center">
                     <Mail className="mr-1 h-3 w-3 text-muted-foreground" />
                     {profileData?.email}
@@ -563,10 +563,10 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <Label>Phone:</Label>
+                  <Label>{intl.formatMessage({ id: 'profile.phoneNumber' })}:</Label>
                   <span className="flex items-center">
                     <Phone className="mr-1 h-3 w-3 text-muted-foreground" />
-                    {profileData?.phone || "Not provided"}
+                    {profileData?.phone || intl.formatMessage({ id: 'profile.notProvided' })}
                   </span>
                 </div>
               </div>

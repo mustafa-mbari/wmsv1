@@ -16,7 +16,22 @@
     "refresh": "Aktualisieren",
     "back": "Zurück",
     "next": "Weiter",
-    "previous": "Vorherige"
+    "previous": "Vorherige",
+    "actions": "Aktionen",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "name": "Name",
+    "description": "Beschreibung",
+    "createdAt": "Erstellt am",
+    "updatedAt": "Aktualisiert am",
+    "noData": "Keine Daten verfügbar",
+    "confirm": "Bestätigen",
+    "view": "Anzeigen",
+    "add": "Hinzufügen",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "remove": "Entfernen"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -77,7 +92,40 @@
     "avatar": "Avatar",
     "changeAvatar": "Avatar ändern",
     "profileUpdated": "Profil erfolgreich aktualisiert",
-    "myAccount": "Mein Konto"
+    "myAccount": "Mein Konto",
+    "displayName": "Anzeigename",
+    "username": "Benutzername",
+    "email": "E-Mail-Adresse",
+    "phoneNumber": "Telefonnummer",
+    "language": "Sprache",
+    "timeZone": "Zeitzone",
+    "profileCompleteness": "Profilvollständigkeit",
+    "missing": "Fehlend",
+    "preferences": "Einstellungen",
+    "security": "Sicherheit",
+    "accountInfo": "Kontoinformationen",
+    "activityInfo": "Aktivitätsinformationen",
+    "lastLogin": "Letzte Anmeldung",
+    "accountCreated": "Konto erstellt",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "userId": "Benutzer-ID",
+    "emailVerified": "E-Mail verifiziert",
+    "verified": "Verifiziert",
+    "notVerified": "Nicht verifiziert",
+    "verifiedAt": "Verifiziert am",
+    "assignedRoles": "Zugewiesene Rollen",
+    "noRoles": "Keine Rollen zugewiesen",
+    "roleInfo": "Ihre Rollen bestimmen, welche Aktionen Sie im System ausführen können. Wenden Sie sich an Ihren Administrator, um Rollenänderungen anzufordern.",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "updatePassword": "Passwort aktualisieren",
+    "passwordChanged": "Passwort erfolgreich geändert!",
+    "lastPasswordChange": "Zuletzt geändert",
+    "never": "Nie",
+    "notSet": "Nicht gesetzt",
+    "notProvided": "Nicht angegeben"
   },
   "language": {
     "selectLanguage": "Sprache auswählen",
@@ -87,5 +135,62 @@
   },
   "footer": {
     "version": "Lagerverwaltungssystem v1.0"
+  },
+  "users": {
+    "title": "Benutzer",
+    "description": "Systembenutzer und deren Berechtigungen verwalten",
+    "createUser": "Benutzer erstellen",
+    "editUser": "Benutzer bearbeiten",
+    "deleteUser": "Benutzer löschen",
+    "userList": "Benutzerliste",
+    "totalUsers": "Benutzer gesamt",
+    "activeUsers": "Aktive Benutzer",
+    "role": "Rolle",
+    "roles": "Rollen",
+    "permissions": "Berechtigungen",
+    "lastActive": "Zuletzt aktiv",
+    "joinedDate": "Beitrittsdatum",
+    "userDetails": "Benutzerdetails",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
+    "userCreated": "Benutzer erfolgreich erstellt",
+    "userUpdated": "Benutzer erfolgreich aktualisiert",
+    "userDeleted": "Benutzer erfolgreich gelöscht"
+  },
+  "pages": {
+    "dashboard": {
+      "welcome": "Willkommen zurück, {{name}}!",
+      "overview": "Systemübersicht",
+      "quickActions": "Schnellaktionen",
+      "recentActivity": "Kürzliche Aktivitäten",
+      "statistics": "Wichtige Statistiken",
+      "noActivity": "Keine kürzlichen Aktivitäten"
+    },
+    "notFound": {
+      "title": "Seite nicht gefunden",
+      "message": "Die gesuchte Seite existiert nicht.",
+      "goHome": "Zum Dashboard"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "minLength": "Muss mindestens {min} Zeichen lang sein",
+      "maxLength": "Muss weniger als {max} Zeichen lang sein",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "invalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein"
+    }
+  },
+  "messages": {
+    "loading": "Wird geladen...",
+    "saving": "Wird gespeichert...",
+    "deleting": "Wird gelöscht...",
+    "updating": "Wird aktualisiert...",
+    "success": "Vorgang erfolgreich abgeschlossen",
+    "error": "Ein Fehler ist aufgetreten",
+    "noDataFound": "Keine Daten gefunden",
+    "confirmDelete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
+    "unsavedChanges": "Sie haben ungespeicherte Änderungen",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
   }
 }

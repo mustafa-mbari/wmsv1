@@ -16,7 +16,22 @@
     "refresh": "Refresh",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "name": "Name",
+    "description": "Description",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "noData": "No data available",
+    "confirm": "Confirm",
+    "view": "View",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -77,7 +92,40 @@
     "avatar": "Avatar",
     "changeAvatar": "Change Avatar",
     "profileUpdated": "Profile updated successfully",
-    "myAccount": "My Account"
+    "myAccount": "My Account",
+    "displayName": "Display Name",
+    "username": "Username",
+    "email": "Email Address",
+    "phoneNumber": "Phone Number",
+    "language": "Language",
+    "timeZone": "Time Zone",
+    "profileCompleteness": "Profile Completeness",
+    "missing": "Missing",
+    "preferences": "Preferences",
+    "security": "Security",
+    "accountInfo": "Account Information",
+    "activityInfo": "Activity Information",
+    "lastLogin": "Last Login",
+    "accountCreated": "Account Created",
+    "lastUpdated": "Last Updated",
+    "userId": "User ID",
+    "emailVerified": "Email Verified",
+    "verified": "Verified",
+    "notVerified": "Not Verified",
+    "verifiedAt": "Verified At",
+    "assignedRoles": "Assigned Roles",
+    "noRoles": "No roles assigned",
+    "roleInfo": "Your roles determine what actions you can perform in the system. Contact your administrator to request role changes.",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "updatePassword": "Update Password",
+    "passwordChanged": "Password changed successfully!",
+    "lastPasswordChange": "Last changed",
+    "never": "Never",
+    "notSet": "Not set",
+    "notProvided": "Not provided"
   },
   "language": {
     "selectLanguage": "Select Language",
@@ -87,5 +135,62 @@
   },
   "footer": {
     "version": "Warehouse Management System v1.0"
+  },
+  "users": {
+    "title": "Users",
+    "description": "Manage system users and their permissions",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "deleteUser": "Delete User",
+    "userList": "User List",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "role": "Role",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "lastActive": "Last Active",
+    "joinedDate": "Joined Date",
+    "userDetails": "User Details",
+    "deleteConfirm": "Are you sure you want to delete this user?",
+    "userCreated": "User created successfully",
+    "userUpdated": "User updated successfully",
+    "userDeleted": "User deleted successfully"
+  },
+  "pages": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}!",
+      "overview": "System Overview",
+      "quickActions": "Quick Actions",
+      "recentActivity": "Recent Activity",
+      "statistics": "Key Statistics",
+      "noActivity": "No recent activity"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "message": "The page you're looking for doesn't exist.",
+      "goHome": "Go to Dashboard"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "minLength": "Must be at least {min} characters",
+      "maxLength": "Must be less than {max} characters",
+      "passwordMismatch": "Passwords don't match",
+      "invalidPhone": "Please enter a valid phone number"
+    }
+  },
+  "messages": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "updating": "Updating...",
+    "success": "Operation completed successfully",
+    "error": "An error occurred",
+    "noDataFound": "No data found",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "unsavedChanges": "You have unsaved changes",
+    "sessionExpired": "Your session has expired. Please log in again."
   }
 }

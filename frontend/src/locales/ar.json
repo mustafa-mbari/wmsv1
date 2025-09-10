@@ -16,7 +16,22 @@
     "refresh": "تحديث",
     "back": "عودة",
     "next": "التالي",
-    "previous": "السابق"
+    "previous": "السابق",
+    "actions": "الإجراءات",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "name": "الاسم",
+    "description": "الوصف",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "noData": "لا توجد بيانات متاحة",
+    "confirm": "تأكيد",
+    "view": "عرض",
+    "add": "إضافة",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "remove": "إزالة"
   },
   "navigation": {
     "dashboard": "لوحة التحكم",
@@ -77,7 +92,40 @@
     "avatar": "الصورة الشخصية",
     "changeAvatar": "تغيير الصورة الشخصية",
     "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
-    "myAccount": "حسابي"
+    "myAccount": "حسابي",
+    "displayName": "اسم العرض",
+    "username": "اسم المستخدم",
+    "email": "عنوان البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "language": "اللغة",
+    "timeZone": "المنطقة الزمنية",
+    "profileCompleteness": "اكتمال الملف الشخصي",
+    "missing": "مفقود",
+    "preferences": "التفضيلات",
+    "security": "الأمان",
+    "accountInfo": "معلومات الحساب",
+    "activityInfo": "معلومات النشاط",
+    "lastLogin": "آخر تسجيل دخول",
+    "accountCreated": "تاريخ إنشاء الحساب",
+    "lastUpdated": "آخر تحديث",
+    "userId": "معرف المستخدم",
+    "emailVerified": "تم التحقق من البريد الإلكتروني",
+    "verified": "تم التحقق",
+    "notVerified": "لم يتم التحقق",
+    "verifiedAt": "تاريخ التحقق",
+    "assignedRoles": "الأدوار المعينة",
+    "noRoles": "لا توجد أدوار معينة",
+    "roleInfo": "تحدد أدوارك الإجراءات التي يمكنك تنفيذها في النظام. اتصل بالمشرف لطلب تغيير الأدوار.",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "updatePassword": "تحديث كلمة المرور",
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح!",
+    "lastPasswordChange": "آخر تغيير",
+    "never": "أبداً",
+    "notSet": "غير محدد",
+    "notProvided": "غير متوفر"
   },
   "language": {
     "selectLanguage": "اختر اللغة",
@@ -87,5 +135,62 @@
   },
   "footer": {
     "version": "نظام إدارة المستودعات ﺩ1.0"
+  },
+  "users": {
+    "title": "المستخدمون",
+    "description": "إدارة مستخدمي النظام وصلاحياتهم",
+    "createUser": "إنشاء مستخدم",
+    "editUser": "تحرير المستخدم",
+    "deleteUser": "حذف المستخدم",
+    "userList": "قائمة المستخدمين",
+    "totalUsers": "إجمالي المستخدمين",
+    "activeUsers": "المستخدمون النشطون",
+    "role": "الدور",
+    "roles": "الأدوار",
+    "permissions": "الصلاحيات",
+    "lastActive": "آخر نشاط",
+    "joinedDate": "تاريخ الانضمام",
+    "userDetails": "تفاصيل المستخدم",
+    "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذا المستخدم؟",
+    "userCreated": "تم إنشاء المستخدم بنجاح",
+    "userUpdated": "تم تحديث المستخدم بنجاح",
+    "userDeleted": "تم حذف المستخدم بنجاح"
+  },
+  "pages": {
+    "dashboard": {
+      "welcome": "مرحباً بك، {{name}}!",
+      "overview": "نظرة عامة على النظام",
+      "quickActions": "الإجراءات السريعة",
+      "recentActivity": "النشاط الأخير",
+      "statistics": "الإحصائيات الرئيسية",
+      "noActivity": "لا يوجد نشاط حديث"
+    },
+    "notFound": {
+      "title": "الصفحة غير موجودة",
+      "message": "الصفحة التي تبحث عنها غير موجودة.",
+      "goHome": "الذهاب إلى لوحة التحكم"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "هذا الحقل مطلوب",
+      "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+      "minLength": "يجب أن يكون على الأقل {min} أحرف",
+      "maxLength": "يجب أن يكون أقل من {max} أحرف",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "invalidPhone": "يرجى إدخال رقم هاتف صحيح"
+    }
+  },
+  "messages": {
+    "loading": "جاري التحميل...",
+    "saving": "جاري الحفظ...",
+    "deleting": "جاري الحذف...",
+    "updating": "جاري التحديث...",
+    "success": "تمت العملية بنجاح",
+    "error": "حدث خطأ",
+    "noDataFound": "لم يتم العثور على بيانات",
+    "confirmDelete": "هل أنت متأكد من أنك تريد حذف هذا العنصر؟",
+    "unsavedChanges": "لديك تغييرات غير محفوظة",
+    "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى."
   }
 }

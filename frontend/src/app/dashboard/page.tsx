@@ -4,31 +4,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Users, Package, Warehouse } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
+import { useIntl } from "react-intl";
+import { useAuth } from "@/components/providers/auth-provider";
 
-const stats = [
+const getStats = (intl: any) => [
   {
-    name: "Total Products",
+    name: intl.formatMessage({ id: 'dashboard.stats.totalProducts', defaultMessage: 'Total Products' }),
     value: "2,847",
     change: "+12%",
     changeType: "positive",
     icon: Package,
   },
   {
-    name: "Active Users", 
+    name: intl.formatMessage({ id: 'dashboard.stats.activeUsers', defaultMessage: 'Active Users' }), 
     value: "127",
     change: "+5%",
     changeType: "positive",
     icon: Users,
   },
   {
-    name: "Warehouses",
+    name: intl.formatMessage({ id: 'dashboard.stats.warehouses', defaultMessage: 'Warehouses' }),
     value: "8",
     change: "0%",
     changeType: "neutral",
     icon: Warehouse,
   },
   {
-    name: "Inventory Value",
+    name: intl.formatMessage({ id: 'dashboard.stats.inventoryValue', defaultMessage: 'Inventory Value' }),
     value: "$84,293",
     change: "+18%", 
     changeType: "positive",
@@ -37,11 +39,17 @@ const stats = [
 ];
 
 export default function DashboardPage() {
+  const intl = useIntl();
+  const { user } = useAuth();
+  const stats = getStats(intl);
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Dashboard"
-        description="Welcome to your warehouse management system"
+        title={intl.formatMessage({ id: 'navigation.dashboard' })}
+        description={intl.formatMessage(
+          { id: 'pages.dashboard.welcome' }, 
+          { name: user?.name || user?.username || 'User' }
+        )}
       />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -66,7 +74,7 @@ export default function DashboardPage() {
                   {stat.change}
                 </Badge>
                 <p className="text-xs text-muted-foreground ml-2">
-                  from last month
+                  {intl.formatMessage({ id: 'dashboard.fromLastMonth', defaultMessage: 'from last month' })}
                 </p>
               </div>
             </CardContent>
@@ -77,37 +85,37 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>{intl.formatMessage({ id: 'pages.dashboard.recentActivity' })}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center">
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    New product added: "Wireless Headphones"
+                    {intl.formatMessage({ id: 'dashboard.activity.newProduct', defaultMessage: 'New product added: "Wireless Headphones"' })}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Added by John Doe • 2 hours ago
+                    {intl.formatMessage({ id: 'dashboard.activity.addedBy', defaultMessage: 'Added by John Doe • 2 hours ago' })}
                   </p>
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    Inventory adjustment: Warehouse A
+                    {intl.formatMessage({ id: 'dashboard.activity.inventoryAdjustment', defaultMessage: 'Inventory adjustment: Warehouse A' })}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Adjusted by Sarah Smith • 4 hours ago
+                    {intl.formatMessage({ id: 'dashboard.activity.adjustedBy', defaultMessage: 'Adjusted by Sarah Smith • 4 hours ago' })}
                   </p>
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    New user registered: Mike Johnson
+                    {intl.formatMessage({ id: 'dashboard.activity.newUser', defaultMessage: 'New user registered: Mike Johnson' })}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Registered • 6 hours ago
+                    {intl.formatMessage({ id: 'dashboard.activity.registered', defaultMessage: 'Registered • 6 hours ago' })}
                   </p>
                 </div>
               </div>
@@ -116,18 +124,18 @@ export default function DashboardPage() {
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>{intl.formatMessage({ id: 'pages.dashboard.quickActions' })}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Add New Product
+                {intl.formatMessage({ id: 'dashboard.actions.addProduct', defaultMessage: 'Add New Product' })}
               </button>
               <button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Inventory Adjustment
+                {intl.formatMessage({ id: 'dashboard.actions.inventoryAdjustment', defaultMessage: 'Inventory Adjustment' })}
               </button>
               <button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Generate Report
+                {intl.formatMessage({ id: 'dashboard.actions.generateReport', defaultMessage: 'Generate Report' })}
               </button>
             </div>
           </CardContent>
