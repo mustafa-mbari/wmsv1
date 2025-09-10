@@ -42,13 +42,21 @@ export default function DashboardPage() {
   const intl = useIntl();
   const { user } = useAuth();
   const stats = getStats(intl);
+  
+  const getUserDisplayName = () => {
+    if (user?.name) return user.name;
+    if (user?.first_name || user?.last_name) {
+      return `${user.first_name || ''} ${user.last_name || ''}`.trim();
+    }
+    return user?.username || 'User';
+  };
   return (
     <div className="space-y-6">
       <PageHeader 
         title={intl.formatMessage({ id: 'navigation.dashboard' })}
         description={intl.formatMessage(
-          { id: 'pages.dashboard.welcome' }, 
-          { name: user?.name || user?.username || 'User' }
+          { id: 'pages.dashboard.welcome', defaultMessage: 'Welcome back, {name}!' }, 
+          { name: getUserDisplayName() }
         )}
       />
 

@@ -16,7 +16,8 @@ import {
   LogOut,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Palette
 } from "lucide-react";
 import {
   Sidebar,
@@ -90,6 +91,7 @@ const getNavigation = (intl: any) => [
   },
   { name: intl.formatMessage({ id: 'navigation.warehouses' }), href: "/dashboard/warehouses", icon: Warehouse },
   { name: intl.formatMessage({ id: 'navigation.users' }), href: "/dashboard/users", icon: Users },
+  { name: intl.formatMessage({ id: 'navigation.uiShowcase' }), href: "/dashboard/ui-showcase", icon: Palette },
   { name: intl.formatMessage({ id: 'navigation.settings' }), href: "/dashboard/settings", icon: Settings },
 ];
 
@@ -305,25 +307,34 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-muted/30">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-muted/30">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="h-4 w-px bg-sidebar-border" />
-            <h1 className="text-lg font-semibold">{intl.formatMessage({ id: 'dashboard.warehouseManagementSystem' })}</h1>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-sm sticky top-0 z-50">
+          <div className="flex items-center gap-3 px-6">
+            <SidebarTrigger className="-ml-1 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors" />
+            <div className="h-5 w-px bg-border/60" />
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+              <h1 className="text-lg font-semibold text-foreground/90">{intl.formatMessage({ id: 'dashboard.warehouseManagementSystem' })}</h1>
+            </div>
           </div>
-          <div className="ml-auto flex items-center gap-2 px-4">
+          <div className="ml-auto flex items-center gap-3 px-6">
             {/* Notifications */}
-            <Button variant="ghost" size="icon">
-              <Bell className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="relative hover:bg-accent hover:text-accent-foreground transition-colors">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 rounded-full text-[11px] text-white flex items-center justify-center font-medium">
+                3
+              </span>
             </Button>
             
             {/* Language Switcher */}
-            <LanguageSwitcher />
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
             
             {/* Theme Toggle */}
             <Button 
               variant="ghost" 
               size="icon"
+              className="hover:bg-accent hover:text-accent-foreground transition-colors"
               onClick={handleThemeToggle}
               title={`Switch to ${displayTheme === "dark" ? "light" : "dark"} mode`}
             >
@@ -331,12 +342,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
             
             {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <UserAvatar user={user} size="md" />
-                </Button>
-              </DropdownMenuTrigger>
+            <div className="border-l border-border/40 pl-3 ml-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors ring-2 ring-transparent hover:ring-border/20">
+                    <UserAvatar user={user} size="md" />
+                  </Button>
+                </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-2">
@@ -389,10 +401,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <span>{intl.formatMessage({ id: 'navigation.logout' })}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </div>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-24 pt-0 bg-muted/30">
+        <div className="flex flex-1 flex-col gap-4 p-24 pt-8 bg-muted/30">
           {children}
         </div>
       </SidebarInset>
