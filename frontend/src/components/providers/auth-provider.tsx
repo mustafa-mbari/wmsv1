@@ -11,6 +11,7 @@ interface User {
   first_name?: string;
   last_name?: string;
   role_names?: string[];
+  profilePicture?: string;
 }
 
 interface AuthContextType {
@@ -18,6 +19,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (data: any) => Promise<void>;
+  refreshUser: () => Promise<void>;
   isLoading: boolean;
   hasRole: (role: string) => boolean;
   isAdmin: () => boolean;
@@ -127,11 +129,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return hasRole("super-admin");
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await apiClient.get("/api/auth/me");
+      const { data: { user: userData } } = response.data;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    }
+  };
+
   const value = {
     user,
     login,
     logout,
     register,
+    refreshUser,
     isLoading,
     hasRole,
     isAdmin,

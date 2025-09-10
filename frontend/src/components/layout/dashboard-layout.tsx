@@ -50,7 +50,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -334,6 +334,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
+                    <AvatarImage 
+                      src={user?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${user.profilePicture}` : undefined}
+                      alt={getUserDisplayName(user)} 
+                    />
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {getUserInitials(user)}
                     </AvatarFallback>

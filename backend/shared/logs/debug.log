@@ -1,8 +1,0 @@
-2025-08-24T18:48:41.784Z [INFO] [server-simple::POST /api/users]: ✅ Connected to PostgreSQL database
-2025-08-24T18:50:13.819Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T18:54:36.365Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T18:55:41.203Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T18:57:20.551Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T18:58:23.270Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T19:02:15.984Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database
-2025-08-24T19:04:20.778Z [INFO] [server.js::app.listen]: ✅ Connected to PostgreSQL database

@@ -133,7 +133,7 @@ const commonTimeZones = [
 ];
 
 export default function ProfilePage() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, refreshUser } = useAuth();
   const { toast } = useToast();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -180,7 +180,7 @@ export default function ProfilePage() {
   // Debug log for image URL
   useEffect(() => {
     if (profileData?.profilePicture) {
-      console.log('Profile picture URL:', `http://localhost:8000${profileData.profilePicture}`);
+      console.log('Profile picture URL:', `${process.env.NEXT_PUBLIC_API_URL}${profileData.profilePicture}`);
     }
   }, [profileData]);
 
@@ -356,6 +356,7 @@ export default function ProfilePage() {
       }
       
       await fetchUserProfile();
+      await refreshUser(); // Refresh user data in auth provider
       setProfilePicturePreview(null);
       toast({
         title: "Success",
@@ -510,7 +511,7 @@ export default function ProfilePage() {
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarImage 
-                  src={profilePicturePreview || (profileData?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${profileData.profilePicture}` : undefined)} 
+                  src={profilePicturePreview || (profileData?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL}${profileData.profilePicture}` : undefined)} 
                   alt={profileData?.name || 'Profile'} 
                 />
                 <AvatarFallback className="text-2xl">
