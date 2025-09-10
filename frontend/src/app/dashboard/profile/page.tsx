@@ -346,7 +346,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
+      <div className="space-y-6 px-12 py-6 bg-muted/30 min-h-screen -m-6">
         <div className="space-y-2">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-4 w-96" />
@@ -374,7 +374,7 @@ export default function ProfilePage() {
 
   if (!profileData) {
     return (
-      <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
+      <div className="space-y-6 px-12 py-6 bg-muted/30 min-h-screen -m-6">
         <Card className="border-red-200 dark:border-red-800">
           <CardHeader>
             <CardTitle>{intl.formatMessage({ id: 'profile.title' })} {intl.formatMessage({ id: 'pages.notFound.title' })}</CardTitle>
@@ -388,7 +388,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-muted/30 min-h-screen -m-6">
+    <div className="space-y-6 px-12 py-6 bg-muted/30 min-h-screen -m-6">
       <PageHeader 
         title={intl.formatMessage({ id: 'profile.title' })}
         description={intl.formatMessage({ id: 'profile.description', defaultMessage: 'Manage your account information and preferences' })}
