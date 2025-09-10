@@ -104,8 +104,8 @@ router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Respo
   }
 });
 
-// GET /api/users/:id
-router.get('/:id', async (req: Request, res: Response) => {
+// GET /api/users/:id - Require admin access
+router.get('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     logger.info('Fetching user by ID from database', { 
@@ -185,8 +185,8 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/users (Create new user)
-router.post('/', async (req: Request, res: Response) => {
+// POST /api/users (Create new user) - Admin only
+router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { 
       username, 
@@ -304,8 +304,8 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-// PUT /api/users/:id (Update user)
-router.put('/:id', async (req: Request, res: Response) => {
+// PUT /api/users/:id (Update user) - Admin only
+router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { 
@@ -457,8 +457,8 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 
-// DELETE /api/users/:id (Hard delete user - permanently remove from database)
-router.delete('/:id', async (req: Request, res: Response) => {
+// DELETE /api/users/:id (Hard delete user - permanently remove from database) - Super admin only
+router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -524,8 +524,8 @@ router.delete('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/users/:id/avatar (Upload avatar)
-router.post('/:id/avatar', avatarUpload.single('avatar') as any, async (req: Request, res: Response) => {
+// POST /api/users/:id/avatar (Upload avatar) - Admin only
+router.post('/:id/avatar', authenticateToken, requireAdmin, avatarUpload.single('avatar') as any, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -603,8 +603,8 @@ router.post('/:id/avatar', avatarUpload.single('avatar') as any, async (req: Req
   }
 });
 
-// PUT /api/users/:id/password (Change password)
-router.put('/:id/password', async (req: Request, res: Response) => {
+// PUT /api/users/:id/password (Change password) - Admin only
+router.put('/:id/password', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { currentPassword, password } = req.body;
