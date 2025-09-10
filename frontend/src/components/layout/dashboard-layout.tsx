@@ -52,16 +52,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { Badge } from "@/components/ui/badge";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useIntl } from "react-intl";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
+const getNavigation = (intl: any) => [
+  { name: intl.formatMessage({ id: 'navigation.dashboard' }), href: "/dashboard", icon: Home },
   { 
     name: "Products", 
     href: "/dashboard/products", 
@@ -88,16 +90,18 @@ const navigation = [
   },
   { name: "Warehouses", href: "/dashboard/warehouses", icon: Warehouse },
   { name: "Users", href: "/dashboard/users", icon: Users },
-  { name: "System", href: "/dashboard/settings", icon: Settings },
+  { name: intl.formatMessage({ id: 'navigation.settings' }), href: "/dashboard/settings", icon: Settings },
 ];
 
 function AppSidebar() {
   const pathname = usePathname();
   const [manuallyOpenMenus, setManuallyOpenMenus] = useState<string[]>([]);
   const { isSuperAdmin, isAdmin, hasRole } = useAuth();
+  const intl = useIntl();
 
   // Filter menu items based on user permissions
   const getFilteredMenuItems = () => {
+    const navigation = getNavigation(intl);
     return navigation.filter((item: any) => {
       // Users page - only accessible to Super Admin, Admin, and Manager
       if (item.href === "/users") {
@@ -255,6 +259,7 @@ function AppSidebar() {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const intl = useIntl();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -312,6 +317,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Bell className="h-4 w-4" />
             </Button>
             
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {/* Theme Toggle */}
             <Button 
               variant="ghost" 
@@ -366,19 +374,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/profile">
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span>{intl.formatMessage({ id: 'navigation.profile' })}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/settings">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span>{intl.formatMessage({ id: 'navigation.settings' })}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign Out</span>
+                  <span>{intl.formatMessage({ id: 'navigation.logout' })}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

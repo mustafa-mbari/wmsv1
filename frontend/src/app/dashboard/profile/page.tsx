@@ -48,6 +48,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
+import { useIntl } from "react-intl";
 
 interface UserProfileData {
   id: number;
@@ -135,6 +136,7 @@ const commonTimeZones = [
 export default function ProfilePage() {
   const { user: currentUser, refreshUser } = useAuth();
   const { toast } = useToast();
+  const intl = useIntl();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -384,7 +386,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="My Profile"
+        title={intl.formatMessage({ id: 'profile.title' })}
         description="Manage your account information and preferences"
         actions={
           <div className="flex space-x-2">
