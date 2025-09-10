@@ -9,6 +9,9 @@ shared/dist/
 # Ignore shared log files
 shared/logs/
 
+# Ignore backend log files
+backend/logs/*.log
+
 # Ignore backend environment file
 backend/.env
 
@@ -20,3 +23,7 @@ backend/uploads/
 
 # Ignore frontend project directories
 frontendProjectTwo/
+
+# Ignore TypeScript build info files
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
