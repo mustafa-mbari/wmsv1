@@ -433,7 +433,7 @@ export default function ProfilePage() {
       )}
       
       {/* Profile Header Section */}
-      <Card className="bg-muted/20">
+      <Card className="bg-muted/50">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <AvatarUpload 
@@ -481,8 +481,8 @@ export default function ProfilePage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Personal Information */}
-        <Card>
-          <CardHeader className="bg-muted/50">
+        <Card className="bg-muted/70">
+          <CardHeader>
             <CardTitle className="flex items-center">
               <User className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.personalInfo' })}
@@ -579,8 +579,8 @@ export default function ProfilePage() {
         </Card>
 
         {/* Preferences */}
-        <Card>
-          <CardHeader className="bg-muted/50">
+        <Card className="bg-muted/70">
+          <CardHeader>
             <CardTitle className="flex items-center">
               <Globe className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.preferences' })}
@@ -660,8 +660,8 @@ export default function ProfilePage() {
         </Card>
 
         {/* Security Section */}
-        <Card>
-          <CardHeader className="bg-muted/50">
+        <Card className="bg-muted/70">
+          <CardHeader>
             <CardTitle className="flex items-center">
               <Lock className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.security' })}
@@ -833,8 +833,8 @@ export default function ProfilePage() {
         </Card>
 
         {/* Account Information */}
-        <Card>
-          <CardHeader className="bg-muted/50">
+        <Card className="bg-muted/70">
+          <CardHeader>
             <CardTitle className="flex items-center">
               <Shield className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.accountInfo' })}
@@ -891,8 +891,8 @@ export default function ProfilePage() {
         </Card>
         
         {/* Activity Information */}
-        <Card>
-          <CardHeader className="bg-muted/50">
+        <Card className="bg-muted/70">
+          <CardHeader>
             <CardTitle className="flex items-center">
               <Clock className="mr-2 h-5 w-5" />
               {intl.formatMessage({ id: 'profile.activityInfo' })}
