@@ -83,3 +83,59 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Settings-related styles */
+@layer components {
+  /* Compact mode styles */
+  .compact-mode .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+  
+  .compact-mode .space-y-4 > * + * {
+    margin-top: 0.75rem !important;
+  }
+  
+  .compact-mode .p-6 {
+    padding: 1rem !important;
+  }
+  
+  .compact-mode .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  .compact-mode .h-16 {
+    height: 3rem !important;
+  }
+
+  /* No animations */
+  .no-animations *,
+  .no-animations *::before,
+  .no-animations *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Font size overrides */
+  html[style*="font-size: 14px"] {
+    font-size: 14px !important;
+  }
+  
+  html[style*="font-size: 16px"] {
+    font-size: 16px !important;
+  }
+  
+  html[style*="font-size: 18px"] {
+    font-size: 18px !important;
+  }
+
+  /* Settings page specific styles */
+  .settings-section {
+    @apply space-y-6;
+  }
+  
+  .settings-card {
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm;
+  }
+}

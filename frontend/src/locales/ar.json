@@ -245,5 +245,149 @@
     "confirmDelete": "هل أنت متأكد من أنك تريد حذف هذا العنصر؟",
     "unsavedChanges": "لديك تغييرات غير محفوظة",
     "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى."
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "description": "خصص تجربتك وتفضيلاتك",
+    "sections": {
+      "appearance": "المظهر",
+      "language": "اللغة والمنطقة",
+      "notifications": "الإشعارات",
+      "privacy": "الخصوصية والأمان",
+      "account": "الحساب",
+      "advanced": "متقدم"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "description": "خصص شكل ومظهر واجهتك",
+      "theme": "المظهر",
+      "themeOptions": {
+        "light": "فاتح",
+        "dark": "داكن",
+        "system": "تتبع النظام"
+      },
+      "accentColor": "لون التمييز",
+      "accentColors": {
+        "default": "افتراضي",
+        "blue": "أزرق",
+        "green": "أخضر",
+        "purple": "بنفسجي",
+        "red": "أحمر",
+        "orange": "برتقالي",
+        "pink": "وردي"
+      },
+      "fontSize": "حجم الخط",
+      "fontSizeOptions": {
+        "small": "صغير",
+        "medium": "متوسط",
+        "large": "كبير"
+      },
+      "compactMode": "الوضع المضغوط",
+      "compactModeDescription": "تقليل المسافات لعرض محتوى أكثر على الشاشة",
+      "animations": "الرسوم المتحركة",
+      "animationsDescription": "تمكين الانتقالات السلسة والرسوم المتحركة"
+    },
+    "language": {
+      "title": "اللغة والمنطقة",
+      "description": "اضبط تفضيلات اللغة والمنطقة",
+      "language": "لغة الواجهة",
+      "languageDescription": "اختر لغتك المفضلة للواجهة",
+      "dateFormat": "تنسيق التاريخ",
+      "timeFormat": "تنسيق الوقت",
+      "timeFormatOptions": {
+        "12hour": "12 ساعة (ص/م)",
+        "24hour": "24 ساعة"
+      },
+      "timezone": "المنطقة الزمنية",
+      "timezoneDescription": "اختر المنطقة الزمنية المحلية",
+      "numberFormat": "تنسيق الأرقام",
+      "currency": "العملة",
+      "rtlSupport": "دعم من اليمين إلى اليسار"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "description": "إدارة تفضيلات الإشعارات",
+      "emailNotifications": "إشعارات البريد الإلكتروني",
+      "pushNotifications": "الإشعارات الفورية",
+      "systemAlerts": "تنبيهات النظام",
+      "systemAlertsDescription": "تحديثات النظام المهمة والتنبيهات",
+      "inventoryAlerts": "تنبيهات المخزون",
+      "inventoryAlertsDescription": "تحذيرات النفاد والمخزون",
+      "orderUpdates": "تحديثات الطلبات",
+      "orderUpdatesDescription": "إشعارات حول تغييرات حالة الطلبات",
+      "securityAlerts": "تنبيهات الأمان",
+      "securityAlertsDescription": "محاولات تسجيل الدخول وأحداث الأمان",
+      "marketing": "الاتصالات التسويقية",
+      "marketingDescription": "تحديثات المنتجات والمحتوى الترويجي",
+      "frequency": "تكرار الإشعارات",
+      "frequencyOptions": {
+        "immediate": "فوري",
+        "daily": "ملخص يومي",
+        "weekly": "ملخص أسبوعي",
+        "never": "أبداً"
+      }
+    },
+    "privacy": {
+      "title": "الخصوصية والأمان",
+      "description": "تحكم في إعدادات الخصوصية والأمان",
+      "profileVisibility": "رؤية الملف الشخصي",
+      "profileVisibilityOptions": {
+        "public": "عام",
+        "private": "خاص",
+        "team": "أعضاء الفريق فقط"
+      },
+      "dataSharing": "مشاركة البيانات",
+      "analyticsTracking": "تتبع التحليلات",
+      "analyticsTrackingDescription": "ساعد في تحسين خدمتنا عبر مشاركة بيانات الاستخدام",
+      "sessionTimeout": "انتهاء مهلة الجلسة",
+      "sessionTimeoutDescription": "تسجيل الخروج التلقائي بعد فترة عدم النشاط",
+      "timeoutOptions": {
+        "15min": "15 دقيقة",
+        "30min": "30 دقيقة",
+        "1hour": "ساعة واحدة",
+        "4hours": "4 ساعات",
+        "never": "أبداً"
+      },
+      "twoFactorAuth": "المصادقة الثنائية",
+      "twoFactorAuthDescription": "أضف أماناً إضافياً لحسابك",
+      "loginHistory": "تاريخ تسجيل الدخول",
+      "downloadData": "تحميل بياناتي",
+      "deleteAccount": "حذف الحساب"
+    },
+    "advanced": {
+      "title": "متقدم",
+      "description": "خيارات التكوين المتقدمة",
+      "debugMode": "وضع التصحيح",
+      "debugModeDescription": "إظهار معلومات إضافية لاستكشاف الأخطاء وإصلاحها",
+      "apiSettings": "إعدادات API",
+      "experimentalFeatures": "الميزات التجريبية",
+      "experimentalFeaturesDescription": "تمكين الميزات قيد التطوير",
+      "resetSettings": "إعادة تعيين للافتراضي",
+      "resetSettingsDescription": "إعادة تعيين جميع الإعدادات لقيمها الافتراضية",
+      "exportSettings": "تصدير الإعدادات",
+      "importSettings": "استيراد الإعدادات",
+      "clearCache": "مسح التخزين المؤقت",
+      "clearCacheDescription": "مسح البيانات المحفوظة لتحرير مساحة"
+    },
+    "actions": {
+      "save": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "reset": "إعادة تعيين",
+      "apply": "تطبيق",
+      "export": "تصدير",
+      "import": "استيراد",
+      "clear": "مسح"
+    },
+    "messages": {
+      "settingsSaved": "تم حفظ الإعدادات بنجاح!",
+      "settingsReset": "تم إعادة تعيين الإعدادات للافتراضي",
+      "exportSuccess": "تم تصدير الإعدادات بنجاح",
+      "importSuccess": "تم استيراد الإعدادات بنجاح",
+      "cacheCleared": "تم مسح التخزين المؤقت بنجاح",
+      "unsavedChanges": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟",
+      "confirmReset": "هل أنت متأكد من أنك تريد إعادة تعيين جميع الإعدادات؟ لا يمكن التراجع عن هذا الإجراء.",
+      "confirmDeleteAccount": "هل أنت متأكد من أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+      "requiresRestart": "سيصبح هذا التغيير ساري المفعول بعد إعادة تشغيل التطبيق."
+    }
   }
 }

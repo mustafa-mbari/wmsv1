@@ -246,5 +246,149 @@
     "confirmDelete": "Are you sure you want to delete this item?",
     "unsavedChanges": "You have unsaved changes",
     "sessionExpired": "Your session has expired. Please log in again."
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Customize your experience and preferences",
+    "sections": {
+      "appearance": "Appearance",
+      "language": "Language & Region",
+      "notifications": "Notifications",
+      "privacy": "Privacy & Security",
+      "account": "Account",
+      "advanced": "Advanced"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the look and feel of your interface",
+      "theme": "Theme",
+      "themeOptions": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "Follow System"
+      },
+      "accentColor": "Accent Color",
+      "accentColors": {
+        "default": "Default",
+        "blue": "Blue",
+        "green": "Green",
+        "purple": "Purple",
+        "red": "Red",
+        "orange": "Orange",
+        "pink": "Pink"
+      },
+      "fontSize": "Font Size",
+      "fontSizeOptions": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      },
+      "compactMode": "Compact Mode",
+      "compactModeDescription": "Reduce spacing for more content on screen",
+      "animations": "Animations",
+      "animationsDescription": "Enable smooth transitions and animations"
+    },
+    "language": {
+      "title": "Language & Region",
+      "description": "Configure your language and regional preferences",
+      "language": "Interface Language",
+      "languageDescription": "Choose your preferred language for the interface",
+      "dateFormat": "Date Format",
+      "timeFormat": "Time Format",
+      "timeFormatOptions": {
+        "12hour": "12-hour (AM/PM)",
+        "24hour": "24-hour"
+      },
+      "timezone": "Timezone",
+      "timezoneDescription": "Select your local timezone",
+      "numberFormat": "Number Format",
+      "currency": "Currency",
+      "rtlSupport": "Right-to-left Support"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage your notification preferences",
+      "emailNotifications": "Email Notifications",
+      "pushNotifications": "Push Notifications",
+      "systemAlerts": "System Alerts",
+      "systemAlertsDescription": "Important system updates and alerts",
+      "inventoryAlerts": "Inventory Alerts",
+      "inventoryAlertsDescription": "Low stock and inventory warnings",
+      "orderUpdates": "Order Updates",
+      "orderUpdatesDescription": "Notifications about order status changes",
+      "securityAlerts": "Security Alerts",
+      "securityAlertsDescription": "Login attempts and security events",
+      "marketing": "Marketing Communications",
+      "marketingDescription": "Product updates and promotional content",
+      "frequency": "Notification Frequency",
+      "frequencyOptions": {
+        "immediate": "Immediate",
+        "daily": "Daily Digest",
+        "weekly": "Weekly Summary",
+        "never": "Never"
+      }
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "description": "Control your privacy and security settings",
+      "profileVisibility": "Profile Visibility",
+      "profileVisibilityOptions": {
+        "public": "Public",
+        "private": "Private",
+        "team": "Team Members Only"
+      },
+      "dataSharing": "Data Sharing",
+      "analyticsTracking": "Analytics Tracking",
+      "analyticsTrackingDescription": "Help improve our service by sharing usage data",
+      "sessionTimeout": "Session Timeout",
+      "sessionTimeoutDescription": "Automatically log out after period of inactivity",
+      "timeoutOptions": {
+        "15min": "15 minutes",
+        "30min": "30 minutes",
+        "1hour": "1 hour",
+        "4hours": "4 hours",
+        "never": "Never"
+      },
+      "twoFactorAuth": "Two-Factor Authentication",
+      "twoFactorAuthDescription": "Add extra security to your account",
+      "loginHistory": "Login History",
+      "downloadData": "Download My Data",
+      "deleteAccount": "Delete Account"
+    },
+    "advanced": {
+      "title": "Advanced",
+      "description": "Advanced configuration options",
+      "debugMode": "Debug Mode",
+      "debugModeDescription": "Show additional information for troubleshooting",
+      "apiSettings": "API Settings",
+      "experimentalFeatures": "Experimental Features",
+      "experimentalFeaturesDescription": "Enable features that are in development",
+      "resetSettings": "Reset to Defaults",
+      "resetSettingsDescription": "Reset all settings to their default values",
+      "exportSettings": "Export Settings",
+      "importSettings": "Import Settings",
+      "clearCache": "Clear Cache",
+      "clearCacheDescription": "Clear stored data to free up space"
+    },
+    "actions": {
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "reset": "Reset",
+      "apply": "Apply",
+      "export": "Export",
+      "import": "Import",
+      "clear": "Clear"
+    },
+    "messages": {
+      "settingsSaved": "Settings saved successfully!",
+      "settingsReset": "Settings reset to defaults",
+      "exportSuccess": "Settings exported successfully",
+      "importSuccess": "Settings imported successfully",
+      "cacheCleared": "Cache cleared successfully",
+      "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+      "confirmReset": "Are you sure you want to reset all settings? This action cannot be undone.",
+      "confirmDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
+      "requiresRestart": "This change will take effect after restarting the application."
+    }
   }
 }

@@ -1,0 +1,214 @@
+'use client';
+
+import React from 'react';
+import { useIntl } from 'react-intl';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent } from '@/components/ui/card';
+import { useSettings } from '@/components/providers/settings-provider';
+import { Sun, Moon, Monitor, Palette } from 'lucide-react';
+
+export function AppearanceSection() {
+  const intl = useIntl();
+  const { settings, updateSetting } = useSettings();
+
+  const themeOptions = [
+    {
+      value: 'light' as const,
+      labelKey: 'settings.appearance.themeOptions.light',
+      icon: Sun,
+      description: 'Light theme for daytime use',
+    },
+    {
+      value: 'dark' as const,
+      labelKey: 'settings.appearance.themeOptions.dark',
+      icon: Moon,
+      description: 'Dark theme for low-light environments',
+    },
+    {
+      value: 'system' as const,
+      labelKey: 'settings.appearance.themeOptions.system',
+      icon: Monitor,
+      description: 'Follows your system preference',
+    },
+  ];
+
+  const accentColors = [
+    { value: 'default' as const, color: 'hsl(var(--primary))', labelKey: 'settings.appearance.accentColors.default' },
+    { value: 'blue' as const, color: '#3b82f6', labelKey: 'settings.appearance.accentColors.blue' },
+    { value: 'green' as const, color: '#10b981', labelKey: 'settings.appearance.accentColors.green' },
+    { value: 'purple' as const, color: '#8b5cf6', labelKey: 'settings.appearance.accentColors.purple' },
+    { value: 'red' as const, color: '#ef4444', labelKey: 'settings.appearance.accentColors.red' },
+    { value: 'orange' as const, color: '#f97316', labelKey: 'settings.appearance.accentColors.orange' },
+    { value: 'pink' as const, color: '#ec4899', labelKey: 'settings.appearance.accentColors.pink' },
+  ];
+
+  const fontSizeOptions = [
+    { value: 'small' as const, labelKey: 'settings.appearance.fontSizeOptions.small', size: '14px' },
+    { value: 'medium' as const, labelKey: 'settings.appearance.fontSizeOptions.medium', size: '16px' },
+    { value: 'large' as const, labelKey: 'settings.appearance.fontSizeOptions.large', size: '18px' },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Theme Selection */}
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-medium">
+            {intl.formatMessage({ id: 'settings.appearance.theme' })}
+          </Label>
+        </div>
+        <RadioGroup
+          value={settings.theme}
+          onValueChange={(value: 'light' | 'dark' | 'system') => updateSetting('theme', value)}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        >
+          {themeOptions.map((option) => {
+            const Icon = option.icon;
+            return (
+              <div key={option.value}>
+                <RadioGroupItem
+                  value={option.value}
+                  id={option.value}
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor={option.value}
+                  className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                >
+                  <Icon className="mb-3 h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">
+                      {intl.formatMessage({ id: option.labelKey })}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {option.description}
+                    </div>
+                  </div>
+                </Label>
+              </div>
+            );
+          })}
+        </RadioGroup>
+      </div>
+
+      {/* Accent Color */}
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-medium">
+            {intl.formatMessage({ id: 'settings.appearance.accentColor' })}
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Choose your preferred accent color for highlights and interactive elements
+          </p>
+        </div>
+        <div className="grid grid-cols-7 gap-3">
+          {accentColors.map((color) => (
+            <button
+              key={color.value}
+              onClick={() => updateSetting('accentColor', color.value)}
+              className={`
+                relative aspect-square rounded-lg border-2 transition-all hover:scale-110
+                ${settings.accentColor === color.value 
+                  ? 'border-foreground shadow-lg' 
+                  : 'border-muted-foreground/20 hover:border-muted-foreground/40'
+                }
+              `}
+              style={{ backgroundColor: color.color }}
+              title={intl.formatMessage({ id: color.labelKey })}
+            >
+              {settings.accentColor === color.value && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-4 w-4 rounded-full bg-white/90 flex items-center justify-center">
+                    <Palette className="h-2.5 w-2.5 text-black" />
+                  </div>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Font Size */}
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-medium">
+            {intl.formatMessage({ id: 'settings.appearance.fontSize' })}
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Adjust the default text size throughout the interface
+          </p>
+        </div>
+        <RadioGroup
+          value={settings.fontSize}
+          onValueChange={(value: 'small' | 'medium' | 'large') => updateSetting('fontSize', value)}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        >
+          {fontSizeOptions.map((option) => (
+            <div key={option.value}>
+              <RadioGroupItem
+                value={option.value}
+                id={`font-${option.value}`}
+                className="peer sr-only"
+              />
+              <Label
+                htmlFor={`font-${option.value}`}
+                className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+              >
+                <div style={{ fontSize: option.size }} className="font-medium mb-2">
+                  Aa
+                </div>
+                <div className="text-center">
+                  <div className="font-medium text-sm">
+                    {intl.formatMessage({ id: option.labelKey })}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {option.size}
+                  </div>
+                </div>
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      </div>
+
+      {/* Toggle Settings */}
+      <div className="space-y-6">
+        <Card className="p-6">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-base font-medium">
+                  {intl.formatMessage({ id: 'settings.appearance.compactMode' })}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {intl.formatMessage({ id: 'settings.appearance.compactModeDescription' })}
+                </p>
+              </div>
+              <Switch
+                checked={settings.compactMode}
+                onCheckedChange={(checked) => updateSetting('compactMode', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-base font-medium">
+                  {intl.formatMessage({ id: 'settings.appearance.animations' })}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {intl.formatMessage({ id: 'settings.appearance.animationsDescription' })}
+                </p>
+              </div>
+              <Switch
+                checked={settings.animations}
+                onCheckedChange={(checked) => updateSetting('animations', checked)}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}

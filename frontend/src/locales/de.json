@@ -245,5 +245,149 @@
     "confirmDelete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
     "unsavedChanges": "Sie haben ungespeicherte Änderungen",
     "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Passen Sie Ihre Erfahrungen und Präferenzen an",
+    "sections": {
+      "appearance": "Erscheinungsbild",
+      "language": "Sprache & Region",
+      "notifications": "Benachrichtigungen",
+      "privacy": "Datenschutz & Sicherheit",
+      "account": "Konto",
+      "advanced": "Erweitert"
+    },
+    "appearance": {
+      "title": "Erscheinungsbild",
+      "description": "Passen Sie das Aussehen Ihrer Benutzeroberfläche an",
+      "theme": "Design",
+      "themeOptions": {
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System folgen"
+      },
+      "accentColor": "Akzentfarbe",
+      "accentColors": {
+        "default": "Standard",
+        "blue": "Blau",
+        "green": "Grün",
+        "purple": "Lila",
+        "red": "Rot",
+        "orange": "Orange",
+        "pink": "Rosa"
+      },
+      "fontSize": "Schriftgröße",
+      "fontSizeOptions": {
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      },
+      "compactMode": "Kompaktmodus",
+      "compactModeDescription": "Abstände reduzieren für mehr Inhalt auf dem Bildschirm",
+      "animations": "Animationen",
+      "animationsDescription": "Sanfte Übergänge und Animationen aktivieren"
+    },
+    "language": {
+      "title": "Sprache & Region",
+      "description": "Konfigurieren Sie Ihre Sprach- und Regionspräferenzen",
+      "language": "Benutzersprache",
+      "languageDescription": "Wählen Sie Ihre bevorzugte Sprache für die Benutzeroberfläche",
+      "dateFormat": "Datumsformat",
+      "timeFormat": "Zeitformat",
+      "timeFormatOptions": {
+        "12hour": "12-Stunden (AM/PM)",
+        "24hour": "24-Stunden"
+      },
+      "timezone": "Zeitzone",
+      "timezoneDescription": "Wählen Sie Ihre lokale Zeitzone",
+      "numberFormat": "Zahlenformat",
+      "currency": "Währung",
+      "rtlSupport": "Rechts-nach-links-Unterstützung"
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "description": "Verwalten Sie Ihre Benachrichtigungseinstellungen",
+      "emailNotifications": "E-Mail-Benachrichtigungen",
+      "pushNotifications": "Push-Benachrichtigungen",
+      "systemAlerts": "Systemwarnungen",
+      "systemAlertsDescription": "Wichtige Systemupdates und Warnungen",
+      "inventoryAlerts": "Lagerwarnungen",
+      "inventoryAlertsDescription": "Niedrigbestand und Lagerwarnungen",
+      "orderUpdates": "Bestellaktualisierungen",
+      "orderUpdatesDescription": "Benachrichtigungen über Bestellstatusänderungen",
+      "securityAlerts": "Sicherheitswarnungen",
+      "securityAlertsDescription": "Anmeldeversuche und Sicherheitsereignisse",
+      "marketing": "Marketingkommunikation",
+      "marketingDescription": "Produktupdates und Werbeinhalte",
+      "frequency": "Benachrichtigungsfrequenz",
+      "frequencyOptions": {
+        "immediate": "Sofort",
+        "daily": "Tägliche Zusammenfassung",
+        "weekly": "Wöchentliche Zusammenfassung",
+        "never": "Nie"
+      }
+    },
+    "privacy": {
+      "title": "Datenschutz & Sicherheit",
+      "description": "Kontrollieren Sie Ihre Datenschutz- und Sicherheitseinstellungen",
+      "profileVisibility": "Profilsichtbarkeit",
+      "profileVisibilityOptions": {
+        "public": "Öffentlich",
+        "private": "Privat",
+        "team": "Nur Teammitglieder"
+      },
+      "dataSharing": "Datenaustausch",
+      "analyticsTracking": "Analytics-Tracking",
+      "analyticsTrackingDescription": "Helfen Sie uns, unseren Service zu verbessern, indem Sie Nutzungsdaten teilen",
+      "sessionTimeout": "Sitzungs-Timeout",
+      "sessionTimeoutDescription": "Automatisch abmelden nach Inaktivitätsperiode",
+      "timeoutOptions": {
+        "15min": "15 Minuten",
+        "30min": "30 Minuten",
+        "1hour": "1 Stunde",
+        "4hours": "4 Stunden",
+        "never": "Nie"
+      },
+      "twoFactorAuth": "Zwei-Faktor-Authentifizierung",
+      "twoFactorAuthDescription": "Zusätzliche Sicherheit für Ihr Konto hinzufügen",
+      "loginHistory": "Anmeldeverlauf",
+      "downloadData": "Meine Daten herunterladen",
+      "deleteAccount": "Konto löschen"
+    },
+    "advanced": {
+      "title": "Erweitert",
+      "description": "Erweiterte Konfigurationsoptionen",
+      "debugMode": "Debug-Modus",
+      "debugModeDescription": "Zusätzliche Informationen zur Fehlerbehebung anzeigen",
+      "apiSettings": "API-Einstellungen",
+      "experimentalFeatures": "Experimentelle Funktionen",
+      "experimentalFeaturesDescription": "Funktionen aktivieren, die in der Entwicklung sind",
+      "resetSettings": "Auf Standard zurücksetzen",
+      "resetSettingsDescription": "Alle Einstellungen auf ihre Standardwerte zurücksetzen",
+      "exportSettings": "Einstellungen exportieren",
+      "importSettings": "Einstellungen importieren",
+      "clearCache": "Cache leeren",
+      "clearCacheDescription": "Gespeicherte Daten löschen, um Speicherplatz freizugeben"
+    },
+    "actions": {
+      "save": "Änderungen speichern",
+      "cancel": "Abbrechen",
+      "reset": "Zurücksetzen",
+      "apply": "Anwenden",
+      "export": "Exportieren",
+      "import": "Importieren",
+      "clear": "Leeren"
+    },
+    "messages": {
+      "settingsSaved": "Einstellungen erfolgreich gespeichert!",
+      "settingsReset": "Einstellungen auf Standard zurückgesetzt",
+      "exportSuccess": "Einstellungen erfolgreich exportiert",
+      "importSuccess": "Einstellungen erfolgreich importiert",
+      "cacheCleared": "Cache erfolgreich geleert",
+      "unsavedChanges": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?",
+      "confirmReset": "Sind Sie sicher, dass Sie alle Einstellungen zurücksetzen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmDeleteAccount": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "requiresRestart": "Diese Änderung wird nach einem Neustart der Anwendung wirksam."
+    }
   }
 }
