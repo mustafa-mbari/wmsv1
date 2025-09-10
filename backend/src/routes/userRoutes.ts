@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
+import { authenticateToken, requireAdmin, requireSuperAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -46,8 +47,8 @@ const avatarUpload = multer({
   }
 });
 
-// GET /api/users
-router.get('/', async (req: Request, res: Response) => {
+// GET /api/users - Require admin access
+router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     logger.info('Fetching all users from database', { 
       source: 'userRoutes', 

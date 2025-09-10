@@ -511,12 +511,39 @@ export default function ProfilePage() {
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarImage 
-                  src={profilePicturePreview || (profileData?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL}${profileData.profilePicture}` : undefined)} 
-                  alt={profileData?.name || 'Profile'} 
+                  src={profilePicturePreview || (profileData?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${profileData.profilePicture}` : undefined)} 
+                  alt={profileData?.name || 'Profile'}
+                  onLoad={() => {
+                    console.log('Profile image loaded successfully:', profileData?.profilePicture);
+                  }}
+                  onError={(e) => {
+                    console.log('Profile image failed to load:', profileData?.profilePicture);
+                    console.log('Full URL attempted:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${profileData?.profilePicture}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
-                <AvatarFallback className="text-2xl">
-                  {profileData?.name?.split(' ').map(n => n[0]).join('') || 
-                   profileData?.username?.[0]?.toUpperCase() || 'U'}
+                <AvatarFallback className="text-2xl font-semibold bg-primary text-primary-foreground">
+                  {(() => {
+                    // Try to get initials from name first
+                    if (profileData?.name) {
+                      const nameParts = profileData.name.trim().split(' ');
+                      if (nameParts.length >= 2) {
+                        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+                      } else {
+                        return nameParts[0][0].toUpperCase();
+                      }
+                    }
+                    // Fallback to first and last name
+                    if (profileData?.first_name && profileData?.last_name) {
+                      return `${profileData.first_name[0]}${profileData.last_name[0]}`.toUpperCase();
+                    }
+                    // Fallback to username
+                    if (profileData?.username) {
+                      return profileData.username[0].toUpperCase();
+                    }
+                    // Final fallback
+                    return 'U';
+                  })()}
                 </AvatarFallback>
               </Avatar>
               

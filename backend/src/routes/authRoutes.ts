@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { LoginDto, createApiResponse, HttpStatus, validateEmail } from '../../../shared/dist'
+import { LoginDto, createApiResponse, HttpStatus, validateEmail } from '@my-app/shared'
 import logger from '../utils/logger/logger';
 import prisma from '../utils/prismaClient'; // Adjust the import based on your project structure
 import bcrypt from 'bcryptjs'; // or 'bcrypt' depending on your bcrypt version
+import { generateToken, authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -59,9 +60,17 @@ router.post('/login', async (req: Request, res: Response) => {
           .filter(ur => ur.roles.is_active && !ur.roles.deleted_at)
           .map(ur => ur.roles.slug);
         
+        // Generate JWT token
+        const token = generateToken({
+          id: user.id.toString(),
+          email: user.email,
+          username: user.username,
+          role_names: roleNames
+        });
+
         // Create clean user object for response
         const userResponse = {
-          id: user.id,
+          id: user.id.toString(),
           email: user.email,
           username: user.username,
           first_name: user.first_name,
@@ -72,106 +81,63 @@ router.post('/login', async (req: Request, res: Response) => {
           updated_at: user.updated_at
         };
         
-        logger.info('Login successful (database)', { source: 'authRoutes', method: 'login', email });
-        return res.json(createApiResponse(true, { user: userResponse }, 'Login successful'));
+        logger.info('Login successful', { source: 'authRoutes', method: 'login', email, userId: user.id.toString() });
+        return res.json(createApiResponse(true, { user: userResponse, token }, 'Login successful'));
       }
     }
   } catch (dbError) {
-    logger.warn('Database error, falling back to mock auth', { source: 'authRoutes', method: 'login', error: dbError instanceof Error ? dbError.message : String(dbError) });
+    logger.error('Database error during login', { source: 'authRoutes', method: 'login', error: dbError instanceof Error ? dbError.message : String(dbError) });
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(createApiResponse(false, null, 'Internal server error'));
   }
 
-  // Fallback to mock authentication if database fails or user not found
-  if (email === 'admin@example.com' && password === 'password123') {
-    validPassword = true;
-    user = {
-      id: 7,
-      email: 'admin@example.com',
-      username: 'superadmin',
-      first_name: 'Admin',
-      last_name: 'User',
-      is_active: true,
-      role_names: ['super-admin'],
-      created_at: new Date(),
-      updated_at: new Date()
-    };
-    
-    logger.info('Login successful (mock)', { source: 'authRoutes', method: 'login', email });
-    return res.json(createApiResponse(true, { user }, 'Login successful'));
-  }
+  // No fallback authentication - only use database users
 
   logger.warn('Login failed: invalid credentials', { source: 'authRoutes', method: 'login', email });
   res.status(HttpStatus.UNAUTHORIZED).json(createApiResponse(false, null, 'Invalid credentials'));
 });
 
-// GET /api/auth/me
-router.get('/me', async (req: Request, res: Response) => {
-  logger.info('Auth me request', { source: 'authRoutes', method: 'me' });
+// GET /api/auth/me - Get current authenticated user
+router.get('/me', authenticateToken, async (req: Request, res: Response) => {
+  logger.info('Auth me request', { source: 'authRoutes', method: 'me', userId: req.user?.id });
   
-  // For now, return the admin user since we don't have JWT validation yet
-  // In a real implementation, you'd validate the JWT token and get the user ID from it
   try {
     const user = await prisma.users.findUnique({ 
-      where: { email: 'admin@example.com' }
-    });
-
-    if (user) {
-      // Get user roles
-      const userRoles = await prisma.user_roles.findMany({
-        where: {
-          user_id: user.id,
-          deleted_at: null
-        },
-        include: {
-          roles: {
-            select: {
-              slug: true,
-              is_active: true,
-              deleted_at: true
-            }
+      where: { id: parseInt(req.user!.id) },
+      include: {
+        user_roles_user_roles_user_idTousers: {
+          include: {
+            roles: true
           }
         }
-      });
+      }
+    });
 
-      // Extract role names for the response (only active roles)
-      const roleNames = userRoles
-        .filter(ur => ur.roles.is_active && !ur.roles.deleted_at)
-        .map(ur => ur.roles.slug);
-      
-      // Create clean user object for response
-      const userResponse = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        is_active: user.is_active,
-        role_names: roleNames,
-        created_at: user.created_at,
-        updated_at: user.updated_at
-      };
-
-      logger.info('Auth me successful (database)', { source: 'authRoutes', method: 'me' });
-      return res.json(createApiResponse(true, { user: userResponse }, 'User retrieved successfully'));
+    if (!user) {
+      logger.warn('Auth me failed: user not found', { source: 'authRoutes', method: 'me', userId: req.user?.id });
+      return res.status(HttpStatus.NOT_FOUND).json(createApiResponse(false, null, 'User not found'));
     }
+
+    // Create clean user object for response with profile picture support
+    const userResponse = {
+      id: user.id.toString(),
+      email: user.email,
+      username: user.username,
+      name: `${user.first_name} ${user.last_name}`.trim(),
+      first_name: user.first_name,
+      last_name: user.last_name,
+      profilePicture: user.avatar_url,
+      is_active: user.is_active,
+      role_names: user.user_roles_user_roles_user_idTousers.map(ur => ur.roles.slug),
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    };
+
+    logger.info('Auth me successful', { source: 'authRoutes', method: 'me', userId: user.id.toString() });
+    return res.json(createApiResponse(true, { user: userResponse }, 'User retrieved successfully'));
   } catch (error: any) {
-    logger.warn('Auth me database error, using fallback', { source: 'authRoutes', method: 'me', error: error.message });
+    logger.error('Auth me database error', { source: 'authRoutes', method: 'me', error: error.message, userId: req.user?.id });
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(createApiResponse(false, null, 'Internal server error'));
   }
-
-  // Fallback mock user
-  const mockUser = {
-    id: 7,
-    email: 'admin@example.com',
-    username: 'superadmin',
-    first_name: 'Admin',
-    last_name: 'User',
-    is_active: true,
-    role_names: ['super-admin'],
-    created_at: new Date(),
-    updated_at: new Date()
-  };
-
-  logger.info('Auth me successful (mock)', { source: 'authRoutes', method: 'me' });
-  res.json(createApiResponse(true, { user: mockUser }, 'User retrieved successfully'));
 });
 
 // POST /api/auth/register
@@ -275,6 +241,14 @@ router.post('/register', async (req: Request, res: Response) => {
       }
     });
 
+    // Generate JWT token for the new user
+    const token = generateToken({
+      id: newUser.id.toString(),
+      email: newUser.email,
+      username: newUser.username,
+      role_names: [] // New users have no roles initially
+    });
+
     // Create clean user object for response (no password hash)
     const userResponse = {
       id: newUser.id.toString(),
@@ -296,7 +270,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
 
     res.status(HttpStatus.CREATED).json(
-      createApiResponse(true, { user: userResponse }, 'User registered successfully')
+      createApiResponse(true, { user: userResponse, token }, 'User registered successfully')
     );
   } catch (error) {
     logger.error('Error during user registration', {

@@ -276,16 +276,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const displayTheme = mounted ? theme : "light";
 
   const getUserInitials = (user: any) => {
+    // Try to get initials from display name first
+    if (user?.name) {
+      const nameParts = user.name.trim().split(' ');
+      if (nameParts.length >= 2) {
+        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+      } else {
+        return nameParts[0][0].toUpperCase();
+      }
+    }
+    // Fallback to first and last name
     if (user?.first_name && user?.last_name) {
       return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
     }
+    // Fallback to username (first character only for consistency)
     if (user?.username) {
-      return user.username.slice(0, 2).toUpperCase();
+      return user.username[0].toUpperCase();
     }
     return 'U';
   };
 
   const getUserDisplayName = (user: any) => {
+    if (user?.name) {
+      return user.name;
+    }
     if (user?.first_name && user?.last_name) {
       return `${user.first_name} ${user.last_name}`;
     }
@@ -336,9 +350,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Avatar className="h-8 w-8">
                     <AvatarImage 
                       src={user?.profilePicture ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${user.profilePicture}` : undefined}
-                      alt={getUserDisplayName(user)} 
+                      alt={getUserDisplayName(user)}
+                      onLoad={() => {
+                        console.log('Avatar image loaded successfully:', user?.profilePicture);
+                      }}
+                      onError={(e) => {
+                        console.log('Avatar image failed to load:', user?.profilePicture);
+                        console.log('Full URL attempted:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${user?.profilePicture}`);
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                       {getUserInitials(user)}
                     </AvatarFallback>
                   </Avatar>

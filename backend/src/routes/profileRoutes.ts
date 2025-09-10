@@ -6,36 +6,24 @@ import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// Middleware to extract user from auth (assuming auth middleware sets req.user)
-const getUserFromAuth = (req: Request): { id: number } | null => {
-  // For now, using mock user ID - this should be replaced with actual auth
-  // The auth middleware should set req.user after validating the JWT token
-  return { id: 1 }; // Mock user ID - replace with actual implementation
-};
-
 // GET /api/profile - Get current user profile
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(
-        createApiResponse(false, null, 'Unauthorized')
-      );
-    }
 
     logger.info('Fetching current user profile', { 
       source: 'profileRoutes', 
       method: 'getProfile',
-      userId: authUser.id.toString()
+      userId: req.user!.id.toString()
     });
     
     const user = await prisma.users.findUnique({
       where: { 
-        id: authUser.id
+        id: req.user!.id
       },
       include: {
         user_roles_user_roles_user_idTousers: {
@@ -50,7 +38,7 @@ router.get('/', async (req: Request, res: Response) => {
       logger.warn('Profile not found', { 
         source: 'profileRoutes', 
         method: 'getProfile',
-        userId: authUser.id.toString()
+        userId: req.user!.id.toString()
       });
       return res.status(HttpStatus.NOT_FOUND).json(
         createApiResponse(false, null, 'Profile not found')
@@ -83,7 +71,7 @@ router.get('/', async (req: Request, res: Response) => {
     logger.info('Profile retrieved successfully', { 
       source: 'profileRoutes', 
       method: 'getProfile',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       userEmail: profileData.email
     });
 
@@ -103,14 +91,8 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // PATCH /api/profile - Update current user profile
-router.patch('/', async (req: Request, res: Response) => {
+router.patch('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(
-        createApiResponse(false, null, 'Unauthorized')
-      );
-    }
 
     const { 
       name,
@@ -125,13 +107,13 @@ router.patch('/', async (req: Request, res: Response) => {
     logger.info('Updating user profile', { 
       source: 'profileRoutes', 
       method: 'updateProfile',
-      userId: authUser.id.toString()
+      userId: req.user!.id.toString()
     });
 
     // Check if user exists
     const existingUser = await prisma.users.findUnique({
       where: { 
-        id: authUser.id
+        id: req.user!.id
       }
     });
 
@@ -139,7 +121,7 @@ router.patch('/', async (req: Request, res: Response) => {
       logger.warn('Profile update failed: user not found', { 
         source: 'profileRoutes', 
         method: 'updateProfile',
-        userId: authUser.id.toString()
+        userId: req.user!.id.toString()
       });
       return res.status(HttpStatus.NOT_FOUND).json(
         createApiResponse(false, null, 'User not found')
@@ -154,7 +136,7 @@ router.patch('/', async (req: Request, res: Response) => {
             ...(email ? [{ email }] : []),
             ...(username ? [{ username }] : [])
           ],
-          id: { not: authUser.id }
+          id: { not: req.user!.id }
         }
       });
 
@@ -162,7 +144,7 @@ router.patch('/', async (req: Request, res: Response) => {
         logger.warn('Profile update failed: email or username already exists', { 
           source: 'profileRoutes', 
           method: 'updateProfile',
-          userId: authUser.id.toString(),
+          userId: req.user!.id.toString(),
           email,
           username
         });
@@ -193,7 +175,7 @@ router.patch('/', async (req: Request, res: Response) => {
 
     // Update user
     const updatedUser = await prisma.users.update({
-      where: { id: authUser.id },
+      where: { id: req.user!.id },
       data: updateData,
       include: {
         user_roles_user_roles_user_idTousers: {
@@ -230,7 +212,7 @@ router.patch('/', async (req: Request, res: Response) => {
     logger.info('Profile updated successfully', { 
       source: 'profileRoutes', 
       method: 'updateProfile',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       email: updatedUser.email
     });
 
@@ -250,21 +232,15 @@ router.patch('/', async (req: Request, res: Response) => {
 });
 
 // POST /api/profile/password - Change password
-router.post('/password', async (req: Request, res: Response) => {
+router.post('/password', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(
-        createApiResponse(false, null, 'Unauthorized')
-      );
-    }
 
     const { currentPassword, newPassword } = req.body;
 
     logger.info('Changing password for current user', { 
       source: 'profileRoutes', 
       method: 'changePassword',
-      userId: authUser.id.toString()
+      userId: req.user!.id.toString()
     });
 
     if (!currentPassword || !newPassword) {
@@ -275,7 +251,7 @@ router.post('/password', async (req: Request, res: Response) => {
 
     // Check if user exists
     const existingUser = await prisma.users.findUnique({
-      where: { id: authUser.id }
+      where: { id: req.user!.id }
     });
 
     if (!existingUser) {
@@ -290,7 +266,7 @@ router.post('/password', async (req: Request, res: Response) => {
       logger.warn('Password change failed: invalid current password', { 
         source: 'profileRoutes', 
         method: 'changePassword',
-        userId: authUser.id.toString()
+        userId: req.user!.id.toString()
       });
       return res.status(HttpStatus.BAD_REQUEST).json(
         createApiResponse(false, null, 'Current password is incorrect')
@@ -310,7 +286,7 @@ router.post('/password', async (req: Request, res: Response) => {
 
     // Update password
     await prisma.users.update({
-      where: { id: authUser.id },
+      where: { id: req.user!.id },
       data: {
         password_hash: newPasswordHash,
         updated_at: new Date()
@@ -320,7 +296,7 @@ router.post('/password', async (req: Request, res: Response) => {
     logger.info('Password changed successfully', { 
       source: 'profileRoutes', 
       method: 'changePassword',
-      userId: authUser.id.toString()
+      userId: req.user!.id.toString()
     });
 
     res.json(createApiResponse(true, null, 'Password changed successfully'));
@@ -339,21 +315,15 @@ router.post('/password', async (req: Request, res: Response) => {
 });
 
 // POST /api/profile/profile-picture/upload-url - Get signed upload URL for profile picture
-router.post('/profile-picture/upload-url', async (req: Request, res: Response) => {
+router.post('/profile-picture/upload-url', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(
-        createApiResponse(false, null, 'Unauthorized')
-      );
-    }
 
     const { fileName, fileType } = req.body;
 
     logger.info('Generating profile picture upload URL', { 
       source: 'profileRoutes', 
       method: 'getProfilePictureUploadUrl',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       fileName,
       fileType
     });
@@ -376,7 +346,7 @@ router.post('/profile-picture/upload-url', async (req: Request, res: Response) =
     // In production, you would generate a signed URL for S3/Cloudinary
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const fileExtension = fileName.split('.').pop();
-    const newFileName = `avatar-${authUser.id}-${uniqueSuffix}.${fileExtension}`;
+    const newFileName = `avatar-${req.user!.id}-${uniqueSuffix}.${fileExtension}`;
     const imageUrl = `/uploads/profile-pictures/${newFileName}`;
 
     // Create upload directory if it doesn't exist
@@ -393,7 +363,7 @@ router.post('/profile-picture/upload-url', async (req: Request, res: Response) =
     logger.info('Profile picture upload URL generated', { 
       source: 'profileRoutes', 
       method: 'getProfilePictureUploadUrl',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       imageUrl
     });
 
@@ -434,15 +404,14 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req: any, file: any, cb: any) => {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
+    if (!req.user) {
       cb(new Error('Unauthorized'), '');
       return;
     }
     
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const fileExtension = path.extname(file.originalname);
-    const newFileName = `profile-picture-${authUser.id}-${uniqueSuffix}${fileExtension}`;
+    const newFileName = `profile-picture-${req.user.id}-${uniqueSuffix}${fileExtension}`;
     cb(null, newFileName);
   }
 });
@@ -463,14 +432,8 @@ const upload = multer({
 });
 
 // POST /api/profile/profile-picture/upload - Upload profile picture file
-router.post('/profile-picture/upload', upload.single('profilePicture') as any, async (req: Request, res: Response) => {
+router.post('/profile-picture/upload', authenticateToken, upload.single('profilePicture') as any, async (req: Request, res: Response) => {
   try {
-    const authUser = getUserFromAuth(req);
-    if (!authUser) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(
-        createApiResponse(false, null, 'Unauthorized')
-      );
-    }
 
     if (!req.file) {
       return res.status(HttpStatus.BAD_REQUEST).json(
@@ -481,7 +444,7 @@ router.post('/profile-picture/upload', upload.single('profilePicture') as any, a
     logger.info('Processing profile picture upload', { 
       source: 'profileRoutes', 
       method: 'uploadProfilePicture',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       fileName: req.file.filename,
       fileSize: req.file.size
     });
@@ -491,7 +454,7 @@ router.post('/profile-picture/upload', upload.single('profilePicture') as any, a
 
     // Update user's avatar_url in database
     const updatedUser = await prisma.users.update({
-      where: { id: authUser.id },
+      where: { id: req.user!.id },
       data: {
         avatar_url: imageUrl,
         updated_at: new Date()
@@ -501,7 +464,7 @@ router.post('/profile-picture/upload', upload.single('profilePicture') as any, a
     logger.info('Profile picture uploaded successfully', { 
       source: 'profileRoutes', 
       method: 'uploadProfilePicture',
-      userId: authUser.id.toString(),
+      userId: req.user!.id.toString(),
       imageUrl
     });
 

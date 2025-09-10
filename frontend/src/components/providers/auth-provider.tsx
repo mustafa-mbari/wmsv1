@@ -8,6 +8,7 @@ interface User {
   id: string | number;
   email: string;
   username: string;
+  name?: string;
   first_name?: string;
   last_name?: string;
   role_names?: string[];
@@ -67,8 +68,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userData = response.data.data.user;
         console.log("User data extracted:", userData);
         
-        // Store token if provided, otherwise create mock token
-        const token = response.data.data.token || `mock_token_${userData.id}_${Date.now()}`;
+        // Store token from server response
+        if (!response.data.data.token) {
+          throw new Error("No authentication token received from server");
+        }
+        const token = response.data.data.token;
         localStorage.setItem("auth-token", token);
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
@@ -106,11 +110,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (data: any) => {
     const response = await apiClient.post("/api/auth/register", data);
-    const { data: { user: userData } } = response.data;
+    const { data: { user: userData, token } } = response.data;
     
-    // For now, create a mock token since backend doesn't return one yet
-    const mockToken = `mock_token_${userData.id}_${Date.now()}`;
-    localStorage.setItem("auth-token", mockToken);
+    if (!token) {
+      throw new Error("No authentication token received from server");
+    }
+    
+    localStorage.setItem("auth-token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
     
