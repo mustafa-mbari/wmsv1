@@ -61,7 +61,7 @@ import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedProductTable, ProductData } from "@/components/ui/advanced-product-table";
 
 export interface Category {
   id: number;
@@ -273,23 +273,25 @@ export default function CategoriesPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform categories to UserData format for reusing the table
-  const transformedCategories: UserData[] = useMemo(() => {
+  // Transform categories to ProductData format for the table
+  const transformedCategories: ProductData[] = useMemo(() => {
     if (!categories) return [];
     
     return categories.map((category: Category) => ({
       id: String(category.id),
-      username: category.slug,
-      email: category.name,
-      first_name: category.parent_name || "Root",
-      last_name: category.level.toString(),
-      phone: category.product_count.toString(),
-      is_active: category.is_active,
-      email_verified: category.product_count > 0,
-      last_login_at: category.updated_at,
+      name: category.name,
+      sku: category.slug,
+      category: category.parent_name || "Root",
+      brand: `Level ${category.level}`,
+      family: category.subcategory_count > 0 ? "Has Children" : "No Children",
+      unit: "category",
+      price: category.product_count,
+      cost: 0,
+      quantity: category.subcategory_count,
+      status: category.is_active ? "active" : "inactive",
+      description: category.description,
       created_at: category.created_at,
-      role_names: [category.level === 1 ? "Parent" : "Child"],
-      role_slugs: [category.level === 1 ? "parent" : "child"]
+      updated_at: category.updated_at,
     }));
   }, [categories]);
 
@@ -310,31 +312,27 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleCategoryEdit = (categoryData: UserData) => {
-    const categoryFound = categories?.find((c: Category) => c.id.toString() === categoryData.id);
+  const handleCategoryEdit = (productData: ProductData) => {
+    const categoryFound = categories?.find((c: Category) => c.id.toString() === productData.id);
     if (categoryFound) {
       handleEdit(categoryFound);
     }
   };
 
-  const handleCategoryDelete = (categoryData: UserData) => {
-    const categoryFound = categories?.find((c: Category) => c.id.toString() === categoryData.id);
+  const handleCategoryDelete = (productData: ProductData) => {
+    const categoryFound = categories?.find((c: Category) => c.id.toString() === productData.id);
     if (categoryFound) {
       setCurrentCategory(categoryFound);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleCategoryView = (categoryData: UserData) => {
-    console.log("View category details:", categoryData.email);
+  const handleCategoryView = (productData: ProductData) => {
+    console.log("View category details:", productData.name);
   };
 
-  const handleCategoryToggleStatus = (categoryData: UserData) => {
-    console.log("Toggle status for category:", categoryData.email);
-  };
-
-  const handleCategoryManageRoles = (categoryData: UserData) => {
-    console.log("Manage subcategories for:", categoryData.email);
+  const handleCategoryToggleStatus = (productData: ProductData) => {
+    console.log("Toggle status for category:", productData.name);
   };
 
   // Get parent categories for dropdown
@@ -632,16 +630,15 @@ export default function CategoriesPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedProductTable
               data={transformedCategories}
               loading={loading}
-              onUserSelect={handleCategorySelection}
+              onProductSelect={handleCategorySelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleCategoryEdit}
-              onUserDelete={handleCategoryDelete}
-              onUserView={handleCategoryView}
-              onUserManageRoles={handleCategoryManageRoles}
-              onUserToggleStatus={handleCategoryToggleStatus}
+              onProductEdit={handleCategoryEdit}
+              onProductDelete={handleCategoryDelete}
+              onProductView={handleCategoryView}
+              onProductToggleStatus={handleCategoryToggleStatus}
             />
           </div>
         </CardContent>
