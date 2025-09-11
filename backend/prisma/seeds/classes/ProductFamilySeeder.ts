@@ -30,7 +30,7 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
   }
 
   getJsonFileName(): string {
-    return 'products.json';
+    return 'product-families.json';
   }
 
   getDependencies(): string[] {
@@ -39,27 +39,18 @@ export class ProductFamilySeeder extends BaseSeed<FamilySeedData> {
 
   protected async loadData(): Promise<FamilySeedData[]> {
     try {
-      // Cast the result to our expected types - this fixes the TypeScript error
-      const rawData = await this.jsonReader.readJsonFile<ProductsJsonStructure | FamilySeedData[]>('products.json');
+      const rawData = await this.jsonReader.readJsonFile<FamilySeedData>('product-families.json');
       
-      // Type guard to check if it's an array
       if (Array.isArray(rawData)) {
-        logger.info('No families found in array format', { source: 'ProductFamilySeeder', method: 'loadData' });
-        return [];
+        logger.info(`Loading ${rawData.length} families from product-families.json`, { 
+          source: 'ProductFamilySeeder', 
+          method: 'loadData', 
+          familiesCount: rawData.length 
+        });
+        return rawData;
       }
       
-      // Type guard to check if it's an object with families property
-      if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
-        const structuredData = rawData as ProductsJsonStructure;
-        
-        // Now TypeScript knows that structuredData has the families property
-        if (structuredData.families) {
-          logger.info(`Loading ${structuredData.families.length || 0} families from structured format`, { source: 'ProductFamilySeeder', method: 'loadData', familiesCount: structuredData.families.length || 0 });
-          return structuredData.families;
-        }
-      }
-      
-      logger.warn('No families found in products.json', { source: 'ProductFamilySeeder', method: 'loadData' });
+      logger.warn('No families found in product-families.json', { source: 'ProductFamilySeeder', method: 'loadData' });
       return [];
     } catch (error) {
       logger.error('Failed to load families', { source: 'ProductFamilySeeder', method: 'loadData', error: error instanceof Error ? error.message : error });
