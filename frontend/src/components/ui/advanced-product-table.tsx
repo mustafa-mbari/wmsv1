@@ -711,7 +711,6 @@ export function AdvancedProductTable({
       render: (product: ProductData) => (
         <div className="font-medium">
           {product.name}
-          <div className="text-xs text-muted-foreground">{product.sku}</div>
         </div>
       ),
     },
@@ -1022,7 +1021,7 @@ export function AdvancedProductTable({
                             : column === "unit"
                             ? uniqueValues.units
                             : uniqueValues.statuses
-                          ).map((value) => (
+                          ).filter(value => value && value.trim() !== "").map((value) => (
                             <SelectItem key={value} value={value.toLowerCase()}>
                               {value}
                             </SelectItem>

@@ -72,8 +72,6 @@ export interface Product {
   description?: string;
   category_id: number;
   category_name?: string;
-  brand_id?: number;
-  brand_name?: string;
   family_id?: number;
   family_name?: string;
   unit_id: number;
@@ -105,7 +103,6 @@ export default function ProductsPage() {
 
   // Dropdown data from APIs
   const [categories, setCategories] = useState<any[]>([]);
-  const [brands, setBrands] = useState<any[]>([]);
   const [families, setFamilies] = useState<any[]>([]);
   const [units, setUnits] = useState<any[]>([]);
 
@@ -117,7 +114,6 @@ export default function ProductsPage() {
     sku: z.string().min(1, "SKU is required"),
     description: z.string().optional(),
     categoryId: z.string().min(1, "Category is required"),
-    brandId: z.string().optional(),
     familyId: z.string().optional(),
     unitId: z.string().min(1, "Unit is required"),
     price: z.number().min(0, "Price must be positive"),
@@ -140,18 +136,14 @@ export default function ProductsPage() {
 
   const fetchDropdownData = async () => {
     try {
-      const [categoriesResponse, brandsResponse, familiesResponse, unitsResponse] = await Promise.all([
+      const [categoriesResponse, familiesResponse, unitsResponse] = await Promise.all([
         apiClient.get('/api/categories'),
-        apiClient.get('/api/brands'),
         apiClient.get('/api/families'),
         apiClient.get('/api/units')
       ]);
 
       if (categoriesResponse.data?.success) {
         setCategories(categoriesResponse.data.data);
-      }
-      if (brandsResponse.data?.success) {
-        setBrands(brandsResponse.data.data);
       }
       if (familiesResponse.data?.success) {
         setFamilies(familiesResponse.data.data);
@@ -177,8 +169,6 @@ export default function ProductsPage() {
           description: product.description,
           category_id: parseInt(product.category_id) || 0,
           category_name: product.category_name,
-          brand_id: product.brand_id ? parseInt(product.brand_id) : undefined,
-          brand_name: product.brand_name,
           family_id: product.family_id ? parseInt(product.family_id) : undefined,
           family_name: product.family_name,
           unit_id: parseInt(product.unit_id) || 0,
@@ -214,8 +204,7 @@ export default function ProductsPage() {
       sku: "",
       description: "",
       categoryId: "",
-      brandId: "",
-      familyId: "",
+      familyId: "none",
       unitId: "",
       price: 0,
       cost: 0,
@@ -236,8 +225,7 @@ export default function ProductsPage() {
       sku: "",
       description: "",
       categoryId: "",
-      brandId: "",
-      familyId: "",
+      familyId: "none",
       unitId: "",
       price: 0,
       cost: 0,
@@ -258,7 +246,7 @@ export default function ProductsPage() {
         sku: data.sku,
         description: data.description || null,
         category_id: data.categoryId,
-        family_id: data.familyId || null,
+        family_id: data.familyId === "none" ? null : data.familyId || null,
         unit_id: data.unitId,
         price: data.price,
         cost: data.cost,
@@ -295,7 +283,7 @@ export default function ProductsPage() {
         sku: data.sku,
         description: data.description || null,
         category_id: data.categoryId,
-        family_id: data.familyId || null,
+        family_id: data.familyId === "none" ? null : data.familyId || null,
         unit_id: data.unitId,
         price: data.price,
         cost: data.cost,
@@ -371,8 +359,7 @@ export default function ProductsPage() {
       sku: product.sku,
       description: product.description || "",
       categoryId: product.category_id.toString(),
-      brandId: product.brand_id?.toString() || "",
-      familyId: product.family_id?.toString() || "",
+      familyId: product.family_id?.toString() || "none",
       unitId: product.unit_id.toString(),
       price: product.price,
       cost: product.cost,
@@ -400,7 +387,6 @@ export default function ProductsPage() {
       name: product.name,
       sku: product.sku,
       category: product.category_name || "",
-      brand: product.brand_name,
       family: product.family_name,
       unit: product.unit_name || "",
       price: product.price,
@@ -580,56 +566,30 @@ export default function ProductsPage() {
                         )}
                       />
                       
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="categoryId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category*</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {categories.map((category) => (
-                                    <SelectItem key={category.id} value={category.id.toString()}>
-                                      {category.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="brandId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Brand</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select brand" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {brands.map((brand) => (
-                                    <SelectItem key={brand.id} value={brand.id.toString()}>
-                                      {brand.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                      <FormField
+                        control={createForm.control}
+                        name="categoryId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category*</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {categories.filter(category => category.id).map((category) => (
+                                  <SelectItem key={category.id} value={category.id.toString()}>
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
                       <div className="grid grid-cols-2 gap-4">
                         <FormField
@@ -638,14 +598,15 @@ export default function ProductsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Family</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} value={field.value || undefined}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select family" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {families.map((family) => (
+                                  <SelectItem value="none">No Family</SelectItem>
+                                  {families.filter(family => family.id).map((family) => (
                                     <SelectItem key={family.id} value={family.id.toString()}>
                                       {family.name}
                                     </SelectItem>
@@ -662,14 +623,14 @@ export default function ProductsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Unit*</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} value={field.value || undefined}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select unit" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {units.map((unit) => (
+                                  {units.filter(unit => unit.id).map((unit) => (
                                     <SelectItem key={unit.id} value={unit.id.toString()}>
                                       {unit.name} ({unit.symbol})
                                     </SelectItem>
@@ -747,7 +708,7 @@ export default function ProductsPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Status</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select status" />
@@ -945,6 +906,165 @@ export default function ProductsPage() {
                     <FormControl>
                       <Textarea placeholder="Product description" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category*</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || undefined}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.filter(category => category.id).map((category) => (
+                          <SelectItem key={category.id} value={category.id.toString()}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="familyId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Family</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select family" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">No Family</SelectItem>
+                          {families.filter(family => family.id).map((family) => (
+                            <SelectItem key={family.id} value={family.id.toString()}>
+                              {family.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="unitId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Unit*</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select unit" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {units.filter(unit => unit.id).map((unit) => (
+                            <SelectItem key={unit.id} value={unit.id.toString()}>
+                              {unit.name} ({unit.symbol})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price*</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.01"
+                          placeholder="0.00" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="cost"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cost*</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.01"
+                          placeholder="0.00" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="quantity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantity*</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || undefined}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="discontinued">Discontinued</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

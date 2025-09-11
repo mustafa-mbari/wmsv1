@@ -145,7 +145,7 @@ export default function CategoriesPage() {
       name: "",
       slug: "",
       description: "",
-      parentId: "",
+      parentId: "none",
       isActive: true,
     },
   });
@@ -156,7 +156,7 @@ export default function CategoriesPage() {
       name: "",
       slug: "",
       description: "",
-      parentId: "",
+      parentId: "none",
       isActive: true,
     },
   });
@@ -167,7 +167,7 @@ export default function CategoriesPage() {
         name: data.name,
         slug: data.slug,
         description: data.description || null,
-        parent_id: data.parentId || null,
+        parent_id: data.parentId === "none" ? null : data.parentId || null,
         is_active: data.isActive,
       };
 
@@ -194,7 +194,7 @@ export default function CategoriesPage() {
         name: data.name,
         slug: data.slug,
         description: data.description || null,
-        parent_id: data.parentId || null,
+        parent_id: data.parentId === "none" ? null : data.parentId || null,
         is_active: data.isActive,
       };
 
@@ -262,7 +262,7 @@ export default function CategoriesPage() {
       name: category.name,
       slug: category.slug,
       description: category.description || "",
-      parentId: category.parent_id?.toString() || "",
+      parentId: category.parent_id?.toString() || "none",
       isActive: category.is_active,
     });
     setIsEditDialogOpen(true);
@@ -473,14 +473,14 @@ export default function CategoriesPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Parent Category</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select parent category (optional)" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="">None (Root Category)</SelectItem>
+                                <SelectItem value="none">None (Root Category)</SelectItem>
                                 {parentCategories.map((category) => (
                                   <SelectItem key={category.id} value={category.id.toString()}>
                                     {category.name}
@@ -715,7 +715,7 @@ export default function CategoriesPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None (Root Category)</SelectItem>
+                        <SelectItem value="none">None (Root Category)</SelectItem>
                         {parentCategories
                           .filter(c => c.id !== currentCategory?.id) // Don't allow self as parent
                           .map((category) => (
