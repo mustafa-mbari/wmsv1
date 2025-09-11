@@ -38,6 +38,9 @@ cd backend && npx prisma migrate dev
 # Seed the database with initial data
 npm run seed
 # or specifically: npm run seed:full
+
+# to run the prisma studio
+cd backend; npx prisma studio
 ```
 
 ### 4. Run the Application
