@@ -10,6 +10,14 @@ import { requestLogger } from './middleware/requestLogger';
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profileRoutes';
+import productRoutes from './routes/productRoutes';
+import categoryRoutes from './routes/categoryRoutes';
+import familyRoutes from './routes/familyRoutes';
+import brandRoutes from './routes/brandRoutes';
+import unitRoutes from './routes/unitRoutes';
+import attributeRoutes from './routes/attributeRoutes';
+import attributeOptionRoutes from './routes/attributeOptionRoutes';
+import attributeValueRoutes from './routes/attributeValueRoutes';
 
 dotenv.config();
 
@@ -50,6 +58,16 @@ app.use(requestLogger);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
+
+// Product-related routes
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/families', familyRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/units', unitRoutes);
+app.use('/api/attributes', attributeRoutes);
+app.use('/api/attribute-options', attributeOptionRoutes);
+app.use('/api/attribute-values', attributeValueRoutes);
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

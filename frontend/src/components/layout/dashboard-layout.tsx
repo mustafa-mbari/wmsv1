@@ -72,11 +72,12 @@ const getNavigation = (intl: any) => [
     children: [
       { name: intl.formatMessage({ id: 'menu.products.products' }), href: "/dashboard/products" },
       { name: intl.formatMessage({ id: 'menu.products.categories' }), href: "/dashboard/products/categories" },
-      { name: intl.formatMessage({ id: 'menu.products.families' }), href: "/dashboard/products/families" },
+      { name: intl.formatMessage({ id: 'menu.products.families' }), href: "/dashboard/products/family" },
+      { name: intl.formatMessage({ id: 'menu.products.brands' }), href: "/dashboard/products/brands" },
       { name: intl.formatMessage({ id: 'menu.products.attributes' }), href: "/dashboard/products/attributes" },
       { name: intl.formatMessage({ id: 'menu.products.attributeOptions' }), href: "/dashboard/products/attribute-options" },
       { name: intl.formatMessage({ id: 'menu.products.attributeValues' }), href: "/dashboard/products/attribute-values" },
-      { name: intl.formatMessage({ id: 'menu.products.uom' }), href: "/dashboard/products/uom" },
+      { name: intl.formatMessage({ id: 'menu.products.uom' }), href: "/dashboard/products/units" },
     ]
   },
   { 

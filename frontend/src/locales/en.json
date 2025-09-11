@@ -51,6 +51,7 @@
       "products": "Products",
       "categories": "Categories",
       "families": "Product Families",
+      "brands": "Brands",
       "attributes": "Attributes",
       "attributeOptions": "Attribute Options",
       "attributeValues": "Attribute Values",
