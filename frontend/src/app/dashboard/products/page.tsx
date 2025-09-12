@@ -63,7 +63,9 @@ import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedProductTable, ProductData } from "@/components/ui/advanced-product-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { useAlert } from "@/hooks/useAlert";
+import { getErrorMessage } from "@/lib/error-utils";
 
 export interface Product {
   id: number;
@@ -91,6 +93,7 @@ export interface Product {
 
 export default function ProductsPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -113,17 +116,17 @@ export default function ProductsPage() {
     name: z.string().min(1, "Product name is required"),
     sku: z.string().min(1, "SKU is required"),
     description: z.string().optional(),
-    categoryId: z.string().min(1, "Category is required"),
+    categoryId: z.string().min(1, "Category is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid category"),
     familyId: z.string().optional(),
-    unitId: z.string().min(1, "Unit is required"),
-    price: z.number().min(0, "Price must be positive"),
-    cost: z.number().min(0, "Cost must be positive"),
-    quantity: z.number().min(0, "Quantity must be positive"),
-    minQuantity: z.number().min(0, "Min quantity must be positive").optional(),
-    maxQuantity: z.number().min(0, "Max quantity must be positive").optional(),
+    unitId: z.string().min(1, "Unit is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid unit"),
+    price: z.coerce.number().min(0, "Price must be positive"),
+    cost: z.coerce.number().min(0, "Cost must be positive"),
+    quantity: z.coerce.number().min(0, "Quantity must be positive"),
+    minQuantity: z.coerce.number().min(0, "Min quantity must be positive").optional(),
+    maxQuantity: z.coerce.number().min(0, "Max quantity must be positive").optional(),
     status: z.enum(["active", "inactive", "discontinued"]).default("active"),
     barcode: z.string().optional(),
-    weight: z.number().min(0, "Weight must be positive").optional(),
+    weight: z.coerce.number().min(0, "Weight must be positive").optional(),
     dimensions: z.string().optional(),
   });
 
@@ -241,20 +244,28 @@ export default function ProductsPage() {
 
   const onCreateSubmit = async (data: z.infer<typeof productFormSchema>) => {
     try {
+      // Validate required fields before sending
+      if (!data.categoryId || data.categoryId === "undefined" || data.categoryId === "") {
+        throw new Error("Please select a valid category");
+      }
+      if (!data.unitId || data.unitId === "undefined" || data.unitId === "") {
+        throw new Error("Please select a valid unit");
+      }
+
       const productData = {
-        name: data.name,
-        sku: data.sku,
-        description: data.description || null,
-        category_id: data.categoryId,
-        family_id: data.familyId === "none" ? null : data.familyId || null,
-        unit_id: data.unitId,
-        price: data.price,
-        cost: data.cost,
-        stock_quantity: data.quantity,
-        min_stock_level: data.minQuantity || 0,
+        name: data.name.trim(),
+        sku: data.sku.trim().toUpperCase(),
+        description: data.description?.trim() || null,
+        category_id: parseInt(data.categoryId),
+        family_id: data.familyId === "none" || !data.familyId || data.familyId === "undefined" ? null : parseInt(data.familyId),
+        unit_id: parseInt(data.unitId),
+        price: Number(data.price) || 0,
+        cost: Number(data.cost) || 0,
+        stock_quantity: Number(data.quantity) || 0,
+        min_stock_level: Number(data.minQuantity) || 0,
         status: data.status,
-        barcode: data.barcode || null,
-        weight: data.weight || null,
+        barcode: data.barcode?.trim() || null,
+        weight: data.weight ? Number(data.weight) : null,
         is_digital: false,
         track_stock: true
       };
@@ -270,7 +281,10 @@ export default function ProductsPage() {
       }
     } catch (error: any) {
       console.error("Error creating product:", error);
-      alert(error.response?.data?.message || "Failed to create product");
+      showAlert({
+        title: "Error Creating Product",
+        description: getErrorMessage(error, "Failed to create product")
+      });
     }
   };
 
@@ -282,9 +296,9 @@ export default function ProductsPage() {
         name: data.name,
         sku: data.sku,
         description: data.description || null,
-        category_id: data.categoryId,
-        family_id: data.familyId === "none" ? null : data.familyId || null,
-        unit_id: data.unitId,
+        category_id: parseInt(data.categoryId),
+        family_id: data.familyId === "none" || !data.familyId ? null : parseInt(data.familyId),
+        unit_id: parseInt(data.unitId),
         price: data.price,
         cost: data.cost,
         stock_quantity: data.quantity,
@@ -305,7 +319,10 @@ export default function ProductsPage() {
       }
     } catch (error: any) {
       console.error("Error updating product:", error);
-      alert(error.response?.data?.message || "Failed to update product");
+      showAlert({
+        title: "Error Updating Product",
+        description: getErrorMessage(error, "Failed to update product")
+      });
     }
   };
 
@@ -324,7 +341,10 @@ export default function ProductsPage() {
         }
       } catch (error: any) {
         console.error("Error deleting product:", error);
-        alert(error.response?.data?.message || "Failed to delete product");
+        showAlert({
+          title: "Error Deleting Product",
+          description: getErrorMessage(error, "Failed to delete product")
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -348,7 +368,10 @@ export default function ProductsPage() {
       fetchProducts();
     } catch (error: any) {
       console.error("Error deleting products:", error);
-      alert("Failed to delete some products");
+      showAlert({
+        title: "Error Deleting Products",
+        description: getErrorMessage(error, "Failed to delete some products. Please try again.")
+      });
     }
   };
 
@@ -379,25 +402,123 @@ export default function ProductsPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  const transformedProducts: ProductData[] = useMemo(() => {
+  // Transform products to TableData format for the table
+  const transformedProducts: (Product & TableData)[] = useMemo(() => {
     if (!products) return [];
     
     return products.map((product: Product) => ({
+      ...product,
       id: String(product.id),
-      name: product.name,
-      sku: product.sku,
-      category: product.category_name || "",
-      family: product.family_name,
-      unit: product.unit_name || "",
-      price: product.price,
-      cost: product.cost,
-      quantity: product.quantity,
-      status: product.status,
-      description: product.description,
-      created_at: product.created_at,
-      updated_at: product.updated_at,
     }));
   }, [products]);
+
+  // Define column configuration for the table
+  const columnConfig: ColumnConfig<Product & TableData>[] = [
+    {
+      key: "name",
+      label: "Product Name",
+      width: 200,
+      render: (product) => (
+        <div className="font-medium">{product.name}</div>
+      ),
+    },
+    {
+      key: "sku",
+      label: "SKU",
+      width: 150,
+      render: (product) => (
+        <span className="font-mono text-sm">{product.sku}</span>
+      ),
+    },
+    {
+      key: "category_name",
+      label: "Category",
+      width: 150,
+      filterType: "select",
+      render: (product) => (
+        <Badge variant="outline">{product.category_name || "N/A"}</Badge>
+      ),
+    },
+    {
+      key: "family_name",
+      label: "Family",
+      width: 130,
+      filterType: "select",
+      render: (product) => (
+        <span className="text-muted-foreground">{product.family_name || "N/A"}</span>
+      ),
+    },
+    {
+      key: "unit_name",
+      label: "Unit",
+      width: 100,
+      filterType: "select",
+      render: (product) => (
+        <Badge variant="secondary">{product.unit_name || "N/A"}</Badge>
+      ),
+    },
+    {
+      key: "price",
+      label: "Price",
+      width: 120,
+      render: (product) => (
+        <span className="font-medium">
+          ${product.price.toFixed(2)}
+        </span>
+      ),
+    },
+    {
+      key: "cost",
+      label: "Cost",
+      width: 120,
+      render: (product) => (
+        <span className="text-muted-foreground">
+          ${product.cost.toFixed(2)}
+        </span>
+      ),
+    },
+    {
+      key: "quantity",
+      label: "Stock",
+      width: 100,
+      render: (product) => (
+        <span className={`font-medium ${
+          product.quantity <= 10 ? 'text-red-600' : 
+          product.quantity <= 50 ? 'text-yellow-600' : 'text-green-600'
+        }`}>
+          {product.quantity}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      width: 120,
+      filterType: "select",
+      render: (product) => (
+        <Badge variant={
+          product.status === "active" ? "default" :
+          product.status === "inactive" ? "secondary" : "destructive"
+        }>
+          {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+        </Badge>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      render: (product) => (
+        <span className="text-muted-foreground">
+          {new Date(product.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
 
   const handleProductSelection = (productIds: string[]) => {
     console.log("Selected products:", productIds);
@@ -416,14 +537,14 @@ export default function ProductsPage() {
     }
   };
 
-  const handleProductEdit = (product: ProductData) => {
+  const handleProductEdit = (product: Product & TableData) => {
     const productFound = products?.find((p: Product) => p.id.toString() === product.id);
     if (productFound) {
       handleEdit(productFound);
     }
   };
 
-  const handleProductDelete = (product: ProductData) => {
+  const handleProductDelete = (product: Product & TableData) => {
     const productFound = products?.find((p: Product) => p.id.toString() === product.id);
     if (productFound) {
       setCurrentProduct(productFound);
@@ -431,12 +552,8 @@ export default function ProductsPage() {
     }
   };
 
-  const handleProductView = (product: ProductData) => {
+  const handleProductView = (product: Product & TableData) => {
     console.log("View product details:", product.name);
-  };
-
-  const handleProductToggleStatus = (product: ProductData) => {
-    console.log("Toggle status for product:", product.name);
   };
 
   // Calculate stats
@@ -579,7 +696,7 @@ export default function ProductsPage() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {categories.filter(category => category.id).map((category) => (
+                                {categories.filter(category => category.id && category.is_active !== false).map((category) => (
                                   <SelectItem key={category.id} value={category.id.toString()}>
                                     {category.name}
                                   </SelectItem>
@@ -606,7 +723,7 @@ export default function ProductsPage() {
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="none">No Family</SelectItem>
-                                  {families.filter(family => family.id).map((family) => (
+                                  {families.filter(family => family.id && family.is_active !== false).map((family) => (
                                     <SelectItem key={family.id} value={family.id.toString()}>
                                       {family.name}
                                     </SelectItem>
@@ -630,7 +747,7 @@ export default function ProductsPage() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {units.filter(unit => unit.id).map((unit) => (
+                                  {units.filter(unit => unit.id && unit.is_active !== false).map((unit) => (
                                     <SelectItem key={unit.id} value={unit.id.toString()}>
                                       {unit.name} ({unit.symbol})
                                     </SelectItem>
@@ -656,7 +773,6 @@ export default function ProductsPage() {
                                   step="0.01"
                                   placeholder="0.00" 
                                   {...field}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -675,7 +791,6 @@ export default function ProductsPage() {
                                   step="0.01"
                                   placeholder="0.00" 
                                   {...field}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -693,7 +808,6 @@ export default function ProductsPage() {
                                   type="number" 
                                   placeholder="0" 
                                   {...field}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -842,15 +956,25 @@ export default function ProductsPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedProductTable
+            <AdvancedTable
               data={transformedProducts}
+              columns={columnConfig}
               loading={loading}
-              onProductSelect={handleProductSelection}
+              title="Product Inventory"
+              onRowSelect={handleProductSelection}
               onBulkAction={handleBulkAction}
-              onProductEdit={handleProductEdit}
-              onProductDelete={handleProductDelete}
-              onProductView={handleProductView}
-              onProductToggleStatus={handleProductToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleProductEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleProductDelete : undefined}
+              onRowView={handleProductView}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit Product" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete Product" } : undefined,
+              }}
+              bulkActions={canPerformAdminActions ? [
+                { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
+              ] : []}
+              emptyMessage="No products found"
             />
           </div>
         </CardContent>
@@ -924,7 +1048,7 @@ export default function ProductsPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.filter(category => category.id).map((category) => (
+                        {categories.filter(category => category.id && category.is_active !== false).map((category) => (
                           <SelectItem key={category.id} value={category.id.toString()}>
                             {category.name}
                           </SelectItem>
@@ -951,7 +1075,7 @@ export default function ProductsPage() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="none">No Family</SelectItem>
-                          {families.filter(family => family.id).map((family) => (
+                          {families.filter(family => family.id && family.is_active !== false).map((family) => (
                             <SelectItem key={family.id} value={family.id.toString()}>
                               {family.name}
                             </SelectItem>
@@ -975,7 +1099,7 @@ export default function ProductsPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {units.filter(unit => unit.id).map((unit) => (
+                          {units.filter(unit => unit.id && unit.is_active !== false).map((unit) => (
                             <SelectItem key={unit.id} value={unit.id.toString()}>
                               {unit.name} ({unit.symbol})
                             </SelectItem>
@@ -1121,6 +1245,9 @@ export default function ProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* General Alert Dialog */}
+      <AlertComponent />
     </div>
   );
 }
