@@ -175,13 +175,42 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
     res.status(HttpStatus.CREATED).json(
       createApiResponse(true, productResponse, 'Product created successfully')
     );
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Error creating product', {
       source: 'productRoutes',
       method: 'createProduct',
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
+      prismaCode: error?.code
     });
+
+    // Handle Prisma unique constraint errors
+    if (error.code === 'P2002') {
+      const target = error.meta?.target;
+      if (target && target.includes('sku')) {
+        return res.status(HttpStatus.BAD_REQUEST).json(
+          createApiResponse(false, null, 'A product with this SKU already exists. Please use a different SKU.')
+        );
+      }
+      
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'A product with these details already exists.')
+      );
+    }
+
+    // Handle other Prisma errors
+    if (error.code?.startsWith('P')) {
+      const prismaErrorMessages: Record<string, string> = {
+        'P2003': 'Foreign key constraint failed. Please check related data.',
+        'P2025': 'Record not found.',
+        'P2014': 'Invalid ID provided.'
+      };
+      
+      const message = prismaErrorMessages[error.code] || 'Database constraint violation.';
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, message)
+      );
+    }
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
       createApiResponse(false, null, 'Failed to create product')
@@ -214,13 +243,42 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
     });
 
     res.json(createApiResponse(true, updatedProduct, 'Product updated successfully'));
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Error updating product', {
       source: 'productRoutes',
       method: 'updateProduct',
       productId: req.params.id,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      prismaCode: error?.code
     });
+
+    // Handle Prisma unique constraint errors
+    if (error.code === 'P2002') {
+      const target = error.meta?.target;
+      if (target && target.includes('sku')) {
+        return res.status(HttpStatus.BAD_REQUEST).json(
+          createApiResponse(false, null, 'A product with this SKU already exists. Please use a different SKU.')
+        );
+      }
+      
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'A product with these details already exists.')
+      );
+    }
+
+    // Handle other Prisma errors
+    if (error.code?.startsWith('P')) {
+      const prismaErrorMessages: Record<string, string> = {
+        'P2003': 'Foreign key constraint failed. Please check related data.',
+        'P2025': 'Record not found.',
+        'P2014': 'Invalid ID provided.'
+      };
+      
+      const message = prismaErrorMessages[error.code] || 'Database constraint violation.';
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, message)
+      );
+    }
 
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
       createApiResponse(false, null, 'Failed to update product')

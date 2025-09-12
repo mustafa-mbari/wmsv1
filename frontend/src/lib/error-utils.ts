@@ -47,7 +47,7 @@ export function getErrorMessage(error: any, defaultMessage: string = "An error o
   if (error.response?.status) {
     switch (error.response.status) {
       case 400:
-        return "Invalid request. Please check your input.";
+        return error.response.data?.message || "Invalid request. Please check your input.";
       case 401:
         return "Authentication required. Please log in again.";
       case 403:
