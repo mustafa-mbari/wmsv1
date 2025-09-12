@@ -17,6 +17,9 @@ import { ProductSeeder } from './classes/ProductSeeder';
 import { UnitsOfMeasureSeeder } from './classes/UnitsOfMeasureSeeder';
 import { WarehouseSeeder } from './classes/WarehouseSeeder';
 import { ClassTypeSeeder } from './classes/ClassTypeSeeder';
+import { ProductAttributeSeeder } from './classes/ProductAttributeSeeder';
+import { ProductAttributeOptionSeeder } from './classes/ProductAttributeOptionSeeder';
+import { ProductAttributeValueSeeder } from './classes/ProductAttributeValueSeeder';
 
 async function main() {
   const prisma = new PrismaClient();
@@ -84,6 +87,11 @@ async function main() {
     runner.registerSeeder('product_categories', () => new ProductCategorySeeder(prisma, { systemUserId }));
     runner.registerSeeder('product_families', () => new ProductFamilySeeder(prisma, { systemUserId }));
     runner.registerSeeder('products', () => new ProductSeeder(prisma, { systemUserId }));
+
+    // Product attributes system (attributes → options → values)
+    runner.registerSeeder('product_attributes', () => new ProductAttributeSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('product_attribute_options', () => new ProductAttributeOptionSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('product_attribute_values', () => new ProductAttributeValueSeeder(prisma, { systemUserId }));
 
     // Warehouse management (requires users for managers)
     runner.registerSeeder('warehouses', () => new WarehouseSeeder(prisma, { systemUserId }));
