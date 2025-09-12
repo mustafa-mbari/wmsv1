@@ -406,7 +406,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-24 pt-8 bg-muted/30">
+        <div className="flex flex-1 flex-col gap-4 p-6 bg-muted/30">
           {children}
         </div>
       </SidebarInset>

@@ -441,7 +441,7 @@ export default function ProductFamilyPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4 space-y-8 max-w-7xl">
+    <div className="w-full space-y-6">
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
