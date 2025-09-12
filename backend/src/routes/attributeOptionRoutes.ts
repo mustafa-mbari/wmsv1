@@ -16,9 +16,6 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     const options = await prisma.product_attribute_options.findMany({
-      where: {
-        deleted_at: null
-      },
       include: {
         product_attributes: {
           select: {
@@ -174,12 +171,8 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res:
   try {
     const { id } = req.params;
 
-    await prisma.product_attribute_options.update({
-      where: { id: parseInt(id) },
-      data: { 
-        deleted_at: new Date(),
-        updated_at: new Date()
-      }
+    await prisma.product_attribute_options.delete({
+      where: { id: parseInt(id) }
     });
 
     res.json(createApiResponse(true, null, 'Attribute option deleted successfully'));
