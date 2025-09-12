@@ -123,32 +123,16 @@ export default function AttributeOptionsPage() {
           name: attr.name,
           type: attr.data_type || attr.type
         })));
+      } else {
+        setAttributes([]);
       }
     } catch (error) {
       console.error("Error fetching attributes:", error);
-      // For demo purposes, add some mock attributes when API fails
-      setAttributes([
-        {
-          id: "1",
-          name: "Color",
-          type: "select"
-        },
-        {
-          id: "2",
-          name: "Size",
-          type: "select"
-        },
-        {
-          id: "3",
-          name: "Material",
-          type: "text"
-        },
-        {
-          id: "4",
-          name: "Weight",
-          type: "number"
-        }
-      ]);
+      setAttributes([]);
+      showAlert({
+        title: "Error Loading Attributes",
+        description: "Failed to load attributes. Please refresh the page or contact support."
+      });
     }
   };
 
@@ -164,75 +148,11 @@ export default function AttributeOptionsPage() {
       }
     } catch (error) {
       console.error("Error fetching attribute options:", error);
-      // For demo purposes, add some mock data when API fails
-      console.log("API failed, showing mock data for demonstration");
-      setAttributeOptions([
-        {
-          id: "1",
-          attribute_id: "1",
-          attribute_name: "Color",
-          attribute_type: "select",
-          value: "red",
-          label: "Red",
-          sort_order: 1,
-          usage_count: 5,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: "2",
-          attribute_id: "1",
-          attribute_name: "Color",
-          attribute_type: "select",
-          value: "blue",
-          label: "Blue",
-          sort_order: 2,
-          usage_count: 3,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: "3",
-          attribute_id: "2",
-          attribute_name: "Size",
-          attribute_type: "select",
-          value: "large",
-          label: "Large",
-          sort_order: 1,
-          usage_count: 8,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: "4",
-          attribute_id: "2",
-          attribute_name: "Size",
-          attribute_type: "select",
-          value: "medium",
-          label: "Medium",
-          sort_order: 2,
-          usage_count: 12,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: "5",
-          attribute_id: "2",
-          attribute_name: "Size",
-          attribute_type: "select",
-          value: "small",
-          label: "Small",
-          sort_order: 3,
-          usage_count: 2,
-          is_active: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ]);
+      setAttributeOptions([]);
+      showAlert({
+        title: "Error Loading Attribute Options",
+        description: "Failed to load attribute options. Please refresh the page or contact support."
+      });
     } finally {
       setLoading(false);
     }
@@ -319,27 +239,32 @@ export default function AttributeOptionsPage() {
   };
 
   const confirmDelete = async () => {
-    if (currentOption) {
-      try {
-        setIsDeleteLoading(true);
-        const response = await apiClient.delete(`/api/attribute-options/${currentOption.id}`);
-        
-        if (response.data?.success) {
-          setIsDeleteDialogOpen(false);
-          setCurrentOption(null);
-          fetchAttributeOptions();
-        } else {
-          throw new Error(response.data?.message || "Failed to delete attribute option");
-        }
-      } catch (error: any) {
-        console.error("Error deleting attribute option:", error);
-        showAlert({
-          title: "Error Deleting Attribute Option",
-          description: getErrorMessage(error, "Failed to delete attribute option")
-        });
-      } finally {
-        setIsDeleteLoading(false);
+    if (!currentOption) return;
+    
+    try {
+      setIsDeleteLoading(true);
+      console.log(`Attempting to delete attribute option with ID: ${currentOption.id}`);
+      
+      const response = await apiClient.delete(`/api/attribute-options/${currentOption.id}`);
+      console.log('Delete response:', response.data);
+      
+      if (response.data?.success) {
+        console.log(`Successfully deleted attribute option: ${currentOption.label}`);
+        setIsDeleteDialogOpen(false);
+        setCurrentOption(null);
+        // Refresh the data to ensure the deleted item is removed from the UI
+        await fetchAttributeOptions();
+      } else {
+        throw new Error(response.data?.message || "Failed to delete attribute option from database");
       }
+    } catch (error: any) {
+      console.error("Error deleting attribute option:", error);
+      showAlert({
+        title: "Error Deleting Attribute Option",
+        description: getErrorMessage(error, "Failed to delete attribute option. The item may still exist in the database.")
+      });
+    } finally {
+      setIsDeleteLoading(false);
     }
   };
 
@@ -452,26 +377,38 @@ export default function AttributeOptionsPage() {
   ];
 
   const handleBulkDeleteConfirm = async () => {
-    if (!canPerformAdminActions) {
+    if (!canPerformAdminActions || bulkDeleteOptionIds.length === 0) {
       setBulkDeleteDialogOpen(false);
       return;
     }
     
     try {
-      await Promise.all(
-        bulkDeleteOptionIds.map(optionId => 
-          apiClient.delete(`/api/attribute-options/${optionId}`)
-        )
-      );
+      console.log(`Attempting to bulk delete ${bulkDeleteOptionIds.length} attribute options:`, bulkDeleteOptionIds);
+      
+      const deletePromises = bulkDeleteOptionIds.map(async (optionId) => {
+        console.log(`Deleting attribute option ID: ${optionId}`);
+        const response = await apiClient.delete(`/api/attribute-options/${optionId}`);
+        if (!response.data?.success) {
+          throw new Error(`Failed to delete option ${optionId}: ${response.data?.message || 'Unknown error'}`);
+        }
+        return response;
+      });
+      
+      await Promise.all(deletePromises);
+      
+      console.log(`Successfully deleted ${bulkDeleteOptionIds.length} attribute options`);
       setBulkDeleteDialogOpen(false);
       setBulkDeleteOptionIds([]);
-      fetchAttributeOptions();
+      // Refresh the data to ensure deleted items are removed from the UI
+      await fetchAttributeOptions();
     } catch (error: any) {
-      console.error("Error deleting attribute options:", error);
+      console.error("Error bulk deleting attribute options:", error);
       showAlert({
         title: "Error Deleting Attribute Options",
-        description: getErrorMessage(error, "Failed to delete some attribute options. Please try again.")
+        description: getErrorMessage(error, "Failed to delete some attribute options. Some items may still exist in the database.")
       });
+      // Still refresh to show what was actually deleted
+      await fetchAttributeOptions();
     }
   };
 

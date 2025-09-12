@@ -199,16 +199,22 @@ export default function AttributeValuesPage() {
   // Fetch data functions
   const fetchAttributeValues = async () => {
     try {
+      console.log('Fetching attribute values from API...');
       const response = await apiClient.get('/api/attribute-values');
       
       if (response.data?.success) {
+        console.log(`Loaded ${response.data.data.length} attribute values`);
         setAttributeValues(response.data.data);
       } else {
-        toast.error('Failed to load attribute values');
+        console.warn('API returned unsuccessful response:', response.data);
+        setAttributeValues([]);
+        toast.error(response.data?.message || 'Failed to load attribute values');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching attribute values:', error);
-      toast.error('Failed to load attribute values');
+      setAttributeValues([]);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load attribute values from database';
+      toast.error(errorMessage);
     }
   };
 
@@ -329,21 +335,26 @@ export default function AttributeValuesPage() {
     setIsSubmitting(true);
     
     try {
+      console.log(`Attempting to delete attribute value with ID: ${selectedAttributeValue.id}`);
       const response = await apiClient.delete(`/api/attribute-values/${selectedAttributeValue.id}`);
       
+      console.log('Delete response:', response.data);
       const result = response.data;
       
       if (result.success) {
+        console.log(`Successfully deleted attribute value: ${selectedAttributeValue.product_name} - ${selectedAttributeValue.attribute_name}`);
         toast.success('Attribute value deleted successfully');
         setIsDeleteDialogOpen(false);
         setSelectedAttributeValue(null);
+        // Refresh the data to ensure the deleted item is removed from the UI
         await fetchAttributeValues();
       } else {
-        toast.error(result.message || 'Failed to delete attribute value');
+        throw new Error(result.message || 'Failed to delete attribute value from database');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting attribute value:', error);
-      toast.error('Failed to delete attribute value');
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete attribute value. The item may still exist in the database.';
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
