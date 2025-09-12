@@ -61,7 +61,8 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface ProductFamily {
   id: number;
@@ -88,13 +89,8 @@ export default function ProductFamilyPage() {
   const [bulkDeleteFamilyIds, setBulkDeleteFamilyIds] = useState<string[]>([]);
   const [currentFamily, setCurrentFamily] = useState<ProductFamily | null>(null);
 
-  // Mock categories data
-  const [categories] = useState([
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Clothing" },
-    { id: 3, name: "Food & Beverages" },
-    { id: 4, name: "Books" },
-  ]);
+  // Categories data from API
+  const [categories, setCategories] = useState<any[]>([]);
 
   const canAccessFamiliesPage = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('inventory-manager');
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager');
@@ -110,88 +106,43 @@ export default function ProductFamilyPage() {
   useEffect(() => {
     if (canAccessFamiliesPage) {
       fetchFamilies();
+      fetchCategories();
     }
   }, [canAccessFamiliesPage]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/api/categories');
+      if (response.data?.success) {
+        setCategories(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchFamilies = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      const mockFamilies: ProductFamily[] = [
-        {
-          id: 1,
-          name: "Smartphones",
-          code: "SMART",
-          description: "Mobile phones and smart devices",
-          category_id: 1,
-          category_name: "Electronics",
-          is_active: true,
-          product_count: 25,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: "Laptops",
-          code: "LAPTOP",
-          description: "Portable computers and notebooks",
-          category_id: 1,
-          category_name: "Electronics",
-          is_active: true,
-          product_count: 18,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: "Running Shoes",
-          code: "RUNSHOE",
-          description: "Athletic footwear for running",
-          category_id: 2,
-          category_name: "Clothing",
-          is_active: true,
-          product_count: 32,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: "Casual Shirts",
-          code: "CASSHIRT",
-          description: "Casual and dress shirts",
-          category_id: 2,
-          category_name: "Clothing",
-          is_active: true,
-          product_count: 45,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: "Gaming Accessories",
-          code: "GAMEACC",
-          description: "Gaming peripherals and accessories",
-          category_id: 1,
-          category_name: "Electronics",
-          is_active: false,
-          product_count: 8,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 6,
-          name: "Organic Snacks",
-          code: "ORGSNACK",
-          description: "Healthy organic snack foods",
-          category_id: 3,
-          category_name: "Food & Beverages",
-          is_active: true,
-          product_count: 12,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-      setFamilies(mockFamilies);
+      const response = await apiClient.get('/api/families');
+      
+      if (response.data?.success) {
+        const apiFamilies = response.data.data.map((family: any) => ({
+          id: parseInt(family.id),
+          name: family.name,
+          code: family.code,
+          description: family.description,
+          category_id: family.category_id ? parseInt(family.category_id) : undefined,
+          category_name: family.category_name,
+          is_active: family.is_active,
+          product_count: family.product_count || 0,
+          created_at: family.created_at,
+          updated_at: family.updated_at,
+        }));
+        setFamilies(apiFamilies);
+      } else {
+        setFamilies([]);
+      }
     } catch (error) {
       console.error("Error fetching families:", error);
       setFamilies([]);
@@ -224,14 +175,26 @@ export default function ProductFamilyPage() {
 
   const onCreateSubmit = async (data: z.infer<typeof familyFormSchema>) => {
     try {
-      console.log("Creating family:", data);
-      alert("Product family created successfully");
-      setIsCreateDialogOpen(false);
-      createForm.reset();
-      fetchFamilies();
-    } catch (error) {
+      const familyData = {
+        name: data.name,
+        code: data.code,
+        description: data.description || null,
+        category_id: data.categoryId === "none" ? null : data.categoryId || null,
+        is_active: data.isActive,
+      };
+
+      const response = await apiClient.post('/api/families', familyData);
+      
+      if (response.data?.success) {
+        setIsCreateDialogOpen(false);
+        createForm.reset();
+        fetchFamilies();
+      } else {
+        throw new Error(response.data?.message || "Failed to create family");
+      }
+    } catch (error: any) {
       console.error("Error creating family:", error);
-      alert("Failed to create product family");
+      alert(error.response?.data?.message || "Failed to create product family");
     }
   };
 
@@ -239,13 +202,26 @@ export default function ProductFamilyPage() {
     if (!currentFamily) return;
     
     try {
-      console.log("Updating family:", data);
-      alert("Product family updated successfully");
-      setIsEditDialogOpen(false);
-      fetchFamilies();
-    } catch (error) {
+      const familyData = {
+        name: data.name,
+        code: data.code,
+        description: data.description || null,
+        category_id: data.categoryId === "none" ? null : data.categoryId || null,
+        is_active: data.isActive,
+      };
+
+      const response = await apiClient.put(`/api/families/${currentFamily.id}`, familyData);
+      
+      if (response.data?.success) {
+        setIsEditDialogOpen(false);
+        setCurrentFamily(null);
+        fetchFamilies();
+      } else {
+        throw new Error(response.data?.message || "Failed to update family");
+      }
+    } catch (error: any) {
       console.error("Error updating family:", error);
-      alert("Failed to update product family");
+      alert(error.response?.data?.message || "Failed to update product family");
     }
   };
 
@@ -253,13 +229,18 @@ export default function ProductFamilyPage() {
     if (currentFamily) {
       try {
         setIsDeleteLoading(true);
-        console.log("Deleting family:", currentFamily.id);
-        setIsDeleteDialogOpen(false);
-        setCurrentFamily(null);
-        fetchFamilies();
-      } catch (error) {
+        const response = await apiClient.delete(`/api/families/${currentFamily.id}`);
+        
+        if (response.data?.success) {
+          setIsDeleteDialogOpen(false);
+          setCurrentFamily(null);
+          fetchFamilies();
+        } else {
+          throw new Error(response.data?.message || "Failed to delete family");
+        }
+      } catch (error: any) {
         console.error("Error deleting family:", error);
-        alert("Failed to delete product family");
+        alert(error.response?.data?.message || "Failed to delete product family");
       } finally {
         setIsDeleteLoading(false);
       }
@@ -300,25 +281,85 @@ export default function ProductFamilyPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform families to UserData format for reusing the table
-  const transformedFamilies: UserData[] = useMemo(() => {
+  // Transform families to TableData format for the table
+  const transformedFamilies: (ProductFamily & TableData)[] = useMemo(() => {
     if (!families) return [];
     
     return families.map((family: ProductFamily) => ({
+      ...family,
       id: String(family.id),
-      username: family.code,
-      email: family.name,
-      first_name: family.category_name || "Uncategorized",
-      last_name: family.product_count.toString(),
-      phone: family.description || "",
-      is_active: family.is_active,
-      email_verified: family.product_count > 0,
-      last_login_at: family.updated_at,
-      created_at: family.created_at,
-      role_names: [family.is_active ? "Active" : "Inactive"],
-      role_slugs: [family.is_active ? "active" : "inactive"]
     }));
   }, [families]);
+
+  // Define column configuration for the table
+  const columnConfig: ColumnConfig<ProductFamily & TableData>[] = [
+    {
+      key: "name",
+      label: "Family Name",
+      width: 200,
+      render: (family) => (
+        <div className="font-medium">{family.name}</div>
+      ),
+    },
+    {
+      key: "code",
+      label: "Code",
+      width: 150,
+      render: (family) => (
+        <span className="font-mono text-sm">{family.code}</span>
+      ),
+    },
+    {
+      key: "category_name",
+      label: "Category",
+      width: 150,
+      filterType: "select",
+      render: (family) => (
+        <Badge variant="outline">{family.category_name || "Uncategorized"}</Badge>
+      ),
+    },
+    {
+      key: "description",
+      label: "Description",
+      width: 200,
+      render: (family) => (
+        <span className="text-muted-foreground">{family.description || "N/A"}</span>
+      ),
+    },
+    {
+      key: "product_count",
+      label: "Products",
+      width: 100,
+      render: (family) => (
+        <span className="font-medium">{family.product_count}</span>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      width: 120,
+      filterType: "select",
+      render: (family) => (
+        <Badge variant={family.is_active ? "default" : "secondary"}>
+          {family.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      render: (family) => (
+        <span className="text-muted-foreground">
+          {new Date(family.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
 
   const handleFamilySelection = (familyIds: string[]) => {
     console.log("Selected families:", familyIds);
@@ -337,31 +378,23 @@ export default function ProductFamilyPage() {
     }
   };
 
-  const handleFamilyEdit = (familyData: UserData) => {
-    const familyFound = families?.find((f: ProductFamily) => f.id.toString() === familyData.id);
+  const handleFamilyEdit = (family: ProductFamily & TableData) => {
+    const familyFound = families?.find((f: ProductFamily) => f.id.toString() === family.id);
     if (familyFound) {
       handleEdit(familyFound);
     }
   };
 
-  const handleFamilyDelete = (familyData: UserData) => {
-    const familyFound = families?.find((f: ProductFamily) => f.id.toString() === familyData.id);
+  const handleFamilyDelete = (family: ProductFamily & TableData) => {
+    const familyFound = families?.find((f: ProductFamily) => f.id.toString() === family.id);
     if (familyFound) {
       setCurrentFamily(familyFound);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleFamilyView = (familyData: UserData) => {
-    console.log("View family details:", familyData.email);
-  };
-
-  const handleFamilyToggleStatus = (familyData: UserData) => {
-    console.log("Toggle status for family:", familyData.email);
-  };
-
-  const handleFamilyManageRoles = (familyData: UserData) => {
-    console.log("Manage products in family:", familyData.email);
+  const handleFamilyView = (family: ProductFamily & TableData) => {
+    console.log("View family details:", family.name);
   };
 
   // Calculate stats
@@ -656,16 +689,22 @@ export default function ProductFamilyPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedTable
               data={transformedFamilies}
+              columns={columnConfig}
               loading={loading}
-              onUserSelect={handleFamilySelection}
+              title="Product Families"
+              onRowSelect={handleFamilySelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleFamilyEdit}
-              onUserDelete={handleFamilyDelete}
-              onUserView={handleFamilyView}
-              onUserManageRoles={handleFamilyManageRoles}
-              onUserToggleStatus={handleFamilyToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleFamilyEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleFamilyDelete : undefined}
+              onRowView={handleFamilyView}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit Family" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete Family" } : undefined,
+              }}
+              emptyMessage="No product families found"
             />
           </div>
         </CardContent>

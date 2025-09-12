@@ -61,7 +61,8 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface Unit {
   id: number;
@@ -121,97 +122,26 @@ export default function UnitsPage() {
   const fetchUnits = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      const mockUnits: Unit[] = [
-        {
-          id: 1,
-          name: "Piece",
-          symbol: "pcs",
-          description: "Individual items or pieces",
-          unit_type: "count",
-          is_active: true,
-          product_count: 125,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: "Kilogram",
-          symbol: "kg",
-          description: "Unit of mass in metric system",
-          unit_type: "weight",
-          base_unit: "gram",
-          conversion_factor: 1000,
-          is_active: true,
-          product_count: 45,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: "Liter",
-          symbol: "L",
-          description: "Unit of volume in metric system",
-          unit_type: "volume",
-          base_unit: "milliliter",
-          conversion_factor: 1000,
-          is_active: true,
-          product_count: 28,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: "Meter",
-          symbol: "m",
-          description: "Unit of length in metric system",
-          unit_type: "length",
-          base_unit: "centimeter",
-          conversion_factor: 100,
-          is_active: true,
-          product_count: 15,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: "Box",
-          symbol: "box",
-          description: "Packaging unit for multiple items",
-          unit_type: "count",
-          is_active: true,
-          product_count: 67,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 6,
-          name: "Square Meter",
-          symbol: "m²",
-          description: "Unit of area measurement",
-          unit_type: "area",
-          base_unit: "square centimeter",
-          conversion_factor: 10000,
-          is_active: false,
-          product_count: 3,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 7,
-          name: "Dozen",
-          symbol: "doz",
-          description: "Set of 12 items",
-          unit_type: "count",
-          base_unit: "piece",
-          conversion_factor: 12,
-          is_active: true,
-          product_count: 22,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-      setUnits(mockUnits);
+      const response = await apiClient.get('/api/units');
+      
+      if (response.data?.success) {
+        const apiUnits = response.data.data.map((unit: any) => ({
+          id: parseInt(unit.id),
+          name: unit.name,
+          symbol: unit.symbol,
+          description: unit.description,
+          unit_type: unit.unit_type,
+          base_unit: unit.base_unit,
+          conversion_factor: unit.conversion_factor ? parseFloat(unit.conversion_factor) : undefined,
+          is_active: unit.is_active,
+          product_count: unit.product_count || 0,
+          created_at: unit.created_at,
+          updated_at: unit.updated_at,
+        }));
+        setUnits(apiUnits);
+      } else {
+        setUnits([]);
+      }
     } catch (error) {
       console.error("Error fetching units:", error);
       setUnits([]);
@@ -326,25 +256,103 @@ export default function UnitsPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform units to UserData format for reusing the table
-  const transformedUnits: UserData[] = useMemo(() => {
+  // Transform units to TableData format for the table
+  const transformedUnits: (Unit & TableData)[] = useMemo(() => {
     if (!units) return [];
     
     return units.map((unit: Unit) => ({
+      ...unit,
       id: String(unit.id),
-      username: unit.symbol,
-      email: unit.name,
-      first_name: unit.unit_type.charAt(0).toUpperCase() + unit.unit_type.slice(1),
-      last_name: unit.product_count.toString(),
-      phone: unit.base_unit || "N/A",
-      is_active: unit.is_active,
-      email_verified: unit.product_count > 0,
-      last_login_at: unit.updated_at,
-      created_at: unit.created_at,
-      role_names: [unit.is_active ? "Active" : "Inactive"],
-      role_slugs: [unit.is_active ? "active" : "inactive"]
     }));
   }, [units]);
+
+  // Define column configuration for the table
+  const columnConfig: ColumnConfig<Unit & TableData>[] = [
+    {
+      key: "name",
+      label: "Unit Name",
+      width: 180,
+      render: (unit) => (
+        <div className="font-medium">{unit.name}</div>
+      ),
+    },
+    {
+      key: "symbol",
+      label: "Symbol",
+      width: 100,
+      render: (unit) => (
+        <span className="font-mono text-sm font-medium">{unit.symbol}</span>
+      ),
+    },
+    {
+      key: "unit_type",
+      label: "Type",
+      width: 120,
+      filterType: "select",
+      render: (unit) => (
+        <Badge variant="outline">{
+          UNIT_TYPES.find(ut => ut.value === unit.unit_type)?.label || unit.unit_type
+        }</Badge>
+      ),
+    },
+    {
+      key: "base_unit",
+      label: "Base Unit",
+      width: 130,
+      render: (unit) => (
+        <span className="text-muted-foreground">{unit.base_unit || "N/A"}</span>
+      ),
+    },
+    {
+      key: "conversion_factor",
+      label: "Factor",
+      width: 100,
+      render: (unit) => (
+        <span className="font-mono text-sm">{unit.conversion_factor || "1"}</span>
+      ),
+    },
+    {
+      key: "description",
+      label: "Description",
+      width: 200,
+      render: (unit) => (
+        <span className="text-muted-foreground">{unit.description || "N/A"}</span>
+      ),
+    },
+    {
+      key: "product_count",
+      label: "Products",
+      width: 100,
+      render: (unit) => (
+        <span className="font-medium">{unit.product_count}</span>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      width: 120,
+      filterType: "select",
+      render: (unit) => (
+        <Badge variant={unit.is_active ? "default" : "secondary"}>
+          {unit.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      render: (unit) => (
+        <span className="text-muted-foreground">
+          {new Date(unit.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
 
   const handleUnitSelection = (unitIds: string[]) => {
     console.log("Selected units:", unitIds);
@@ -363,31 +371,23 @@ export default function UnitsPage() {
     }
   };
 
-  const handleUnitEdit = (unitData: UserData) => {
-    const unitFound = units?.find((u: Unit) => u.id.toString() === unitData.id);
+  const handleUnitEdit = (unit: Unit & TableData) => {
+    const unitFound = units?.find((u: Unit) => u.id.toString() === unit.id);
     if (unitFound) {
       handleEdit(unitFound);
     }
   };
 
-  const handleUnitDelete = (unitData: UserData) => {
-    const unitFound = units?.find((u: Unit) => u.id.toString() === unitData.id);
+  const handleUnitDelete = (unit: Unit & TableData) => {
+    const unitFound = units?.find((u: Unit) => u.id.toString() === unit.id);
     if (unitFound) {
       setCurrentUnit(unitFound);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleUnitView = (unitData: UserData) => {
-    console.log("View unit details:", unitData.email);
-  };
-
-  const handleUnitToggleStatus = (unitData: UserData) => {
-    console.log("Toggle status for unit:", unitData.email);
-  };
-
-  const handleUnitManageRoles = (unitData: UserData) => {
-    console.log("Manage products for unit:", unitData.email);
+  const handleUnitView = (unit: Unit & TableData) => {
+    console.log("View unit details:", unit.name);
   };
 
   // Calculate stats
@@ -719,16 +719,22 @@ export default function UnitsPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedTable
               data={transformedUnits}
+              columns={columnConfig}
               loading={loading}
-              onUserSelect={handleUnitSelection}
+              title="Units of Measure"
+              onRowSelect={handleUnitSelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleUnitEdit}
-              onUserDelete={handleUnitDelete}
-              onUserView={handleUnitView}
-              onUserManageRoles={handleUnitManageRoles}
-              onUserToggleStatus={handleUnitToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleUnitEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleUnitDelete : undefined}
+              onRowView={handleUnitView}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit Unit" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete Unit" } : undefined,
+              }}
+              emptyMessage="No units found"
             />
           </div>
         </CardContent>

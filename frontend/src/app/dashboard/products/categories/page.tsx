@@ -55,13 +55,15 @@ import {
   Tag,
   TrendingUp,
   Package,
+  Copy,
+  Download,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedProductTable, ProductData } from "@/components/ui/advanced-product-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 
 export interface Category {
   id: number;
@@ -273,27 +275,96 @@ export default function CategoriesPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform categories to ProductData format for the table
-  const transformedCategories: ProductData[] = useMemo(() => {
+  // Transform categories to TableData format for the table
+  const transformedCategories: (Category & TableData)[] = useMemo(() => {
     if (!categories) return [];
     
     return categories.map((category: Category) => ({
+      ...category,
       id: String(category.id),
-      name: category.name,
-      sku: category.slug,
-      category: category.parent_name || "Root",
-      brand: `Level ${category.level}`,
-      family: category.subcategory_count > 0 ? "Has Children" : "No Children",
-      unit: "category",
-      price: category.product_count,
-      cost: 0,
-      quantity: category.subcategory_count,
-      status: category.is_active ? "active" : "inactive",
-      description: category.description,
-      created_at: category.created_at,
-      updated_at: category.updated_at,
     }));
   }, [categories]);
+
+  // Define column configuration for the table
+  const columnConfig: ColumnConfig<Category & TableData>[] = [
+    {
+      key: "name",
+      label: "Category Name",
+      width: 200,
+      render: (category) => (
+        <div className="font-medium">{category.name}</div>
+      ),
+    },
+    {
+      key: "slug",
+      label: "Slug",
+      width: 150,
+      render: (category) => (
+        <span className="font-mono text-sm">{category.slug}</span>
+      ),
+    },
+    {
+      key: "parent_name",
+      label: "Parent Category",
+      width: 150,
+      filterType: "select",
+      render: (category) => (
+        <Badge variant="outline">{category.parent_name || "Root"}</Badge>
+      ),
+    },
+    {
+      key: "level",
+      label: "Level",
+      width: 100,
+      filterType: "select",
+      render: (category) => (
+        <Badge variant="secondary">Level {category.level}</Badge>
+      ),
+    },
+    {
+      key: "subcategory_count",
+      label: "Subcategories",
+      width: 120,
+      render: (category) => (
+        <span className="text-muted-foreground">
+          {category.subcategory_count > 0 ? `${category.subcategory_count} children` : "No children"}
+        </span>
+      ),
+    },
+    {
+      key: "product_count",
+      label: "Products",
+      width: 100,
+      render: (category) => (
+        <span className="font-medium">{category.product_count}</span>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      width: 120,
+      filterType: "select",
+      render: (category) => (
+        <Badge variant={category.is_active ? "default" : "secondary"}>
+          {category.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      render: (category) => (
+        <span className="text-muted-foreground">
+          {new Date(category.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
 
   const handleCategorySelection = (categoryIds: string[]) => {
     console.log("Selected categories:", categoryIds);
@@ -312,27 +383,23 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleCategoryEdit = (productData: ProductData) => {
-    const categoryFound = categories?.find((c: Category) => c.id.toString() === productData.id);
+  const handleCategoryEdit = (category: Category & TableData) => {
+    const categoryFound = categories?.find((c: Category) => c.id.toString() === category.id);
     if (categoryFound) {
       handleEdit(categoryFound);
     }
   };
 
-  const handleCategoryDelete = (productData: ProductData) => {
-    const categoryFound = categories?.find((c: Category) => c.id.toString() === productData.id);
+  const handleCategoryDelete = (category: Category & TableData) => {
+    const categoryFound = categories?.find((c: Category) => c.id.toString() === category.id);
     if (categoryFound) {
       setCurrentCategory(categoryFound);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleCategoryView = (productData: ProductData) => {
-    console.log("View category details:", productData.name);
-  };
-
-  const handleCategoryToggleStatus = (productData: ProductData) => {
-    console.log("Toggle status for category:", productData.name);
+  const handleCategoryView = (category: Category & TableData) => {
+    console.log("View category details:", category.name);
   };
 
   // Get parent categories for dropdown
@@ -630,15 +697,26 @@ export default function CategoriesPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedProductTable
+            <AdvancedTable
               data={transformedCategories}
+              columns={columnConfig}
               loading={loading}
-              onProductSelect={handleCategorySelection}
+              title="Category Directory"
+              onRowSelect={handleCategorySelection}
               onBulkAction={handleBulkAction}
-              onProductEdit={handleCategoryEdit}
-              onProductDelete={handleCategoryDelete}
-              onProductView={handleCategoryView}
-              onProductToggleStatus={handleCategoryToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleCategoryEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleCategoryDelete : undefined}
+              onRowView={handleCategoryView}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit Category" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete Category" } : undefined,
+              }}
+              bulkActions={canPerformAdminActions ? undefined : [
+                { label: "Copy", action: "copy", icon: <Copy className="h-4 w-4 mr-2" /> },
+                { label: "Export", action: "export", icon: <Download className="h-4 w-4 mr-2" /> },
+              ]}
+              emptyMessage="No categories found"
             />
           </div>
         </CardContent>

@@ -54,7 +54,8 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface Brand {
   id: number;

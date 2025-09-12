@@ -61,7 +61,8 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface Attribute {
   id: number;
@@ -119,88 +120,26 @@ export default function AttributesPage() {
   const fetchAttributes = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      const mockAttributes: Attribute[] = [
-        {
-          id: 1,
-          name: "Color",
-          code: "COLOR",
-          description: "Product color specification",
-          data_type: "select",
-          is_required: false,
-          is_active: true,
-          option_count: 8,
-          product_count: 145,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: "Size",
-          code: "SIZE",
-          description: "Product size information",
-          data_type: "select",
-          is_required: true,
-          is_active: true,
-          option_count: 6,
-          product_count: 98,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: "Material",
-          code: "MATERIAL",
-          description: "Product material composition",
-          data_type: "multiselect",
-          is_required: false,
-          is_active: true,
-          option_count: 12,
-          product_count: 67,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: "Weight",
-          code: "WEIGHT",
-          description: "Product weight in grams",
-          data_type: "number",
-          is_required: false,
-          is_active: true,
-          option_count: 0,
-          product_count: 234,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: "Warranty",
-          code: "WARRANTY",
-          description: "Product warranty information",
-          data_type: "text",
-          is_required: false,
-          is_active: true,
-          option_count: 0,
-          product_count: 45,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 6,
-          name: "Is Fragile",
-          code: "FRAGILE",
-          description: "Whether the product is fragile",
-          data_type: "boolean",
-          is_required: false,
-          is_active: false,
-          option_count: 0,
-          product_count: 23,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-      setAttributes(mockAttributes);
+      const response = await apiClient.get('/api/attributes');
+      
+      if (response.data?.success) {
+        const apiAttributes = response.data.data.map((attribute: any) => ({
+          id: parseInt(attribute.id),
+          name: attribute.name,
+          code: attribute.code,
+          description: attribute.description,
+          data_type: attribute.data_type,
+          is_required: attribute.is_required,
+          is_active: attribute.is_active,
+          option_count: attribute.option_count || 0,
+          product_count: attribute.product_count || 0,
+          created_at: attribute.created_at,
+          updated_at: attribute.updated_at,
+        }));
+        setAttributes(apiAttributes);
+      } else {
+        setAttributes([]);
+      }
     } catch (error) {
       console.error("Error fetching attributes:", error);
       setAttributes([]);
@@ -312,25 +251,106 @@ export default function AttributesPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform attributes to UserData format for reusing the table
-  const transformedAttributes: UserData[] = useMemo(() => {
+  // Transform attributes to TableData format for the table
+  const transformedAttributes: (Attribute & TableData)[] = useMemo(() => {
     if (!attributes) return [];
     
     return attributes.map((attribute: Attribute) => ({
+      ...attribute,
       id: String(attribute.id),
-      username: attribute.code,
-      email: attribute.name,
-      first_name: attribute.data_type.charAt(0).toUpperCase() + attribute.data_type.slice(1),
-      last_name: attribute.product_count.toString(),
-      phone: attribute.option_count.toString(),
-      is_active: attribute.is_active,
-      email_verified: attribute.is_required,
-      last_login_at: attribute.updated_at,
-      created_at: attribute.created_at,
-      role_names: [attribute.is_active ? "Active" : "Inactive"],
-      role_slugs: [attribute.is_active ? "active" : "inactive"]
     }));
   }, [attributes]);
+
+  // Define column configuration for the table
+  const columnConfig: ColumnConfig<Attribute & TableData>[] = [
+    {
+      key: "name",
+      label: "Attribute Name",
+      width: 200,
+      render: (attribute) => (
+        <div className="font-medium">{attribute.name}</div>
+      ),
+    },
+    {
+      key: "code",
+      label: "Code",
+      width: 150,
+      render: (attribute) => (
+        <span className="font-mono text-sm">{attribute.code}</span>
+      ),
+    },
+    {
+      key: "data_type",
+      label: "Data Type",
+      width: 130,
+      filterType: "select",
+      render: (attribute) => (
+        <Badge variant="outline">{
+          DATA_TYPES.find(dt => dt.value === attribute.data_type)?.label || attribute.data_type
+        }</Badge>
+      ),
+    },
+    {
+      key: "description",
+      label: "Description",
+      width: 200,
+      render: (attribute) => (
+        <span className="text-muted-foreground">{attribute.description || "N/A"}</span>
+      ),
+    },
+    {
+      key: "is_required",
+      label: "Required",
+      width: 100,
+      filterType: "select",
+      render: (attribute) => (
+        <Badge variant={attribute.is_required ? "destructive" : "secondary"}>
+          {attribute.is_required ? "Required" : "Optional"}
+        </Badge>
+      ),
+    },
+    {
+      key: "option_count",
+      label: "Options",
+      width: 100,
+      render: (attribute) => (
+        <span className="font-medium">{attribute.option_count}</span>
+      ),
+    },
+    {
+      key: "product_count",
+      label: "Products",
+      width: 100,
+      render: (attribute) => (
+        <span className="font-medium">{attribute.product_count}</span>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      width: 120,
+      filterType: "select",
+      render: (attribute) => (
+        <Badge variant={attribute.is_active ? "default" : "secondary"}>
+          {attribute.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      render: (attribute) => (
+        <span className="text-muted-foreground">
+          {new Date(attribute.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
 
   const handleAttributeSelection = (attributeIds: string[]) => {
     console.log("Selected attributes:", attributeIds);
@@ -349,31 +369,23 @@ export default function AttributesPage() {
     }
   };
 
-  const handleAttributeEdit = (attributeData: UserData) => {
-    const attributeFound = attributes?.find((a: Attribute) => a.id.toString() === attributeData.id);
+  const handleAttributeEdit = (attribute: Attribute & TableData) => {
+    const attributeFound = attributes?.find((a: Attribute) => a.id.toString() === attribute.id);
     if (attributeFound) {
       handleEdit(attributeFound);
     }
   };
 
-  const handleAttributeDelete = (attributeData: UserData) => {
-    const attributeFound = attributes?.find((a: Attribute) => a.id.toString() === attributeData.id);
+  const handleAttributeDelete = (attribute: Attribute & TableData) => {
+    const attributeFound = attributes?.find((a: Attribute) => a.id.toString() === attribute.id);
     if (attributeFound) {
       setCurrentAttribute(attributeFound);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleAttributeView = (attributeData: UserData) => {
-    console.log("View attribute details:", attributeData.email);
-  };
-
-  const handleAttributeToggleStatus = (attributeData: UserData) => {
-    console.log("Toggle status for attribute:", attributeData.email);
-  };
-
-  const handleAttributeManageRoles = (attributeData: UserData) => {
-    console.log("Manage options for attribute:", attributeData.email);
+  const handleAttributeView = (attribute: Attribute & TableData) => {
+    console.log("View attribute details:", attribute.name);
   };
 
   // Calculate stats
@@ -690,16 +702,29 @@ export default function AttributesPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedTable
               data={transformedAttributes}
+              columns={columnConfig}
               loading={loading}
-              onUserSelect={handleAttributeSelection}
+              title="Product Attributes"
+              onRowSelect={handleAttributeSelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleAttributeEdit}
-              onUserDelete={handleAttributeDelete}
-              onUserView={handleAttributeView}
-              onUserManageRoles={handleAttributeManageRoles}
-              onUserToggleStatus={handleAttributeToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleAttributeEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleAttributeDelete : undefined}
+              onRowView={handleAttributeView}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit Attribute" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete Attribute" } : undefined,
+                custom: canPerformAdminActions && [
+                  {
+                    label: "Manage Options",
+                    icon: <Sliders className="mr-2 h-4 w-4" />,
+                    onClick: (attribute) => console.log("Manage options for:", attribute.name)
+                  }
+                ]
+              }}
+              emptyMessage="No attributes found"
             />
           </div>
         </CardContent>
