@@ -101,7 +101,7 @@ interface SettingsProviderProps {
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<SettingsState>(defaultSettings);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const { setTheme } = useTheme();
+  const { theme: currentTheme, setTheme } = useTheme();
   const { changeLocale } = useLocale();
 
   // Load settings from localStorage on mount
@@ -123,6 +123,24 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   useEffect(() => {
     setTheme(settings.theme);
   }, [settings.theme, setTheme]);
+
+  // Sync theme changes from next-themes back to settings
+  useEffect(() => {
+    if (currentTheme && currentTheme !== settings.theme && typeof window !== 'undefined') {
+      setSettings(prev => ({ ...prev, theme: currentTheme as 'light' | 'dark' | 'system' }));
+      // Save to localStorage to keep in sync
+      const savedSettings = localStorage.getItem('wms-settings');
+      if (savedSettings) {
+        try {
+          const parsedSettings = JSON.parse(savedSettings);
+          const updatedSettings = { ...parsedSettings, theme: currentTheme };
+          localStorage.setItem('wms-settings', JSON.stringify(updatedSettings));
+        } catch (error) {
+          console.error('Failed to sync theme to localStorage:', error);
+        }
+      }
+    }
+  }, [currentTheme, settings.theme]);
 
   // Apply language changes
   useEffect(() => {
@@ -166,10 +184,63 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     }
   }, [settings.animations]);
 
+  // Apply accent color
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      
+      // Define accent color mappings
+      const accentColorMap = {
+        default: {
+          primary: '221.2 83.2% 53.3%',
+          primaryForeground: '210 40% 98%',
+          ring: '221.2 83.2% 53.3%',
+        },
+        blue: {
+          primary: '217.2 91.2% 59.8%',
+          primaryForeground: '210 40% 98%',
+          ring: '217.2 91.2% 59.8%',
+        },
+        green: {
+          primary: '142.1 76.2% 36.3%',
+          primaryForeground: '355.7 100% 97.3%',
+          ring: '142.1 76.2% 36.3%',
+        },
+        purple: {
+          primary: '262.1 83.3% 57.8%',
+          primaryForeground: '210 40% 98%',
+          ring: '262.1 83.3% 57.8%',
+        },
+        red: {
+          primary: '0 72.2% 50.6%',
+          primaryForeground: '210 40% 98%',
+          ring: '0 72.2% 50.6%',
+        },
+        orange: {
+          primary: '24.6 95% 53.1%',
+          primaryForeground: '210 40% 98%',
+          ring: '24.6 95% 53.1%',
+        },
+        pink: {
+          primary: '330.4 81.2% 60.4%',
+          primaryForeground: '210 40% 98%',
+          ring: '330.4 81.2% 60.4%',
+        },
+      };
+
+      const colors = accentColorMap[settings.accentColor] || accentColorMap.default;
+      
+      root.style.setProperty('--primary', colors.primary);
+      root.style.setProperty('--primary-foreground', colors.primaryForeground);
+      root.style.setProperty('--ring', colors.ring);
+    }
+  }, [settings.accentColor]);
+
   const updateSetting = <K extends keyof SettingsState>(
     key: K,
     value: SettingsState[K]
   ) => {
+    console.log(`Updating setting ${String(key)} to:`, value);
     setSettings(prev => ({ ...prev, [key]: value }));
     setHasUnsavedChanges(true);
   };

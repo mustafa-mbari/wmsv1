@@ -4,14 +4,15 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/components/providers/settings-provider';
+import { useTheme } from '@/components/ui/theme-provider';
 import { Sun, Moon, Monitor, Palette } from 'lucide-react';
 
 export function AppearanceSection() {
   const intl = useIntl();
   const { settings, updateSetting } = useSettings();
+  const { theme, setTheme } = useTheme();
 
   const themeOptions = [
     {
@@ -35,13 +36,13 @@ export function AppearanceSection() {
   ];
 
   const accentColors = [
-    { value: 'default' as const, color: 'hsl(var(--primary))', labelKey: 'settings.appearance.accentColors.default' },
-    { value: 'blue' as const, color: '#3b82f6', labelKey: 'settings.appearance.accentColors.blue' },
-    { value: 'green' as const, color: '#10b981', labelKey: 'settings.appearance.accentColors.green' },
-    { value: 'purple' as const, color: '#8b5cf6', labelKey: 'settings.appearance.accentColors.purple' },
-    { value: 'red' as const, color: '#ef4444', labelKey: 'settings.appearance.accentColors.red' },
-    { value: 'orange' as const, color: '#f97316', labelKey: 'settings.appearance.accentColors.orange' },
-    { value: 'pink' as const, color: '#ec4899', labelKey: 'settings.appearance.accentColors.pink' },
+    { value: 'default' as const, color: 'hsl(221.2, 83.2%, 53.3%)', labelKey: 'settings.appearance.accentColors.default' },
+    { value: 'blue' as const, color: 'hsl(217.2, 91.2%, 59.8%)', labelKey: 'settings.appearance.accentColors.blue' },
+    { value: 'green' as const, color: 'hsl(142.1, 76.2%, 36.3%)', labelKey: 'settings.appearance.accentColors.green' },
+    { value: 'purple' as const, color: 'hsl(262.1, 83.3%, 57.8%)', labelKey: 'settings.appearance.accentColors.purple' },
+    { value: 'red' as const, color: 'hsl(0, 72.2%, 50.6%)', labelKey: 'settings.appearance.accentColors.red' },
+    { value: 'orange' as const, color: 'hsl(24.6, 95%, 53.1%)', labelKey: 'settings.appearance.accentColors.orange' },
+    { value: 'pink' as const, color: 'hsl(330.4, 81.2%, 60.4%)', labelKey: 'settings.appearance.accentColors.pink' },
   ];
 
   const fontSizeOptions = [
@@ -59,38 +60,36 @@ export function AppearanceSection() {
             {intl.formatMessage({ id: 'settings.appearance.theme' })}
           </Label>
         </div>
-        <RadioGroup
-          value={settings.theme}
-          onValueChange={(value: 'light' | 'dark' | 'system') => updateSetting('theme', value)}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {themeOptions.map((option) => {
             const Icon = option.icon;
             return (
-              <div key={option.value}>
-                <RadioGroupItem
-                  value={option.value}
-                  id={option.value}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={option.value}
-                  className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                >
-                  <Icon className="mb-3 h-6 w-6" />
-                  <div className="text-center">
-                    <div className="font-medium">
-                      {intl.formatMessage({ id: option.labelKey })}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {option.description}
-                    </div>
+              <div 
+                key={option.value}
+                onClick={() => {
+                  console.log('Theme div clicked:', option.value);
+                  setTheme(option.value);
+                  updateSetting('theme', option.value);
+                }}
+                className={`flex flex-col items-center justify-between rounded-lg border-2 p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors ${
+                  theme === option.value 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-muted bg-background'
+                }`}
+              >
+                <Icon className="mb-3 h-6 w-6" />
+                <div className="text-center">
+                  <div className="font-medium">
+                    {intl.formatMessage({ id: option.labelKey })}
                   </div>
-                </Label>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {option.description}
+                  </div>
+                </div>
               </div>
             );
           })}
-        </RadioGroup>
+        </div>
       </div>
 
       {/* Accent Color */}
@@ -140,37 +139,34 @@ export function AppearanceSection() {
             Adjust the default text size throughout the interface
           </p>
         </div>
-        <RadioGroup
-          value={settings.fontSize}
-          onValueChange={(value: 'small' | 'medium' | 'large') => updateSetting('fontSize', value)}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {fontSizeOptions.map((option) => (
-            <div key={option.value}>
-              <RadioGroupItem
-                value={option.value}
-                id={`font-${option.value}`}
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor={`font-${option.value}`}
-                className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-              >
-                <div style={{ fontSize: option.size }} className="font-medium mb-2">
-                  Aa
+            <div 
+              key={option.value}
+              onClick={() => {
+                console.log('Font size div clicked:', option.value);
+                updateSetting('fontSize', option.value);
+              }}
+              className={`flex flex-col items-center justify-center rounded-lg border-2 p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors ${
+                settings.fontSize === option.value 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-muted bg-background'
+              }`}
+            >
+              <div style={{ fontSize: option.size }} className="font-medium mb-2">
+                Aa
+              </div>
+              <div className="text-center">
+                <div className="font-medium text-sm">
+                  {intl.formatMessage({ id: option.labelKey })}
                 </div>
-                <div className="text-center">
-                  <div className="font-medium text-sm">
-                    {intl.formatMessage({ id: option.labelKey })}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {option.size}
-                  </div>
+                <div className="text-xs text-muted-foreground">
+                  {option.size}
                 </div>
-              </Label>
+              </div>
             </div>
           ))}
-        </RadioGroup>
+        </div>
       </div>
 
       {/* Toggle Settings */}
