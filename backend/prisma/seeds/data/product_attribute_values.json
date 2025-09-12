@@ -1,0 +1,202 @@
+[
+  {
+    "product_sku": "LAP-BUS-001",
+    "attribute_slug": "processor",
+    "value": "Intel i7-12700H"
+  },
+  {
+    "product_sku": "LAP-BUS-001",
+    "attribute_slug": "ram",
+    "value": "16GB DDR5"
+  },
+  {
+    "product_sku": "LAP-BUS-001",
+    "attribute_slug": "storage",
+    "value": "512GB NVMe SSD"
+  },
+  {
+    "product_sku": "LAP-BUS-001",
+    "attribute_slug": "screen_size",
+    "option_value": "14"
+  },
+  {
+    "product_sku": "LAP-BUS-001",
+    "attribute_slug": "color",
+    "option_value": "silver"
+  },
+  {
+    "product_sku": "MSE-GAM-002",
+    "attribute_slug": "dpi",
+    "value": "16000"
+  },
+  {
+    "product_sku": "MSE-GAM-002",
+    "attribute_slug": "button_count",
+    "value": "8"
+  },
+  {
+    "product_sku": "MSE-GAM-002",
+    "attribute_slug": "connectivity",
+    "option_value": "wireless"
+  },
+  {
+    "product_sku": "MSE-GAM-002",
+    "attribute_slug": "color",
+    "option_value": "black"
+  },
+  {
+    "product_sku": "CAM-4K-003",
+    "attribute_slug": "resolution",
+    "option_value": "4k"
+  },
+  {
+    "product_sku": "CAM-4K-003",
+    "attribute_slug": "frame_rate",
+    "value": "30fps"
+  },
+  {
+    "product_sku": "CAM-4K-003",
+    "attribute_slug": "field_of_view",
+    "value": "90 degrees"
+  },
+  {
+    "product_sku": "CAM-4K-003",
+    "attribute_slug": "connectivity",
+    "option_value": "usb_c"
+  },
+  {
+    "product_sku": "CAM-4K-003",
+    "attribute_slug": "color",
+    "option_value": "black"
+  },
+  {
+    "product_sku": "CHR-ERG-004",
+    "attribute_slug": "material",
+    "value": "Mesh fabric with plastic base"
+  },
+  {
+    "product_sku": "CHR-ERG-004",
+    "attribute_slug": "adjustable_height",
+    "value": "true"
+  },
+  {
+    "product_sku": "CHR-ERG-004",
+    "attribute_slug": "lumbar_support",
+    "value": "true"
+  },
+  {
+    "product_sku": "CHR-ERG-004",
+    "attribute_slug": "color",
+    "option_value": "black"
+  },
+  {
+    "product_sku": "CHR-ERG-004",
+    "attribute_slug": "weight_capacity",
+    "value": "120kg"
+  },
+  {
+    "product_sku": "HDP-BT-005",
+    "attribute_slug": "battery_life",
+    "value": "30 hours"
+  },
+  {
+    "product_sku": "HDP-BT-005",
+    "attribute_slug": "connectivity",
+    "option_value": "bluetooth"
+  },
+  {
+    "product_sku": "HDP-BT-005",
+    "attribute_slug": "noise_canceling",
+    "option_value": "active"
+  },
+  {
+    "product_sku": "HDP-BT-005",
+    "attribute_slug": "color",
+    "option_value": "black"
+  },
+  {
+    "product_sku": "SSD-PRT-006",
+    "attribute_slug": "storage",
+    "value": "1TB"
+  },
+  {
+    "product_sku": "SSD-PRT-006",
+    "attribute_slug": "interface",
+    "value": "USB-C 3.2 Gen 2"
+  },
+  {
+    "product_sku": "SSD-PRT-006",
+    "attribute_slug": "read_speed",
+    "value": "1050 MB/s"
+  },
+  {
+    "product_sku": "SSD-PRT-006",
+    "attribute_slug": "connectivity",
+    "option_value": "usb_c"
+  },
+  {
+    "product_sku": "SSD-PRT-006",
+    "attribute_slug": "color",
+    "option_value": "silver"
+  },
+  {
+    "product_sku": "DSK-STD-007",
+    "attribute_slug": "material",
+    "value": "Steel frame with wood surface"
+  },
+  {
+    "product_sku": "DSK-STD-007",
+    "attribute_slug": "adjustable_height",
+    "value": "true"
+  },
+  {
+    "product_sku": "DSK-STD-007",
+    "attribute_slug": "height_range",
+    "value": "15-50cm"
+  },
+  {
+    "product_sku": "DSK-STD-007",
+    "attribute_slug": "weight_capacity",
+    "value": "15kg"
+  },
+  {
+    "product_sku": "DSK-STD-007",
+    "attribute_slug": "color",
+    "option_value": "black"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "port_count",
+    "value": "7"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "hdmi_output",
+    "value": "4K@60Hz"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "connectivity",
+    "option_value": "usb_c"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "connectivity",
+    "option_value": "usb_a"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "connectivity",
+    "option_value": "hdmi"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "connectivity",
+    "option_value": "ethernet"
+  },
+  {
+    "product_sku": "HUB-USC-008",
+    "attribute_slug": "color",
+    "option_value": "gray"
+  }
+]
