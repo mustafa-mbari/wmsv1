@@ -2,9 +2,11 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
 import logger from './utils/logger/logger';
 import { requestLogger } from './middleware/requestLogger';
+import { swaggerSpec } from './config/swagger';
 
 // Import routes
 import userRoutes from './routes/userRoutes';
@@ -54,6 +56,26 @@ app.use('/uploads', express.static('uploads', {
 // Request logging middleware
 app.use(requestLogger);
 
+// Swagger documentation
+app.use('/api-docs', (req: Request, res: Response, next: any) => {
+  // Simple middleware to serve Swagger UI
+  const swaggerHtml = swaggerUi.generateHTML(swaggerSpec, {
+    explorer: true,
+    customSiteTitle: 'WMS API Documentation',
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+    },
+  });
+  res.send(swaggerHtml);
+});
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -72,9 +94,12 @@ app.use('/api/attribute-values', attributeValueRoutes);
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
   logger.info('Health check endpoint accessed', { source: 'app', method: 'health' });
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
   res.json(createApiResponse(true, { 
     status: 'OK', 
-    timestamp: new Date().toISOString() 
+    timestamp: new Date().toISOString(),
+    documentation: `${baseUrl}/api-docs`,
+    version: '1.0.0'
   }));
 });
 

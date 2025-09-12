@@ -7,6 +7,160 @@ import { generateToken, authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LoginRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: admin@wms.com
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User password (minimum 6 characters)
+ *           example: admin123
+ *     
+ *     LoginResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: object
+ *           properties:
+ *             user:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: User unique identifier
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                   description: User email address
+ *                 username:
+ *                   type: string
+ *                   description: Username
+ *                 name:
+ *                   type: string
+ *                   description: Full name
+ *                 first_name:
+ *                   type: string
+ *                   description: First name
+ *                 last_name:
+ *                   type: string
+ *                   description: Last name
+ *                 profilePicture:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Profile picture URL
+ *                 is_active:
+ *                   type: boolean
+ *                   description: Account status
+ *                 role_names:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: User roles
+ *                 created_at:
+ *                   type: string
+ *                   format: date-time
+ *                 updated_at:
+ *                   type: string
+ *                   format: date-time
+ *             token:
+ *               type: string
+ *               description: JWT authentication token
+ *         message:
+ *           type: string
+ *           example: Login successful
+ *     
+ *     RegisterRequest:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - firstName
+ *         - lastName
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: Unique username
+ *           example: johndoe
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: john@example.com
+ *         firstName:
+ *           type: string
+ *           description: First name
+ *           example: John
+ *         lastName:
+ *           type: string
+ *           description: Last name
+ *           example: Doe
+ *         phone:
+ *           type: string
+ *           description: Phone number
+ *           example: "+1234567890"
+ *           nullable: true
+ *         address:
+ *           type: string
+ *           description: Address
+ *           example: "123 Main St, City, State"
+ *           nullable: true
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: Password (minimum 6 characters)
+ *           example: password123
+ *         isActive:
+ *           type: boolean
+ *           description: Account status
+ *           example: true
+ *           default: true
+ *         isAdmin:
+ *           type: boolean
+ *           description: Admin privileges
+ *           example: false
+ *           default: false
+ *
+ * /api/auth/login:
+ *   post:
+ *     tags: [Authentication]
+ *     summary: User login
+ *     description: Authenticate user with email and password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/auth/login
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password }: LoginDto = req.body;
@@ -98,6 +252,41 @@ router.post('/login', async (req: Request, res: Response) => {
   res.status(HttpStatus.UNAUTHORIZED).json(createApiResponse(false, null, 'Invalid credentials'));
 });
 
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     tags: [Authentication]
+ *     summary: Get current user profile
+ *     description: Retrieve the profile information of the currently authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: User retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // GET /api/auth/me - Get current authenticated user
 router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   logger.info('Auth me request', { source: 'authRoutes', method: 'me', userId: req.user?.id });
@@ -142,6 +331,56 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     tags: [Authentication]
+ *     summary: Register a new user
+ *     description: Create a new user account with the provided information
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     token:
+ *                       type: string
+ *                       description: JWT authentication token
+ *                 message:
+ *                   type: string
+ *                   example: User registered successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       409:
+ *         description: Conflict - User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: User with this email or username already exists
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   try {

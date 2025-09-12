@@ -7,6 +7,200 @@ import { authenticateToken, requireAdmin } from '../middleware/authMiddleware';
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Brand:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Brand unique identifier
+ *           example: "1"
+ *         name:
+ *           type: string
+ *           description: Brand name
+ *           minLength: 1
+ *           maxLength: 100
+ *           example: "Apple"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Brand description
+ *           maxLength: 500
+ *           example: "Premium technology and electronics brand"
+ *         isActive:
+ *           type: boolean
+ *           description: Brand active status
+ *           default: true
+ *           example: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Brand creation timestamp
+ *           example: "2023-01-01T00:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update timestamp
+ *           example: "2023-01-01T12:00:00Z"
+ *         productCount:
+ *           type: integer
+ *           description: Number of products from this brand
+ *           example: 15
+ *     CreateBrandRequest:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Brand name
+ *           minLength: 1
+ *           maxLength: 100
+ *           example: "Apple"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Brand description
+ *           maxLength: 500
+ *           example: "Premium technology and electronics brand"
+ *         isActive:
+ *           type: boolean
+ *           description: Brand active status
+ *           default: true
+ *           example: true
+ *     UpdateBrandRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Brand name
+ *           minLength: 1
+ *           maxLength: 100
+ *           example: "Apple"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Brand description
+ *           maxLength: 500
+ *           example: "Premium technology and electronics brand"
+ *         isActive:
+ *           type: boolean
+ *           description: Brand active status
+ *           example: true
+ */
+
+/**
+ * @swagger
+ * /api/brands:
+ *   get:
+ *     tags: [Brands]
+ *     summary: Get all brands
+ *     description: Retrieve all brands with optional filtering, pagination, and product counts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of items per page
+ *         example: 10
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search in brand name and description
+ *         example: "apple"
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive, all]
+ *           default: active
+ *         description: Filter by brand status
+ *         example: "active"
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, createdAt, updatedAt, productCount]
+ *           default: name
+ *         description: Field to sort by
+ *         example: "name"
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort order
+ *         example: "asc"
+ *     responses:
+ *       200:
+ *         description: Brands retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     brands:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Brand'
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         page:
+ *                           type: integer
+ *                           example: 1
+ *                         limit:
+ *                           type: integer
+ *                           example: 10
+ *                         total:
+ *                           type: integer
+ *                           example: 15
+ *                         totalPages:
+ *                           type: integer
+ *                           example: 2
+ *                         hasNextPage:
+ *                           type: boolean
+ *                           example: true
+ *                         hasPrevPage:
+ *                           type: boolean
+ *                           example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Brands retrieved successfully"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // GET /api/brands - Get all brands
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -62,6 +256,67 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/brands:
+ *   post:
+ *     tags: [Brands]
+ *     summary: Create new brand
+ *     description: Create a new brand. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateBrandRequest'
+ *     responses:
+ *       201:
+ *         description: Brand created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     brand:
+ *                       $ref: '#/components/schemas/Brand'
+ *                 message:
+ *                   type: string
+ *                   example: "Brand created successfully"
+ *       400:
+ *         description: Bad request - Invalid input data or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Brand name is required"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       409:
+ *         description: Conflict - Brand with same name already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Brand with name 'Apple' already exists"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/brands - Create brand
 router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -133,6 +388,77 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
   }
 });
 
+/**
+ * @swagger
+ * /api/brands/{id}:
+ *   put:
+ *     tags: [Brands]
+ *     summary: Update brand
+ *     description: Update an existing brand with new information. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Brand unique identifier
+ *         example: "1"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateBrandRequest'
+ *     responses:
+ *       200:
+ *         description: Brand updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     brand:
+ *                       $ref: '#/components/schemas/Brand'
+ *                 message:
+ *                   type: string
+ *                   example: "Brand updated successfully"
+ *       400:
+ *         description: Bad request - Invalid input data or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Invalid brand data"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Conflict - Brand with same name already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Brand with this name already exists"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // PUT /api/brands/:id - Update brand
 router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -185,6 +511,77 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
   }
 });
 
+/**
+ * @swagger
+ * /api/brands/{id}:
+ *   delete:
+ *     tags: [Brands]
+ *     summary: Delete brand
+ *     description: Soft delete a brand by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Brand unique identifier
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Brand deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: "Brand deleted successfully"
+ *       400:
+ *         description: Bad request - Invalid brand ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Invalid brand ID"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         description: Brand not found or already deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Brand not found"
+ *       409:
+ *         description: Conflict - Brand has associated products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Cannot delete brand with associated products"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // DELETE /api/brands/:id - Delete brand (hard delete, no soft delete as requested)
 router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {

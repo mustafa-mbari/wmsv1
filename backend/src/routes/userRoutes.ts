@@ -47,6 +47,270 @@ const avatarUpload = multer({
   }
 });
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - id
+ *         - email
+ *         - username
+ *         - firstName
+ *         - lastName
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: User unique identifier
+ *           example: "123"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: "john.doe@example.com"
+ *         username:
+ *           type: string
+ *           description: Unique username
+ *           example: "johndoe"
+ *         firstName:
+ *           type: string
+ *           description: User first name
+ *           example: "John"
+ *         lastName:
+ *           type: string
+ *           description: User last name
+ *           example: "Doe"
+ *         phone:
+ *           type: string
+ *           nullable: true
+ *           description: User phone number
+ *           example: "+1234567890"
+ *         address:
+ *           type: string
+ *           nullable: true
+ *           description: User address
+ *           example: "123 Main St, City, State"
+ *         avatarUrl:
+ *           type: string
+ *           nullable: true
+ *           description: User avatar image URL
+ *           example: "/uploads/avatars/avatar-123.jpg"
+ *         isActive:
+ *           type: boolean
+ *           description: User account status
+ *           example: true
+ *         roleNames:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: User roles
+ *           example: ["admin", "manager"]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Account creation date
+ *           example: "2023-01-01T00:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update date
+ *           example: "2023-01-01T12:00:00Z"
+ *     
+ *     CreateUserRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - username
+ *         - firstName
+ *         - lastName
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: "john.doe@example.com"
+ *         username:
+ *           type: string
+ *           minLength: 3
+ *           maxLength: 50
+ *           description: Unique username
+ *           example: "johndoe"
+ *         firstName:
+ *           type: string
+ *           minLength: 1
+ *           maxLength: 100
+ *           description: User first name
+ *           example: "John"
+ *         lastName:
+ *           type: string
+ *           minLength: 1
+ *           maxLength: 100
+ *           description: User last name
+ *           example: "Doe"
+ *         phone:
+ *           type: string
+ *           nullable: true
+ *           description: User phone number
+ *           example: "+1234567890"
+ *         address:
+ *           type: string
+ *           nullable: true
+ *           description: User address
+ *           example: "123 Main St, City, State"
+ *         password:
+ *           type: string
+ *           format: password
+ *           minLength: 6
+ *           description: User password (minimum 6 characters)
+ *           example: "securepassword123"
+ *         isActive:
+ *           type: boolean
+ *           description: User account status
+ *           default: true
+ *           example: true
+ *     
+ *     UpdateUserRequest:
+ *       type: object
+ *       properties:
+ *         firstName:
+ *           type: string
+ *           minLength: 1
+ *           maxLength: 100
+ *           description: User first name
+ *           example: "John"
+ *         lastName:
+ *           type: string
+ *           minLength: 1
+ *           maxLength: 100
+ *           description: User last name
+ *           example: "Doe"
+ *         phone:
+ *           type: string
+ *           nullable: true
+ *           description: User phone number
+ *           example: "+1234567890"
+ *         address:
+ *           type: string
+ *           nullable: true
+ *           description: User address
+ *           example: "123 Main St, City, State"
+ *         isActive:
+ *           type: boolean
+ *           description: User account status
+ *           example: true
+ */
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get all users
+ *     description: Retrieve a paginated list of users with optional filtering and sorting
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search in username, email, firstName, lastName
+ *         example: "john"
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *         description: Filter by user role
+ *         example: "admin"
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive, all]
+ *           default: all
+ *         description: Filter by user status
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [firstName, lastName, email, createdAt, updatedAt]
+ *           default: createdAt
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     users:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/User'
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         page:
+ *                           type: integer
+ *                           example: 1
+ *                         limit:
+ *                           type: integer
+ *                           example: 10
+ *                         total:
+ *                           type: integer
+ *                           example: 100
+ *                         totalPages:
+ *                           type: integer
+ *                           example: 10
+ *                         hasNextPage:
+ *                           type: boolean
+ *                           example: true
+ *                         hasPrevPage:
+ *                           type: boolean
+ *                           example: false
+ *                 message:
+ *                   type: string
+ *                   example: Users retrieved successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // GET /api/users - Require admin access
 router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -104,6 +368,53 @@ router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Respo
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get user by ID
+ *     description: Retrieve a specific user by their unique identifier
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: "123"
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: User retrieved successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // GET /api/users/:id - Require admin access
 router.get('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -185,6 +496,59 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
   }
 });
 
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     tags: [Users]
+ *     summary: Create new user
+ *     description: Create a new user account with the provided information. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateUserRequest'
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: User created successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       409:
+ *         description: Conflict - User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: User with this email or username already exists
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/users (Create new user) - Admin only
 router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -304,6 +668,69 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     tags: [Users]
+ *     summary: Update user
+ *     description: Update an existing user with new information. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: "123"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserRequest'
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: User updated successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Conflict - Username or email already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: Username or email already exists
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // PUT /api/users/:id (Update user) - Admin only
 router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -456,7 +883,50 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
   }
 });
 
-
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     tags: [Users]
+ *     summary: Delete user
+ *     description: Permanently delete a user from the system. This action cannot be undone. Requires super admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: "123"
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: null
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // DELETE /api/users/:id (Hard delete user - permanently remove from database) - Super admin only
 router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
@@ -524,6 +994,90 @@ router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request,
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}/avatar:
+ *   post:
+ *     tags: [Users]
+ *     summary: Upload user avatar
+ *     description: Upload an avatar image for a specific user. Accepts JPEG and PNG files up to 5MB. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: "123"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Avatar image file (JPEG/PNG, max 5MB)
+ *     responses:
+ *       200:
+ *         description: Avatar uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     avatarUrl:
+ *                       type: string
+ *                       description: URL of the uploaded avatar
+ *                       example: "/uploads/avatars/avatar-123-1640995200000-123456789.jpg"
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: Avatar uploaded successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       413:
+ *         description: File too large
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: File size exceeds maximum limit of 5MB
+ *       415:
+ *         description: Unsupported media type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: Only JPEG and PNG files are allowed
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/users/:id/avatar (Upload avatar) - Admin only
 router.post('/:id/avatar', authenticateToken, requireAdmin, avatarUpload.single('avatar') as any, async (req: Request, res: Response) => {
   try {
@@ -603,6 +1157,92 @@ router.post('/:id/avatar', authenticateToken, requireAdmin, avatarUpload.single(
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}/password:
+ *   put:
+ *     tags: [Users]
+ *     summary: Change user password
+ *     description: Change a user's password with current password verification. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: "123"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - password
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Current user password for verification
+ *                 minLength: 6
+ *                 example: "currentPass123"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: New password (minimum 6 characters)
+ *                 minLength: 6
+ *                 example: "newPassword123"
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "Password changed successfully"
+ *                 message:
+ *                   type: string
+ *                   example: "Password changed successfully"
+ *       400:
+ *         description: Bad request - Missing required fields or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: Current password and new password are required
+ *       401:
+ *         description: Invalid current password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: Current password is incorrect
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // PUT /api/users/:id/password (Change password) - Admin only
 router.put('/:id/password', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {

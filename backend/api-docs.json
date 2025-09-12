@@ -1,0 +1,3277 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "WMS API Documentation",
+    "version": "1.0.0",
+    "description": "Warehouse Management System API documentation",
+    "contact": {
+      "name": "WMS Team",
+      "email": "support@wms.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api.wms.com",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Authorization header using the Bearer scheme"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response data",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if request failed",
+            "nullable": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User unique identifier",
+            "example": "123"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "john.doe@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER",
+              "MANAGER"
+            ],
+            "description": "User role"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User account status",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation date",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update date",
+            "example": "2023-01-01T12:00:00Z"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "description": "User address",
+            "example": "123 Main St, City, State"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "User avatar image URL",
+            "example": "/uploads/avatars/avatar-123.jpg"
+          },
+          "roleNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User roles",
+            "example": [
+              "admin",
+              "manager"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "username",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Product unique identifier",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Premium Coffee Beans"
+          },
+          "description": {
+            "type": "string",
+            "description": "Product description",
+            "nullable": true,
+            "maxLength": 1000,
+            "example": "High-quality arabica coffee beans from Colombia"
+          },
+          "sku": {
+            "type": "string",
+            "description": "Stock Keeping Unit - unique product identifier",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "COFFEE-001"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Product price in decimal format",
+            "minimum": 0,
+            "example": 24.99
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Associated category ID",
+            "nullable": true,
+            "example": "5"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "Associated family ID",
+            "nullable": true,
+            "example": "3"
+          },
+          "brandId": {
+            "type": "string",
+            "description": "Associated brand ID",
+            "nullable": true,
+            "example": "2"
+          },
+          "unitId": {
+            "type": "string",
+            "description": "Associated unit ID",
+            "nullable": true,
+            "example": "1"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Product active status",
+            "default": true,
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Product creation timestamp",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp",
+            "example": "2023-01-01T12:00:00Z"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category",
+            "description": "Associated category details"
+          },
+          "family": {
+            "type": "object",
+            "nullable": true,
+            "description": "Associated family details"
+          },
+          "brand": {
+            "$ref": "#/components/schemas/Brand",
+            "description": "Associated brand details"
+          },
+          "unit": {
+            "type": "object",
+            "nullable": true,
+            "description": "Associated unit details"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sku",
+          "price"
+        ]
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Category unique identifier",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Category name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "string",
+            "description": "Category description",
+            "nullable": true,
+            "maxLength": 500,
+            "example": "Electronic devices and accessories"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Category active status",
+            "default": true,
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Category creation timestamp",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp",
+            "example": "2023-01-01T12:00:00Z"
+          },
+          "productCount": {
+            "type": "integer",
+            "description": "Number of products in this category",
+            "example": 25
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Brand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Brand unique identifier",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Brand name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Apple"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brand description",
+            "nullable": true,
+            "maxLength": 500,
+            "example": "Premium technology and electronics brand"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Brand active status",
+            "default": true,
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Brand creation timestamp",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp",
+            "example": "2023-01-01T12:00:00Z"
+          },
+          "productCount": {
+            "type": "integer",
+            "description": "Number of products from this brand",
+            "example": 15
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "data": {
+            "type": "null",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "error": {
+            "type": "string",
+            "description": "Detailed error information",
+            "nullable": true
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "admin@wms.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "User password (minimum 6 characters)",
+            "example": "admin123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "User unique identifier"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User email address"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "Username"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Full name"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "First name"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Last name"
+                  },
+                  "profilePicture": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Profile picture URL"
+                  },
+                  "is_active": {
+                    "type": "boolean",
+                    "description": "Account status"
+                  },
+                  "role_names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "User roles"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "token": {
+                "type": "string",
+                "description": "JWT authentication token"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "john@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number",
+            "example": "+1234567890",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "description": "Address",
+            "example": "123 Main St, City, State",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Password (minimum 6 characters)",
+            "example": "password123"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Account status",
+            "example": true,
+            "default": true
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "description": "Admin privileges",
+            "example": false,
+            "default": false
+          }
+        }
+      },
+      "CreateBrandRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Brand name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Apple"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Brand description",
+            "maxLength": 500,
+            "example": "Premium technology and electronics brand"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Brand active status",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateBrandRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Brand name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Apple"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Brand description",
+            "maxLength": 500,
+            "example": "Premium technology and electronics brand"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Brand active status",
+            "example": true
+          }
+        }
+      },
+      "CreateCategoryRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Category name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Category description",
+            "maxLength": 500,
+            "example": "Electronic devices and accessories"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Category active status",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Category name",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Category description",
+            "maxLength": 500,
+            "example": "Electronic devices and accessories"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Category active status",
+            "example": true
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "sku",
+          "price"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Product name",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Premium Coffee Beans"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Product description",
+            "maxLength": 1000,
+            "example": "High-quality arabica coffee beans from Colombia"
+          },
+          "sku": {
+            "type": "string",
+            "description": "Stock Keeping Unit - unique product identifier",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "COFFEE-001"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Product price in decimal format",
+            "minimum": 0,
+            "example": 24.99
+          },
+          "categoryId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated category ID",
+            "example": "5"
+          },
+          "familyId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated family ID",
+            "example": "3"
+          },
+          "brandId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated brand ID",
+            "example": "2"
+          },
+          "unitId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated unit ID",
+            "example": "1"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Product active status",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateProductRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Product name",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Premium Coffee Beans"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Product description",
+            "maxLength": 1000,
+            "example": "High-quality arabica coffee beans from Colombia"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Product price in decimal format",
+            "minimum": 0,
+            "example": 24.99
+          },
+          "categoryId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated category ID",
+            "example": "5"
+          },
+          "familyId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated family ID",
+            "example": "3"
+          },
+          "brandId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated brand ID",
+            "example": "2"
+          },
+          "unitId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Associated unit ID",
+            "example": "1"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Product active status",
+            "example": true
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "username",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "john.doe@example.com"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50,
+            "description": "Unique username",
+            "example": "johndoe"
+          },
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "User first name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "description": "User address",
+            "example": "123 Main St, City, State"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "description": "User password (minimum 6 characters)",
+            "example": "securepassword123"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User account status",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "User first name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "description": "User address",
+            "example": "123 Main St, City, State"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User account status",
+            "example": true
+          }
+        }
+      }
+    },
+    "responses": {
+      "Success": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiResponse"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "success": false,
+              "data": null,
+              "message": "Bad request",
+              "error": "Invalid input data"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "success": false,
+              "data": null,
+              "message": "Unauthorized",
+              "error": "Authentication required"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "success": false,
+              "data": null,
+              "message": "Forbidden",
+              "error": "Insufficient permissions"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "success": false,
+              "data": null,
+              "message": "Not found",
+              "error": "Resource not found"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "success": false,
+              "data": null,
+              "message": "Internal server error",
+              "error": "An unexpected error occurred"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "User login",
+        "description": "Authenticate user with email and password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get current user profile",
+        "description": "Retrieve the profile information of the currently authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register a new user",
+        "description": "Create a new user account with the provided information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        },
+                        "token": {
+                          "type": "string",
+                          "description": "JWT authentication token"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User registered successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "409": {
+            "description": "Conflict - User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "User with this email or username already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/brands": {
+      "get": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Get all brands",
+        "description": "Retrieve all brands with optional filtering, pagination, and product counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of items per page",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search in brand name and description",
+            "example": "apple"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ],
+              "default": "active"
+            },
+            "description": "Filter by brand status",
+            "example": "active"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "createdAt",
+                "updatedAt",
+                "productCount"
+              ],
+              "default": "name"
+            },
+            "description": "Field to sort by",
+            "example": "name"
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Sort order",
+            "example": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brands retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "brands": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Brand"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 15
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "hasNextPage": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Brands retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Create new brand",
+        "description": "Create a new brand. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBrandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Brand created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "brand": {
+                          "$ref": "#/components/schemas/Brand"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Brand created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Brand name is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "Conflict - Brand with same name already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Brand with name 'Apple' already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/brands/{id}": {
+      "put": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Update brand",
+        "description": "Update an existing brand with new information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Brand unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBrandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Brand updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "brand": {
+                          "$ref": "#/components/schemas/Brand"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Brand updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid brand data"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Conflict - Brand with same name already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Brand with this name already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Delete brand",
+        "description": "Soft delete a brand by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Brand unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brand deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Brand deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid brand ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid brand ID"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Brand not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Brand not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Brand has associated products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Cannot delete brand with associated products"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Get all categories",
+        "description": "Retrieve all product categories with optional filtering, pagination, and product counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of items per page",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search in category name and description",
+            "example": "electronics"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ],
+              "default": "active"
+            },
+            "description": "Filter by category status",
+            "example": "active"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "createdAt",
+                "updatedAt",
+                "productCount"
+              ],
+              "default": "name"
+            },
+            "description": "Field to sort by",
+            "example": "name"
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Sort order",
+            "example": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Category"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 25
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "example": 3
+                            },
+                            "hasNextPage": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Categories retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Create new category",
+        "description": "Create a new product category. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/Category"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Category created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Category name is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "Conflict - Category with same name already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Category with name 'Electronics' already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/categories/{id}": {
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Update category",
+        "description": "Update an existing category with new information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Category unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/Category"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Category updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid category data"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Conflict - Category with same name already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Category with this name already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Delete category",
+        "description": "Soft delete a category by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Category unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Category deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid category ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid category ID"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Category not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Category not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Category has associated products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Cannot delete category with associated products"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get all products",
+        "description": "Retrieve all products with optional filtering, pagination, and related data (categories, brands, families, units)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of items per page",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search in product name, SKU, or description",
+            "example": "coffee"
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by category ID",
+            "example": "5"
+          },
+          {
+            "in": "query",
+            "name": "brandId",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by brand ID",
+            "example": "2"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ],
+              "default": "active"
+            },
+            "description": "Filter by product status",
+            "example": "active"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "sku",
+                "price",
+                "createdAt",
+                "updatedAt"
+              ],
+              "default": "name"
+            },
+            "description": "Field to sort by",
+            "example": "name"
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Sort order",
+            "example": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "products": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Product"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 50
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "hasNextPage": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Products retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Create new product",
+        "description": "Create a new product with the provided information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "product": {
+                          "$ref": "#/components/schemas/Product"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Product name is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "Conflict - Product with same SKU already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Product with SKU 'COFFEE-001' already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Update product",
+        "description": "Update an existing product with new information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "product": {
+                          "$ref": "#/components/schemas/Product"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid product data"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Conflict - Product with same SKU already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Product with this SKU already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete product",
+        "description": "Soft delete a product by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid product ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Invalid product ID"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Product not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Product not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users",
+        "description": "Retrieve a paginated list of users with optional filtering and sorting",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search in username, email, firstName, lastName",
+            "example": "john"
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by user role",
+            "example": "admin"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ],
+              "default": "all"
+            },
+            "description": "Filter by user status"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "firstName",
+                "lastName",
+                "email",
+                "createdAt",
+                "updatedAt"
+              ],
+              "default": "createdAt"
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "users": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/User"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 100
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "hasNextPage": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Users retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create new user",
+        "description": "Create a new user account with the provided information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "Conflict - User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "User with this email or username already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user by ID",
+        "description": "Retrieve a specific user by their unique identifier",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User unique identifier",
+            "example": "123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user",
+        "description": "Update an existing user with new information. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User unique identifier",
+            "example": "123"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Conflict - Username or email already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Username or email already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user",
+        "description": "Permanently delete a user from the system. This action cannot be undone. Requires super admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User unique identifier",
+            "example": "123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": null
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/avatar": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Upload user avatar",
+        "description": "Upload an avatar image for a specific user. Accepts JPEG and PNG files up to 5MB. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User unique identifier",
+            "example": "123"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "avatar"
+                ],
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Avatar image file (JPEG/PNG, max 5MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "avatarUrl": {
+                          "type": "string",
+                          "description": "URL of the uploaded avatar",
+                          "example": "/uploads/avatars/avatar-123-1640995200000-123456789.jpg"
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar uploaded successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "413": {
+            "description": "File too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "File size exceeds maximum limit of 5MB"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported media type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Only JPEG and PNG files are allowed"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/password": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change user password",
+        "description": "Change a user's password with current password verification. Requires admin privileges.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User unique identifier",
+            "example": "123"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "currentPassword",
+                  "password"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Current user password for verification",
+                    "minLength": 6,
+                    "example": "currentPass123"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "New password (minimum 6 characters)",
+                    "minLength": 6,
+                    "example": "newPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Password changed successfully"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password changed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Missing required fields or validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Current password and new password are required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid current password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "Current password is incorrect"
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

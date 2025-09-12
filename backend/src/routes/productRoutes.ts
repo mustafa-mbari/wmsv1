@@ -7,7 +7,316 @@ import { authenticateToken, requireAdmin } from '../middleware/authMiddleware';
 const router = Router();
 const prisma = new PrismaClient();
 
-// Products Routes
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *         - sku
+ *         - price
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Product unique identifier
+ *           example: "1"
+ *         name:
+ *           type: string
+ *           description: Product name
+ *           minLength: 1
+ *           maxLength: 255
+ *           example: "Premium Coffee Beans"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Product description
+ *           maxLength: 1000
+ *           example: "High-quality arabica coffee beans from Colombia"
+ *         sku:
+ *           type: string
+ *           description: Stock Keeping Unit - unique product identifier
+ *           minLength: 1
+ *           maxLength: 100
+ *           example: "COFFEE-001"
+ *         price:
+ *           type: number
+ *           format: decimal
+ *           description: Product price in decimal format
+ *           minimum: 0
+ *           example: 24.99
+ *         categoryId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated category ID
+ *           example: "5"
+ *         familyId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated family ID
+ *           example: "3"
+ *         brandId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated brand ID
+ *           example: "2"
+ *         unitId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated unit ID
+ *           example: "1"
+ *         isActive:
+ *           type: boolean
+ *           description: Product active status
+ *           default: true
+ *           example: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Product creation timestamp
+ *           example: "2023-01-01T00:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update timestamp
+ *           example: "2023-01-01T12:00:00Z"
+ *         category:
+ *           $ref: '#/components/schemas/Category'
+ *           description: Associated category details
+ *         family:
+ *           type: object
+ *           nullable: true
+ *           description: Associated family details
+ *         brand:
+ *           $ref: '#/components/schemas/Brand'
+ *           description: Associated brand details
+ *         unit:
+ *           type: object
+ *           nullable: true
+ *           description: Associated unit details
+ *     CreateProductRequest:
+ *       type: object
+ *       required:
+ *         - name
+ *         - sku
+ *         - price
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Product name
+ *           minLength: 1
+ *           maxLength: 255
+ *           example: "Premium Coffee Beans"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Product description
+ *           maxLength: 1000
+ *           example: "High-quality arabica coffee beans from Colombia"
+ *         sku:
+ *           type: string
+ *           description: Stock Keeping Unit - unique product identifier
+ *           minLength: 1
+ *           maxLength: 100
+ *           example: "COFFEE-001"
+ *         price:
+ *           type: number
+ *           format: decimal
+ *           description: Product price in decimal format
+ *           minimum: 0
+ *           example: 24.99
+ *         categoryId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated category ID
+ *           example: "5"
+ *         familyId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated family ID
+ *           example: "3"
+ *         brandId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated brand ID
+ *           example: "2"
+ *         unitId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated unit ID
+ *           example: "1"
+ *         isActive:
+ *           type: boolean
+ *           description: Product active status
+ *           default: true
+ *           example: true
+ *     UpdateProductRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Product name
+ *           minLength: 1
+ *           maxLength: 255
+ *           example: "Premium Coffee Beans"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Product description
+ *           maxLength: 1000
+ *           example: "High-quality arabica coffee beans from Colombia"
+ *         price:
+ *           type: number
+ *           format: decimal
+ *           description: Product price in decimal format
+ *           minimum: 0
+ *           example: 24.99
+ *         categoryId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated category ID
+ *           example: "5"
+ *         familyId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated family ID
+ *           example: "3"
+ *         brandId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated brand ID
+ *           example: "2"
+ *         unitId:
+ *           type: string
+ *           nullable: true
+ *           description: Associated unit ID
+ *           example: "1"
+ *         isActive:
+ *           type: boolean
+ *           description: Product active status
+ *           example: true
+ */
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     tags: [Products]
+ *     summary: Get all products
+ *     description: Retrieve all products with optional filtering, pagination, and related data (categories, brands, families, units)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of items per page
+ *         example: 10
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search in product name, SKU, or description
+ *         example: "coffee"
+ *       - in: query
+ *         name: categoryId
+ *         schema:
+ *           type: string
+ *         description: Filter by category ID
+ *         example: "5"
+ *       - in: query
+ *         name: brandId
+ *         schema:
+ *           type: string
+ *         description: Filter by brand ID
+ *         example: "2"
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive, all]
+ *           default: active
+ *         description: Filter by product status
+ *         example: "active"
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, sku, price, createdAt, updatedAt]
+ *           default: name
+ *         description: Field to sort by
+ *         example: "name"
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort order
+ *         example: "asc"
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Product'
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         page:
+ *                           type: integer
+ *                           example: 1
+ *                         limit:
+ *                           type: integer
+ *                           example: 10
+ *                         total:
+ *                           type: integer
+ *                           example: 50
+ *                         totalPages:
+ *                           type: integer
+ *                           example: 5
+ *                         hasNextPage:
+ *                           type: boolean
+ *                           example: true
+ *                         hasPrevPage:
+ *                           type: boolean
+ *                           example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Products retrieved successfully"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // GET /api/products - Get all products
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -109,6 +418,67 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     tags: [Products]
+ *     summary: Create new product
+ *     description: Create a new product with the provided information. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateProductRequest'
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     product:
+ *                       $ref: '#/components/schemas/Product'
+ *                 message:
+ *                   type: string
+ *                   example: "Product created successfully"
+ *       400:
+ *         description: Bad request - Invalid input data or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Product name is required"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       409:
+ *         description: Conflict - Product with same SKU already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Product with SKU 'COFFEE-001' already exists"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // POST /api/products - Create product
 router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -230,6 +600,77 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
   }
 });
 
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     tags: [Products]
+ *     summary: Update product
+ *     description: Update an existing product with new information. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product unique identifier
+ *         example: "1"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateProductRequest'
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     product:
+ *                       $ref: '#/components/schemas/Product'
+ *                 message:
+ *                   type: string
+ *                   example: "Product updated successfully"
+ *       400:
+ *         description: Bad request - Invalid input data or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Invalid product data"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Conflict - Product with same SKU already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Product with this SKU already exists"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // PUT /api/products/:id - Update product
 router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -299,6 +740,67 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
   }
 });
 
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     tags: [Products]
+ *     summary: Delete product
+ *     description: Soft delete a product by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product unique identifier
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Product deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: "Product deleted successfully"
+ *       400:
+ *         description: Bad request - Invalid product ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Invalid product ID"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         description: Product not found or already deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "Product not found"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 // DELETE /api/products/:id - Delete product
 router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {

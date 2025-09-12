@@ -25,7 +25,14 @@
     "seed:permissions": "cd backend && npm run seed:permissions",
     "seed:products": "cd backend && npm run seed:products",
     "seed:warehouses": "cd backend && npm run seed:warehouses",
-    "seed:reset": "cd backend && npm run seed:reset"
+    "seed:reset": "cd backend && npm run seed:reset",
+    "generate:api": "node shared/scripts/generate-api-types.js",
+    "docs:generate": "cd backend && npm run docs:generate",
+    "docs:validate": "node shared/scripts/swagger-validator.js",
+    "docs:dev": "nodemon --exec \"npm run generate:api\" --watch backend/src/routes --ext ts",
+    "migration:analyze": "node shared/scripts/swagger-migration-helper.js analyze",
+    "migration:plan": "node shared/scripts/swagger-migration-helper.js plan",
+    "migration:stub": "node shared/scripts/swagger-migration-helper.js stub"
   },
   "workspaces": [
     "backend",
