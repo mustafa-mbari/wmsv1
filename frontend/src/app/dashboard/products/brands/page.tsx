@@ -58,14 +58,14 @@ import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced
 import { apiClient } from "@/lib/api-client";
 
 export interface Brand {
-  id: number;
+  id: string;
   name: string;
-  code: string;
+  slug: string;
   description?: string;
   website?: string;
   logo_url?: string;
   is_active: boolean;
-  product_count: number;
+  product_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -81,13 +81,33 @@ export default function BrandsPage() {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [bulkDeleteBrandIds, setBulkDeleteBrandIds] = useState<string[]>([]);
   const [currentBrand, setCurrentBrand] = useState<Brand | null>(null);
+  
+  // Notification dialog state
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+  }>({
+    open: false,
+    title: '',
+    description: ''
+  });
 
   const canAccessBrandsPage = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('inventory-manager');
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager');
 
+  // Helper function to show notifications
+  const showNotification = (title: string, description: string) => {
+    setNotification({
+      open: true,
+      title,
+      description
+    });
+  };
+
   const brandFormSchema = z.object({
     name: z.string().min(1, "Brand name is required"),
-    code: z.string().min(1, "Brand code is required"),
+    slug: z.string().min(1, "Brand slug is required"),
     description: z.string().optional(),
     website: z.string().url("Invalid URL format").optional().or(z.literal("")),
     logoUrl: z.string().url("Invalid URL format").optional().or(z.literal("")),
@@ -103,80 +123,15 @@ export default function BrandsPage() {
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      const mockBrands: Brand[] = [
-        {
-          id: 1,
-          name: "Apple",
-          code: "APPLE",
-          description: "Technology company known for innovative products",
-          website: "https://www.apple.com",
-          logo_url: "https://logo.clearbit.com/apple.com",
-          is_active: true,
-          product_count: 45,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: "Samsung",
-          code: "SAMSUNG",
-          description: "Global technology and electronics manufacturer",
-          website: "https://www.samsung.com",
-          logo_url: "https://logo.clearbit.com/samsung.com",
-          is_active: true,
-          product_count: 38,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: "Nike",
-          code: "NIKE",
-          description: "Athletic footwear and apparel company",
-          website: "https://www.nike.com",
-          logo_url: "https://logo.clearbit.com/nike.com",
-          is_active: true,
-          product_count: 67,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: "Adidas",
-          code: "ADIDAS",
-          description: "German athletic apparel and footwear brand",
-          website: "https://www.adidas.com",
-          logo_url: "https://logo.clearbit.com/adidas.com",
-          is_active: true,
-          product_count: 52,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: "Sony",
-          code: "SONY",
-          description: "Japanese electronics and entertainment company",
-          website: "https://www.sony.com",
-          logo_url: "https://logo.clearbit.com/sony.com",
-          is_active: false,
-          product_count: 23,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 6,
-          name: "Generic Brand",
-          code: "GENERIC",
-          description: "Unbranded or generic products",
-          is_active: true,
-          product_count: 15,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-      setBrands(mockBrands);
+      const response = await apiClient.get('/api/brands');
+      if (response.data.success) {
+        console.log('Brands API response:', response.data.data);
+        const brandsData = Array.isArray(response.data.data) ? response.data.data : [];
+        setBrands(brandsData);
+      } else {
+        console.error('Failed to fetch brands:', response.data.message);
+        setBrands([]);
+      }
     } catch (error) {
       console.error("Error fetching brands:", error);
       setBrands([]);
@@ -189,7 +144,7 @@ export default function BrandsPage() {
     resolver: zodResolver(brandFormSchema),
     defaultValues: {
       name: "",
-      code: "",
+      slug: "",
       description: "",
       website: "",
       logoUrl: "",
@@ -201,7 +156,7 @@ export default function BrandsPage() {
     resolver: zodResolver(brandFormSchema),
     defaultValues: {
       name: "",
-      code: "",
+      slug: "",
       description: "",
       website: "",
       logoUrl: "",
@@ -211,14 +166,27 @@ export default function BrandsPage() {
 
   const onCreateSubmit = async (data: z.infer<typeof brandFormSchema>) => {
     try {
-      console.log("Creating brand:", data);
-      alert("Brand created successfully");
-      setIsCreateDialogOpen(false);
-      createForm.reset();
-      fetchBrands();
+      const createData = {
+        name: data.name,
+        slug: data.slug,
+        description: data.description || null,
+        website: data.website || null,
+        logo_url: data.logoUrl || null,
+        is_active: data.isActive,
+      };
+      
+      const response = await apiClient.post('/api/brands', createData);
+      if (response.data.success) {
+        showNotification("Success", "Brand created successfully");
+        setIsCreateDialogOpen(false);
+        createForm.reset();
+        fetchBrands();
+      } else {
+        showNotification("Error", response.data.message || "Failed to create brand");
+      }
     } catch (error) {
       console.error("Error creating brand:", error);
-      alert("Failed to create brand");
+      showNotification("Error", "Failed to create brand");
     }
   };
 
@@ -226,13 +194,26 @@ export default function BrandsPage() {
     if (!currentBrand) return;
     
     try {
-      console.log("Updating brand:", data);
-      alert("Brand updated successfully");
-      setIsEditDialogOpen(false);
-      fetchBrands();
+      const updateData = {
+        name: data.name,
+        slug: data.slug,
+        description: data.description || null,
+        website: data.website || null,
+        logo_url: data.logoUrl || null,
+        is_active: data.isActive,
+      };
+      
+      const response = await apiClient.put(`/api/brands/${currentBrand.id}`, updateData);
+      if (response.data.success) {
+        showNotification("Success", "Brand updated successfully");
+        setIsEditDialogOpen(false);
+        fetchBrands();
+      } else {
+        showNotification("Error", response.data.message || "Failed to update brand");
+      }
     } catch (error) {
       console.error("Error updating brand:", error);
-      alert("Failed to update brand");
+      showNotification("Error", "Failed to update brand");
     }
   };
 
@@ -240,13 +221,18 @@ export default function BrandsPage() {
     if (currentBrand) {
       try {
         setIsDeleteLoading(true);
-        console.log("Deleting brand:", currentBrand.id);
-        setIsDeleteDialogOpen(false);
-        setCurrentBrand(null);
-        fetchBrands();
+        const response = await apiClient.delete(`/api/brands/${currentBrand.id}`);
+        if (response.data.success) {
+          showNotification("Success", "Brand deleted successfully");
+          setIsDeleteDialogOpen(false);
+          setCurrentBrand(null);
+          fetchBrands();
+        } else {
+          showNotification("Error", response.data.message || "Failed to delete brand");
+        }
       } catch (error) {
         console.error("Error deleting brand:", error);
-        alert("Failed to delete brand");
+        showNotification("Error", "Failed to delete brand");
       } finally {
         setIsDeleteLoading(false);
       }
@@ -266,7 +252,7 @@ export default function BrandsPage() {
       fetchBrands();
     } catch (error) {
       console.error("Error deleting brands:", error);
-      alert("Failed to delete some brands");
+      showNotification("Error", "Failed to delete some brands");
     }
   };
 
@@ -274,7 +260,7 @@ export default function BrandsPage() {
     setCurrentBrand(brand);
     editForm.reset({
       name: brand.name,
-      code: brand.code,
+      slug: brand.slug,
       description: brand.description || "",
       website: brand.website || "",
       logoUrl: brand.logo_url || "",
@@ -288,23 +274,21 @@ export default function BrandsPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Transform brands to UserData format for reusing the table
-  const transformedBrands: UserData[] = useMemo(() => {
-    if (!brands) return [];
+  // Transform brands to TableData format for AdvancedTable
+  const transformedBrands: TableData[] = useMemo(() => {
+    if (!brands || !Array.isArray(brands)) return [];
     
     return brands.map((brand: Brand) => ({
       id: String(brand.id),
-      username: brand.code,
-      email: brand.name,
-      first_name: brand.website ? "With Website" : "No Website",
-      last_name: brand.product_count.toString(),
-      phone: brand.description || "",
-      is_active: brand.is_active,
-      email_verified: brand.product_count > 0,
-      last_login_at: brand.updated_at,
-      created_at: brand.created_at,
-      role_names: [brand.is_active ? "Active" : "Inactive"],
-      role_slugs: [brand.is_active ? "active" : "inactive"]
+      name: String(brand.name || ''),
+      slug: String(brand.slug || ''),
+      description: String(brand.description || ''),
+      website: String(brand.website || ''),
+      is_active: Boolean(brand.is_active),
+      product_count: Number(brand.product_count || 0),
+      created_at: String(brand.created_at || ''),
+      updated_at: String(brand.updated_at || ''),
+      logo_url: String(brand.logo_url || '')
     }));
   }, [brands]);
 
@@ -325,38 +309,98 @@ export default function BrandsPage() {
     }
   };
 
-  const handleBrandEdit = (brandData: UserData) => {
-    const brandFound = brands?.find((b: Brand) => b.id.toString() === brandData.id);
-    if (brandFound) {
-      handleEdit(brandFound);
+  const handleRowAction = (action: string, rowData: TableData) => {
+    const brand = brands.find(b => b.id === rowData.id);
+    if (!brand) return;
+
+    switch (action) {
+      case 'edit':
+        if (canPerformAdminActions) {
+          handleEdit(brand);
+        }
+        break;
+      case 'delete':
+        if (canPerformAdminActions) {
+          setCurrentBrand(brand);
+          setIsDeleteDialogOpen(true);
+        }
+        break;
+      case 'view':
+        console.log('View brand:', brand.name);
+        break;
+      default:
+        console.log('Unknown action:', action);
     }
   };
 
-  const handleBrandDelete = (brandData: UserData) => {
-    const brandFound = brands?.find((b: Brand) => b.id.toString() === brandData.id);
-    if (brandFound) {
-      setCurrentBrand(brandFound);
-      setIsDeleteDialogOpen(true);
+  // Define columns for AdvancedTable
+  const columns: ColumnConfig[] = [
+    {
+      key: 'name',
+      label: 'Brand Name',
+      sortable: true,
+      filterable: true,
+      render: (item: TableData) => String(item.name || '')
+    },
+    {
+      key: 'slug',
+      label: 'Slug',
+      sortable: true,
+      filterable: true,
+      render: (item: TableData) => String(item.slug || '')
+    },
+    {
+      key: 'description',
+      label: 'Description',
+      sortable: false,
+      filterable: true,
+      render: (item: TableData) => String(item.description || '-')
+    },
+    {
+      key: 'website',
+      label: 'Website',
+      sortable: false,
+      filterable: true,
+      render: (item: TableData) => {
+        const url = String(item.website || '');
+        return url ? (
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+            {url}
+          </a>
+        ) : '-';
+      }
+    },
+    {
+      key: 'is_active',
+      label: 'Status',
+      sortable: true,
+      filterable: false,
+      render: (item: TableData) => (
+        <Badge variant={item.is_active ? 'default' : 'secondary'}>
+          {item.is_active ? 'Active' : 'Inactive'}
+        </Badge>
+      )
+    },
+    {
+      key: 'created_at',
+      label: 'Created',
+      sortable: true,
+      filterable: false,
+      render: (item: TableData) => {
+        try {
+          const date = new Date(item.created_at);
+          return isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
+        } catch {
+          return '-';
+        }
+      }
     }
-  };
-
-  const handleBrandView = (brandData: UserData) => {
-    console.log("View brand details:", brandData.email);
-  };
-
-  const handleBrandToggleStatus = (brandData: UserData) => {
-    console.log("Toggle status for brand:", brandData.email);
-  };
-
-  const handleBrandManageRoles = (brandData: UserData) => {
-    console.log("Manage products for brand:", brandData.email);
-  };
+  ];
 
   // Calculate stats
-  const totalBrands = brands.length;
-  const activeBrands = brands.filter(b => b.is_active).length;
-  const brandsWithWebsite = brands.filter(b => b.website).length;
-  const totalProducts = brands.reduce((sum, b) => sum + b.product_count, 0);
+  const totalBrands = Array.isArray(brands) ? brands.length : 0;
+  const activeBrands = Array.isArray(brands) ? brands.filter(b => b && b.is_active).length : 0;
+  const brandsWithWebsite = Array.isArray(brands) ? brands.filter(b => b && b.website).length : 0;
 
   if (!canAccessBrandsPage) {
     return (
@@ -452,12 +496,12 @@ export default function BrandsPage() {
                         />
                         <FormField
                           control={createForm.control}
-                          name="code"
+                          name="slug"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Brand Code*</FormLabel>
+                              <FormLabel>Brand Slug*</FormLabel>
                               <FormControl>
-                                <Input placeholder="CODE" {...field} />
+                                <Input placeholder="brand-slug" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -621,8 +665,8 @@ export default function BrandsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">Total Products</p>
-                <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{totalProducts}</p>
+                <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">Inactive Brands</p>
+                <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{totalBrands - activeBrands}</p>
               </div>
               <div className="h-12 w-12 bg-orange-500 rounded-lg flex items-center justify-center">
                 <Package className="h-6 w-6 text-white" />
@@ -649,16 +693,22 @@ export default function BrandsPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedTable
               data={transformedBrands}
+              columns={columns}
               loading={loading}
-              onUserSelect={handleBrandSelection}
+              onRowSelect={handleBrandSelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleBrandEdit}
-              onUserDelete={handleBrandDelete}
-              onUserView={handleBrandView}
-              onUserManageRoles={handleBrandManageRoles}
-              onUserToggleStatus={handleBrandToggleStatus}
+              onRowAction={handleRowAction}
+              searchPlaceholder="Search brands..."
+              enableBulkActions={canPerformAdminActions}
+              bulkActions={[
+                { id: 'delete', label: 'Delete Selected', variant: 'destructive' }
+              ]}
+              rowActions={[
+                { id: 'edit', label: 'Edit', icon: Edit },
+                { id: 'delete', label: 'Delete', icon: Trash2, variant: 'destructive' }
+              ]}
             />
           </div>
         </CardContent>
@@ -692,12 +742,12 @@ export default function BrandsPage() {
                 />
                 <FormField
                   control={editForm.control}
-                  name="code"
+                  name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Brand Code*</FormLabel>
+                      <FormLabel>Brand Slug*</FormLabel>
                       <FormControl>
-                        <Input placeholder="CODE" {...field} />
+                        <Input placeholder="brand-slug" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -788,7 +838,7 @@ export default function BrandsPage() {
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={confirmDelete}
         title="Delete Brand Permanently"
-        description={`Are you sure you want to permanently delete "${currentBrand?.name}" brand? This action cannot be undone and will affect ${currentBrand?.product_count || 0} product(s) assigned to this brand.`}
+        description={`Are you sure you want to permanently delete "${currentBrand?.name || 'this'}" brand? This action cannot be undone and will affect ${currentBrand?.product_count || 0} product(s) assigned to this brand.`}
         loading={isDeleteLoading}
       />
 
@@ -816,6 +866,25 @@ export default function BrandsPage() {
                 Delete {bulkDeleteBrandIds.length} Brand{bulkDeleteBrandIds.length === 1 ? '' : 's'}
               </AlertDialogAction>
             )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Notification Dialog */}
+      <AlertDialog open={notification.open} onOpenChange={(open) => setNotification(prev => ({ ...prev, open }))}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {notification.title}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {notification.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setNotification(prev => ({ ...prev, open: false }))}>
+              OK
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
