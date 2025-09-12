@@ -11,6 +11,7 @@ export interface ProductSeedData {
   short_description?: string;
   category_slug?: string;
   family_name?: string;
+  brand_slug?: string;
   unit_symbol?: string;
   price?: number;
   cost?: number;
@@ -44,7 +45,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
   }
 
   getDependencies(): string[] {
-    return ['product_categories', 'product_families', 'units_of_measure'];
+    return ['product_categories', 'product_families', 'units_of_measure', 'brands'];
   }
 
   protected async loadData(): Promise<ProductSeedData[]> {
@@ -176,6 +177,23 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
       }
     }
 
+    // Get brand ID if brand_slug is provided
+    let brand_id = null;
+    if (record.brand_slug) {
+      try {
+        const brand = await this.prisma.brands.findUnique({
+          where: { slug: record.brand_slug }
+        });
+        brand_id = brand?.id || null;
+        
+        if (!brand) {
+          logger.warn(`Brand '${record.brand_slug}' not found for product '${record.sku}'`, { source: 'ProductSeeder', method: 'transformRecord', brand_slug: record.brand_slug, sku: record.sku });
+        }
+      } catch (error) {
+        logger.warn(`Error finding brand '${record.brand_slug}'`, { source: 'ProductSeeder', method: 'transformRecord', brand_slug: record.brand_slug, error: error instanceof Error ? error.message : error });
+      }
+    }
+
     return {
       name: record.name.trim(),
       sku: record.sku.toUpperCase().trim(),
@@ -184,6 +202,7 @@ export class ProductSeeder extends BaseSeed<ProductSeedData> {
       short_description: record.short_description?.trim() || null,
       category_id,
       family_id,
+      brand_id,
       unit_id,
       price: record.price || 0,
       cost: record.cost || 0,

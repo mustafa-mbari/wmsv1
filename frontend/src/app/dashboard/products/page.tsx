@@ -76,6 +76,8 @@ export interface Product {
   category_name?: string;
   family_id?: number;
   family_name?: string;
+  brand_id?: number;
+  brand_name?: string;
   unit_id: number;
   unit_name?: string;
   price: number;
@@ -107,6 +109,7 @@ export default function ProductsPage() {
   // Dropdown data from APIs
   const [categories, setCategories] = useState<any[]>([]);
   const [families, setFamilies] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
   const [units, setUnits] = useState<any[]>([]);
 
   const canAccessProductsPage = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('inventory-manager');
@@ -118,6 +121,7 @@ export default function ProductsPage() {
     description: z.string().optional(),
     categoryId: z.string().min(1, "Category is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid category"),
     familyId: z.string().optional(),
+    brandId: z.string().optional(),
     unitId: z.string().min(1, "Unit is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid unit"),
     price: z.coerce.number().min(0, "Price must be positive"),
     cost: z.coerce.number().min(0, "Cost must be positive"),
@@ -139,9 +143,10 @@ export default function ProductsPage() {
 
   const fetchDropdownData = async () => {
     try {
-      const [categoriesResponse, familiesResponse, unitsResponse] = await Promise.all([
+      const [categoriesResponse, familiesResponse, brandsResponse, unitsResponse] = await Promise.all([
         apiClient.get('/api/categories'),
         apiClient.get('/api/families'),
+        apiClient.get('/api/brands'),
         apiClient.get('/api/units')
       ]);
 
@@ -150,6 +155,9 @@ export default function ProductsPage() {
       }
       if (familiesResponse.data?.success) {
         setFamilies(familiesResponse.data.data);
+      }
+      if (brandsResponse.data?.success) {
+        setBrands(brandsResponse.data.data);
       }
       if (unitsResponse.data?.success) {
         setUnits(unitsResponse.data.data);
@@ -174,6 +182,8 @@ export default function ProductsPage() {
           category_name: product.category_name,
           family_id: product.family_id ? parseInt(product.family_id) : undefined,
           family_name: product.family_name,
+          brand_id: product.brand_id ? parseInt(product.brand_id) : undefined,
+          brand_name: product.brand_name,
           unit_id: parseInt(product.unit_id) || 0,
           unit_name: product.unit_name,
           price: parseFloat(product.price) || 0,
@@ -208,6 +218,7 @@ export default function ProductsPage() {
       description: "",
       categoryId: "",
       familyId: "none",
+      brandId: "none",
       unitId: "",
       price: 0,
       cost: 0,
@@ -229,6 +240,7 @@ export default function ProductsPage() {
       description: "",
       categoryId: "",
       familyId: "none",
+      brandId: "none",
       unitId: "",
       price: 0,
       cost: 0,
@@ -258,6 +270,7 @@ export default function ProductsPage() {
         description: data.description?.trim() || null,
         category_id: parseInt(data.categoryId),
         family_id: data.familyId === "none" || !data.familyId || data.familyId === "undefined" ? null : parseInt(data.familyId),
+        brand_id: data.brandId === "none" || !data.brandId || data.brandId === "undefined" ? null : parseInt(data.brandId),
         unit_id: parseInt(data.unitId),
         price: Number(data.price) || 0,
         cost: Number(data.cost) || 0,
@@ -298,6 +311,7 @@ export default function ProductsPage() {
         description: data.description || null,
         category_id: parseInt(data.categoryId),
         family_id: data.familyId === "none" || !data.familyId ? null : parseInt(data.familyId),
+        brand_id: data.brandId === "none" || !data.brandId ? null : parseInt(data.brandId),
         unit_id: parseInt(data.unitId),
         price: data.price,
         cost: data.cost,
@@ -383,6 +397,7 @@ export default function ProductsPage() {
       description: product.description || "",
       categoryId: product.category_id.toString(),
       familyId: product.family_id?.toString() || "none",
+      brandId: product.brand_id?.toString() || "none",
       unitId: product.unit_id.toString(),
       price: product.price,
       cost: product.cost,
@@ -446,6 +461,15 @@ export default function ProductsPage() {
       filterType: "select",
       render: (product) => (
         <span className="text-muted-foreground">{product.family_name || "N/A"}</span>
+      ),
+    },
+    {
+      key: "brand_name",
+      label: "Brand",
+      width: 120,
+      filterType: "select",
+      render: (product) => (
+        <Badge variant="outline">{product.brand_name || "N/A"}</Badge>
       ),
     },
     {
@@ -708,7 +732,7 @@ export default function ProductsPage() {
                         )}
                       />
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <FormField
                           control={createForm.control}
                           name="familyId"
@@ -726,6 +750,31 @@ export default function ProductsPage() {
                                   {families.filter(family => family.id && family.is_active !== false).map((family) => (
                                     <SelectItem key={family.id} value={family.id.toString()}>
                                       {family.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={createForm.control}
+                          name="brandId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Brand</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select brand" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="none">No Brand</SelectItem>
+                                  {brands.filter(brand => brand.id && brand.is_active !== false).map((brand) => (
+                                    <SelectItem key={brand.id} value={brand.id.toString()}>
+                                      {brand.name}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -1060,7 +1109,7 @@ export default function ProductsPage() {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={editForm.control}
                   name="familyId"
@@ -1078,6 +1127,31 @@ export default function ProductsPage() {
                           {families.filter(family => family.id && family.is_active !== false).map((family) => (
                             <SelectItem key={family.id} value={family.id.toString()}>
                               {family.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="brandId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Brand</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select brand" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">No Brand</SelectItem>
+                          {brands.filter(brand => brand.id && brand.is_active !== false).map((brand) => (
+                            <SelectItem key={brand.id} value={brand.id.toString()}>
+                              {brand.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

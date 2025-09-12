@@ -33,6 +33,13 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
             name: true
           }
         },
+        brands: {
+          select: {
+            id: true,
+            name: true,
+            slug: true
+          }
+        },
         units_of_measure: {
           select: {
             id: true,
@@ -57,6 +64,9 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       category_name: product.product_categories?.name || null,
       family_id: product.family_id?.toString() || null,
       family_name: product.product_families?.name || null,
+      brand_id: product.brand_id?.toString() || null,
+      brand_name: product.brands?.name || null,
+      brand_slug: product.brands?.slug || null,
       unit_id: product.unit_id?.toString() || null,
       unit_name: product.units_of_measure?.name || null,
       unit_symbol: product.units_of_measure?.symbol || null,
@@ -110,6 +120,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
       short_description,
       category_id,
       family_id,
+      brand_id,
       unit_id,
       price,
       cost,
@@ -140,6 +151,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
         short_description: short_description || null,
         category_id: category_id ? parseInt(category_id) : null,
         family_id: family_id ? parseInt(family_id) : null,
+        brand_id: brand_id ? parseInt(brand_id) : null,
         unit_id: unit_id ? parseInt(unit_id) : null,
         price: price ? parseFloat(price) : 0,
         cost: cost ? parseFloat(cost) : 0,
@@ -227,6 +239,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
     // Convert numeric fields
     if (updateData.category_id) updateData.category_id = parseInt(updateData.category_id);
     if (updateData.family_id) updateData.family_id = parseInt(updateData.family_id);
+    if (updateData.brand_id) updateData.brand_id = parseInt(updateData.brand_id);
     if (updateData.unit_id) updateData.unit_id = parseInt(updateData.unit_id);
     if (updateData.price) updateData.price = parseFloat(updateData.price);
     if (updateData.cost) updateData.cost = parseFloat(updateData.cost);
