@@ -1,3 +1,207 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Attribute:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *         - slug
+ *         - type
+ *         - is_required
+ *         - is_filterable
+ *         - is_searchable
+ *         - sort_order
+ *         - is_active
+ *         - created_at
+ *         - updated_at
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Unique identifier for the attribute
+ *           example: "1"
+ *         name:
+ *           type: string
+ *           description: Name of the product attribute
+ *           example: "Color"
+ *         slug:
+ *           type: string
+ *           description: URL-friendly identifier for the attribute
+ *           example: "color"
+ *         type:
+ *           type: string
+ *           description: Type of the attribute (text, select, multiselect, etc.)
+ *           example: "select"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Description of the attribute
+ *           example: "Product color options"
+ *         is_required:
+ *           type: boolean
+ *           description: Whether the attribute is required for products
+ *           example: false
+ *         is_filterable:
+ *           type: boolean
+ *           description: Whether the attribute can be used for filtering
+ *           example: true
+ *         is_searchable:
+ *           type: boolean
+ *           description: Whether the attribute is searchable
+ *           example: false
+ *         sort_order:
+ *           type: integer
+ *           description: Display order of the attribute
+ *           example: 1
+ *         option_count:
+ *           type: integer
+ *           description: Number of available options for this attribute
+ *           example: 5
+ *         value_count:
+ *           type: integer
+ *           description: Number of values assigned to products
+ *           example: 12
+ *         is_active:
+ *           type: boolean
+ *           description: Whether the attribute is active
+ *           example: true
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Attribute creation timestamp
+ *           example: "2024-01-15T10:30:00Z"
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Attribute last update timestamp
+ *           example: "2024-01-15T10:30:00Z"
+ *     AttributeOption:
+ *       type: object
+ *       required:
+ *         - id
+ *         - value
+ *         - label
+ *         - sort_order
+ *         - is_active
+ *         - created_at
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Unique identifier for the attribute option
+ *           example: "1"
+ *         value:
+ *           type: string
+ *           description: Value of the attribute option
+ *           example: "red"
+ *         label:
+ *           type: string
+ *           description: Display label for the option
+ *           example: "Red"
+ *         sort_order:
+ *           type: integer
+ *           description: Display order of the option
+ *           example: 1
+ *         is_active:
+ *           type: boolean
+ *           description: Whether the option is active
+ *           example: true
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Option creation timestamp
+ *           example: "2024-01-15T10:30:00Z"
+ *     CreateAttributeRequest:
+ *       type: object
+ *       required:
+ *         - name
+ *         - slug
+ *         - type
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the product attribute
+ *           example: "Color"
+ *         slug:
+ *           type: string
+ *           description: URL-friendly identifier for the attribute
+ *           example: "color"
+ *         type:
+ *           type: string
+ *           description: Type of the attribute
+ *           example: "select"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Description of the attribute
+ *           example: "Product color options"
+ *         is_required:
+ *           type: boolean
+ *           description: Whether the attribute is required
+ *           default: false
+ *           example: false
+ *         is_filterable:
+ *           type: boolean
+ *           description: Whether the attribute can be used for filtering
+ *           default: false
+ *           example: true
+ *         is_searchable:
+ *           type: boolean
+ *           description: Whether the attribute is searchable
+ *           default: false
+ *           example: false
+ *         sort_order:
+ *           type: integer
+ *           description: Display order of the attribute
+ *           default: 0
+ *           example: 1
+ *         is_active:
+ *           type: boolean
+ *           description: Whether the attribute should be active
+ *           default: true
+ *           example: true
+ *     UpdateAttributeRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the product attribute
+ *           example: "Updated Color"
+ *         slug:
+ *           type: string
+ *           description: URL-friendly identifier for the attribute
+ *           example: "updated-color"
+ *         type:
+ *           type: string
+ *           description: Type of the attribute
+ *           example: "multiselect"
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Description of the attribute
+ *           example: "Updated product color options"
+ *         is_required:
+ *           type: boolean
+ *           description: Whether the attribute is required
+ *           example: true
+ *         is_filterable:
+ *           type: boolean
+ *           description: Whether the attribute can be used for filtering
+ *           example: false
+ *         is_searchable:
+ *           type: boolean
+ *           description: Whether the attribute is searchable
+ *           example: true
+ *         sort_order:
+ *           type: integer
+ *           description: Display order of the attribute
+ *           example: 2
+ *         is_active:
+ *           type: boolean
+ *           description: Whether the attribute should be active
+ *           example: false
+ */
+
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
 import logger from '../utils/logger/logger';
@@ -7,7 +211,47 @@ import { authenticateToken, requireAdmin } from '../middleware/authMiddleware';
 const router = Router();
 const prisma = new PrismaClient();
 
-// GET /api/attributes - Get all product attributes
+/**
+ * @swagger
+ * /api/attributes:
+ *   get:
+ *     tags: [Attributes]
+ *     summary: Get all product attributes
+ *     description: Retrieve all active product attributes with option and value counts
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Product attributes retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     - id: "1"
+ *                       name: "Color"
+ *                       slug: "color"
+ *                       type: "select"
+ *                       description: "Product color options"
+ *                       is_required: false
+ *                       is_filterable: true
+ *                       is_searchable: false
+ *                       sort_order: 1
+ *                       option_count: 5
+ *                       value_count: 12
+ *                       is_active: true
+ *                       created_at: "2024-01-15T10:30:00Z"
+ *                       updated_at: "2024-01-15T10:30:00Z"
+ *                   message: "Product attributes retrieved successfully"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     logger.info('Fetching all product attributes from database', { 
@@ -71,7 +315,61 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/attributes - Create product attribute
+/**
+ * @swagger
+ * /api/attributes:
+ *   post:
+ *     tags: [Attributes]
+ *     summary: Create a new product attribute
+ *     description: Create a new product attribute with filtering and search capabilities
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateAttributeRequest'
+ *           examples:
+ *             create_attribute:
+ *               value:
+ *                 name: "Color"
+ *                 slug: "color"
+ *                 type: "select"
+ *                 description: "Product color options"
+ *                 is_required: false
+ *                 is_filterable: true
+ *                 is_searchable: false
+ *                 sort_order: 1
+ *                 is_active: true
+ *     responses:
+ *       201:
+ *         description: Product attribute created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     id: "1"
+ *                     name: "Color"
+ *                     slug: "color"
+ *                     type: "select"
+ *                     is_active: true
+ *                     created_at: "2024-01-15T10:30:00Z"
+ *                   message: "Product attribute created successfully"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const {
@@ -142,7 +440,77 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
   }
 });
 
-// PUT /api/attributes/:id - Update product attribute
+/**
+ * @swagger
+ * /api/attributes/{id}:
+ *   put:
+ *     tags: [Attributes]
+ *     summary: Update a product attribute
+ *     description: Update an existing product attribute by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Attribute unique identifier
+ *         example: "1"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateAttributeRequest'
+ *           examples:
+ *             update_attribute:
+ *               value:
+ *                 name: "Updated Color"
+ *                 slug: "updated-color"
+ *                 type: "multiselect"
+ *                 description: "Updated product color options"
+ *                 is_required: true
+ *                 is_filterable: false
+ *                 is_searchable: true
+ *                 sort_order: 2
+ *                 is_active: false
+ *     responses:
+ *       200:
+ *         description: Product attribute updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     id: "1"
+ *                     name: "Updated Color"
+ *                     slug: "updated-color"
+ *                     type: "multiselect"
+ *                     description: "Updated product color options"
+ *                     is_required: true
+ *                     is_filterable: false
+ *                     is_searchable: true
+ *                     sort_order: 2
+ *                     is_active: false
+ *                     created_at: "2024-01-15T10:30:00Z"
+ *                     updated_at: "2024-01-15T11:45:00Z"
+ *                   message: "Product attribute updated successfully"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -170,7 +538,45 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
   }
 });
 
-// DELETE /api/attributes/:id - Delete product attribute
+/**
+ * @swagger
+ * /api/attributes/{id}:
+ *   delete:
+ *     tags: [Attributes]
+ *     summary: Delete a product attribute
+ *     description: Soft delete a product attribute by setting deleted_at timestamp
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Attribute unique identifier
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Product attribute deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data: null
+ *                   message: "Product attribute deleted successfully"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -198,7 +604,55 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res:
   }
 });
 
-// GET /api/attributes/:id/options - Get attribute options
+/**
+ * @swagger
+ * /api/attributes/{id}/options:
+ *   get:
+ *     tags: [Attributes]
+ *     summary: Get attribute options
+ *     description: Retrieve all available options for a specific product attribute
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Attribute unique identifier
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Attribute options retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     - id: "1"
+ *                       value: "red"
+ *                       label: "Red"
+ *                       sort_order: 1
+ *                       is_active: true
+ *                       created_at: "2024-01-15T10:30:00Z"
+ *                     - id: "2"
+ *                       value: "blue"
+ *                       label: "Blue"
+ *                       sort_order: 2
+ *                       is_active: true
+ *                       created_at: "2024-01-15T10:35:00Z"
+ *                   message: "Attribute options retrieved successfully"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.get('/:id/options', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

@@ -4,6 +4,213 @@
  */
 
 export interface paths {
+    "/api/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all product attributes
+         * @description Retrieve all active product attributes with option and value counts
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product attributes retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /**
+         * Create a new product attribute
+         * @description Create a new product attribute with filtering and search capabilities
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAttributeRequest"];
+                };
+            };
+            responses: {
+                /** @description Product attribute created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attributes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a product attribute
+         * @description Update an existing product attribute by ID
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAttributeRequest"];
+                };
+            };
+            responses: {
+                /** @description Product attribute updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        post?: never;
+        /**
+         * Delete a product attribute
+         * @description Soft delete a product attribute by setting deleted_at timestamp
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product attribute deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attributes/{id}/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get attribute options
+         * @description Retrieve all available options for a specific product attribute
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute options retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -829,6 +1036,165 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all product families
+         * @description Retrieve all active product families with associated categories and product counts
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product families retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /**
+         * Create a new product family
+         * @description Create a new product family with category association
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateFamilyRequest"];
+                };
+            };
+            responses: {
+                /** @description Product family created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a product family
+         * @description Update an existing product family by ID
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Family unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateFamilyRequest"];
+                };
+            };
+            responses: {
+                /** @description Product family updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        post?: never;
+        /**
+         * Delete a product family
+         * @description Soft delete a product family by setting deleted_at timestamp
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Family unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product family deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -1147,6 +1513,165 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all units of measure
+         * @description Retrieve all active units of measure with product counts
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Units of measure retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /**
+         * Create a new unit of measure
+         * @description Create a new unit of measure with symbol and description
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateUnitRequest"];
+                };
+            };
+            responses: {
+                /** @description Unit of measure created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/units/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a unit of measure
+         * @description Update an existing unit of measure by ID
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Unit unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateUnitRequest"];
+                };
+            };
+            responses: {
+                /** @description Unit of measure updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        post?: never;
+        /**
+         * Delete a unit of measure
+         * @description Soft delete a unit of measure by setting deleted_at timestamp
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Unit unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unit of measure deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
                 500: components["responses"]["InternalServerError"];
             };
         };
@@ -1905,6 +2430,212 @@ export interface components {
             /** @description Detailed error information */
             error?: string | null;
         };
+        Attribute: {
+            /**
+             * @description Unique identifier for the attribute
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description Name of the product attribute
+             * @example Color
+             */
+            name: string;
+            /**
+             * @description URL-friendly identifier for the attribute
+             * @example color
+             */
+            slug: string;
+            /**
+             * @description Type of the attribute (text, select, multiselect, etc.)
+             * @example select
+             */
+            type: string;
+            /**
+             * @description Description of the attribute
+             * @example Product color options
+             */
+            description?: string | null;
+            /**
+             * @description Whether the attribute is required for products
+             * @example false
+             */
+            is_required: boolean;
+            /**
+             * @description Whether the attribute can be used for filtering
+             * @example true
+             */
+            is_filterable: boolean;
+            /**
+             * @description Whether the attribute is searchable
+             * @example false
+             */
+            is_searchable: boolean;
+            /**
+             * @description Display order of the attribute
+             * @example 1
+             */
+            sort_order: number;
+            /**
+             * @description Number of available options for this attribute
+             * @example 5
+             */
+            option_count?: number;
+            /**
+             * @description Number of values assigned to products
+             * @example 12
+             */
+            value_count?: number;
+            /**
+             * @description Whether the attribute is active
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Attribute creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Attribute last update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+        };
+        AttributeOption: {
+            /**
+             * @description Unique identifier for the attribute option
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description Value of the attribute option
+             * @example red
+             */
+            value: string;
+            /**
+             * @description Display label for the option
+             * @example Red
+             */
+            label: string;
+            /**
+             * @description Display order of the option
+             * @example 1
+             */
+            sort_order: number;
+            /**
+             * @description Whether the option is active
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Option creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+        };
+        CreateAttributeRequest: {
+            /**
+             * @description Name of the product attribute
+             * @example Color
+             */
+            name: string;
+            /**
+             * @description URL-friendly identifier for the attribute
+             * @example color
+             */
+            slug: string;
+            /**
+             * @description Type of the attribute
+             * @example select
+             */
+            type: string;
+            /**
+             * @description Description of the attribute
+             * @example Product color options
+             */
+            description?: string | null;
+            /**
+             * @description Whether the attribute is required
+             * @default false
+             * @example false
+             */
+            is_required: boolean;
+            /**
+             * @description Whether the attribute can be used for filtering
+             * @default false
+             * @example true
+             */
+            is_filterable: boolean;
+            /**
+             * @description Whether the attribute is searchable
+             * @default false
+             * @example false
+             */
+            is_searchable: boolean;
+            /**
+             * @description Display order of the attribute
+             * @default 0
+             * @example 1
+             */
+            sort_order: number;
+            /**
+             * @description Whether the attribute should be active
+             * @default true
+             * @example true
+             */
+            is_active: boolean;
+        };
+        UpdateAttributeRequest: {
+            /**
+             * @description Name of the product attribute
+             * @example Updated Color
+             */
+            name?: string;
+            /**
+             * @description URL-friendly identifier for the attribute
+             * @example updated-color
+             */
+            slug?: string;
+            /**
+             * @description Type of the attribute
+             * @example multiselect
+             */
+            type?: string;
+            /**
+             * @description Description of the attribute
+             * @example Updated product color options
+             */
+            description?: string | null;
+            /**
+             * @description Whether the attribute is required
+             * @example true
+             */
+            is_required?: boolean;
+            /**
+             * @description Whether the attribute can be used for filtering
+             * @example false
+             */
+            is_filterable?: boolean;
+            /**
+             * @description Whether the attribute is searchable
+             * @example true
+             */
+            is_searchable?: boolean;
+            /**
+             * @description Display order of the attribute
+             * @example 2
+             */
+            sort_order?: number;
+            /**
+             * @description Whether the attribute should be active
+             * @example false
+             */
+            is_active?: boolean;
+        };
         LoginRequest: {
             /**
              * Format: email
@@ -2077,6 +2808,100 @@ export interface components {
              */
             isActive?: boolean;
         };
+        Family: {
+            /**
+             * @description Unique identifier for the family
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description Name of the product family
+             * @example Electronics
+             */
+            name: string;
+            /**
+             * @description Description of the product family
+             * @example Consumer electronics and devices
+             */
+            description?: string | null;
+            /**
+             * @description ID of the associated category
+             * @example 1
+             */
+            category_id?: string | null;
+            /**
+             * @description Name of the associated category
+             * @example Technology
+             */
+            category_name?: string | null;
+            /**
+             * @description Number of products in this family
+             * @example 25
+             */
+            product_count?: number;
+            /**
+             * @description Whether the family is active
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Family creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Family last update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+        };
+        CreateFamilyRequest: {
+            /**
+             * @description Name of the product family
+             * @example Electronics
+             */
+            name: string;
+            /**
+             * @description Description of the product family
+             * @example Consumer electronics and devices
+             */
+            description?: string | null;
+            /**
+             * @description ID of the associated category
+             * @example 1
+             */
+            category_id?: string | null;
+            /**
+             * @description Whether the family should be active
+             * @default true
+             * @example true
+             */
+            is_active: boolean;
+        };
+        UpdateFamilyRequest: {
+            /**
+             * @description Name of the product family
+             * @example Updated Electronics
+             */
+            name?: string;
+            /**
+             * @description Description of the product family
+             * @example Updated consumer electronics and devices
+             */
+            description?: string | null;
+            /**
+             * @description ID of the associated category
+             * @example 2
+             */
+            category_id?: string | null;
+            /**
+             * @description Whether the family should be active
+             * @example false
+             */
+            is_active?: boolean;
+        };
         CreateProductRequest: {
             /**
              * @description Product name
@@ -2168,6 +2993,95 @@ export interface components {
              * @example true
              */
             isActive?: boolean;
+        };
+        Unit: {
+            /**
+             * @description Unique identifier for the unit of measure
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description Name of the unit of measure
+             * @example Kilogram
+             */
+            name: string;
+            /**
+             * @description Symbol or abbreviation for the unit
+             * @example kg
+             */
+            symbol: string;
+            /**
+             * @description Description of the unit of measure
+             * @example Unit of mass in metric system
+             */
+            description?: string | null;
+            /**
+             * @description Number of products using this unit
+             * @example 15
+             */
+            product_count?: number;
+            /**
+             * @description Whether the unit is active
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Unit creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Unit last update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+        };
+        CreateUnitRequest: {
+            /**
+             * @description Name of the unit of measure
+             * @example Kilogram
+             */
+            name: string;
+            /**
+             * @description Symbol or abbreviation for the unit
+             * @example kg
+             */
+            symbol: string;
+            /**
+             * @description Description of the unit of measure
+             * @example Unit of mass in metric system
+             */
+            description?: string | null;
+            /**
+             * @description Whether the unit should be active
+             * @default true
+             * @example true
+             */
+            is_active: boolean;
+        };
+        UpdateUnitRequest: {
+            /**
+             * @description Name of the unit of measure
+             * @example Updated Kilogram
+             */
+            name?: string;
+            /**
+             * @description Symbol or abbreviation for the unit
+             * @example kg
+             */
+            symbol?: string;
+            /**
+             * @description Description of the unit of measure
+             * @example Updated unit of mass in metric system
+             */
+            description?: string | null;
+            /**
+             * @description Whether the unit should be active
+             * @example false
+             */
+            is_active?: boolean;
         };
         CreateUserRequest: {
             /**
