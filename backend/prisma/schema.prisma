@@ -211,6 +211,7 @@ model products {
   short_description        String?
   category_id              Int?
   family_id                Int?
+  brand_id                 Int?
   unit_id                  Int?
   price                    Decimal?                   @default(0) @db.Decimal(12, 2)
   cost                     Decimal?                   @default(0) @db.Decimal(12, 2)
@@ -233,6 +234,7 @@ model products {
   updated_by               Int?
   deleted_by               Int?
   product_attribute_values product_attribute_values[]
+  brands                   brands?                    @relation(fields: [brand_id], references: [id], onUpdate: NoAction, map: "products_brand_id_foreign")
   product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
   creator                  users?                     @relation("products_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
   deleter                  users?                     @relation("products_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
@@ -240,6 +242,7 @@ model products {
   units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
   updater                  users?                     @relation("products_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
+  @@index([brand_id, status], map: "products_brand_id_status_index")
   @@index([category_id, status], map: "products_category_id_status_index")
   @@index([sku, status], map: "products_sku_status_index")
   @@index([status, deleted_at])
@@ -462,6 +465,9 @@ model users {
   deleted_warehouses                       warehouses[]                @relation("warehouses_deleted_by")
   warehouses                               warehouses[]
   updated_warehouses                       warehouses[]                @relation("warehouses_updated_by")
+  created_brands                           brands[]                    @relation("brands_created_by")
+  deleted_brands                           brands[]                    @relation("brands_deleted_by")
+  updated_brands                           brands[]                    @relation("brands_updated_by")
 
   @@index([is_active, deleted_at])
   @@index([email_verified, is_active])
@@ -493,4 +499,26 @@ model warehouses {
 
   @@index([is_active, deleted_at])
   @@index([manager_id, is_active])
+}
+
+model brands {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique(map: "brands_name_unique") @db.VarChar(100)
+  slug        String    @unique(map: "brands_slug_unique") @db.VarChar(100)
+  description String?
+  website     String?   @db.VarChar(255)
+  logo_url    String?   @db.VarChar(255)
+  is_active   Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  products    products[]
+  creator     users?    @relation("brands_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("brands_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?    @relation("brands_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
 }

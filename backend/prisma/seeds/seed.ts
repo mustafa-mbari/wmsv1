@@ -20,6 +20,7 @@ import { ClassTypeSeeder } from './classes/ClassTypeSeeder';
 import { ProductAttributeSeeder } from './classes/ProductAttributeSeeder';
 import { ProductAttributeOptionSeeder } from './classes/ProductAttributeOptionSeeder';
 import { ProductAttributeValueSeeder } from './classes/ProductAttributeValueSeeder';
+import { BrandSeeder } from './classes/BrandSeeder';
 
 async function main() {
   const prisma = new PrismaClient();
@@ -76,6 +77,7 @@ async function main() {
     runner.registerSeeder('permissions', () => new PermissionSeeder(prisma, { systemUserId }));
     runner.registerSeeder('class_types', () => new ClassTypeSeeder(prisma, { systemUserId }));
     runner.registerSeeder('units_of_measure', () => new UnitsOfMeasureSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('brands', () => new BrandSeeder(prisma, { systemUserId }));
 
     // User management (permissions → roles → role_permissions → users → user_roles)
     runner.registerSeeder('roles', () => new RoleSeeder(prisma, { systemUserId }));
@@ -248,6 +250,7 @@ Available Seeders:
   • user_roles         - User-role assignments (depends on users, roles)
   • class_types        - Classification types
   • units_of_measure   - Units of measurement
+  • brands             - Product brands
   • product_categories - Product categories (from products.json)
   • product_families   - Product families (from products.json, depends on categories)
   • products           - Products and inventory (from products.json, depends on categories, families, units)
@@ -255,7 +258,7 @@ Available Seeders:
 
 Execution Order:
   1. permissions → roles → role_permissions → users → user_roles
-  2. class_types, units_of_measure (parallel)
+  2. class_types, units_of_measure, brands (parallel)
   3. product_categories → product_families → products
   4. warehouses (after users)
 
