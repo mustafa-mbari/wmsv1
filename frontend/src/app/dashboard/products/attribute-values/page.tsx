@@ -417,13 +417,21 @@ export default function AttributeValuesPage() {
 
   const handleRefresh = async () => {
     setLoading(true);
-    await Promise.all([
-      fetchAttributeValues(),
-      fetchProducts(),
-      fetchAttributes()
-    ]);
-    setLoading(false);
-    toast.success('Data refreshed successfully');
+    try {
+      console.log('Refreshing all attribute values data...');
+      await Promise.all([
+        fetchAttributeValues(),
+        fetchProducts(),
+        fetchAttributes()
+      ]);
+      console.log('Successfully refreshed all attribute values data');
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!canAccessPage) {

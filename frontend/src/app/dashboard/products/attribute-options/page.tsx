@@ -61,6 +61,7 @@ import { useForm } from "react-hook-form";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 import { useAlert } from "@/hooks/useAlert";
 import { getErrorMessage } from "@/lib/error-utils";
+import { cn } from "@/lib/utils";
 
 export interface AttributeOption {
   id: string;
@@ -448,6 +449,26 @@ export default function AttributeOptionsPage() {
     console.log("View option details:", option.label);
   };
 
+  // Refresh function to fetch all data
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchAttributeOptions(),
+        fetchAttributes()
+      ]);
+      console.log('Successfully refreshed all attribute options data');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      showAlert({
+        title: "Refresh Failed",
+        description: "Failed to refresh data. Please try again."
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Calculate stats
   const totalOptions = transformedOptions.length;
   const activeOptions = transformedOptions.filter(o => o.is_active).length;
@@ -510,8 +531,8 @@ export default function AttributeOptionsPage() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchAttributeOptions} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
+            <Button onClick={handleRefresh} variant="outline" size="default" disabled={loading}>
+              <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> 
               Refresh
             </Button>
             {canPerformAdminActions && (
