@@ -628,19 +628,13 @@ export default function ProductsPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Product Management
+          <div>
+            <h1 className="text-lg font-medium text-muted-foreground">
+              Products / Product Management
               {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
+                <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions 
-                ? "Manage your product inventory, pricing, and stock levels" 
-                : "View product information and inventory levels (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={fetchProducts} variant="outline" size="default">
@@ -990,19 +984,6 @@ export default function ProductsPage() {
 
       {/* Main Products Table */}
       <Card className="shadow-lg border-0 bg-card">
-        <CardHeader className="border-b bg-muted/30 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">Product Inventory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage and view all products in your inventory
-              </CardDescription>
-            </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedProducts.length} {transformedProducts.length === 1 ? 'product' : 'products'}
-            </Badge>
-          </div>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
             <AdvancedTable

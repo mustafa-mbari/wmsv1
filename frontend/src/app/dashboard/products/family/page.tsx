@@ -668,13 +668,6 @@ export default function ProductFamilyPage() {
 
       {/* Main Families Table */}
       <Card className="shadow-lg border-0 bg-card">
-        <CardHeader className="border-b bg-muted/30 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">Product Family Directory</CardTitle>
-            </div>
-          </div>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
             <AdvancedTable
