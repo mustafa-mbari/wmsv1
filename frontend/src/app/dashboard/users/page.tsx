@@ -42,17 +42,10 @@ export default function UsersPage() {
   return (
     <div className="w-full space-y-6">
       {/* Page Header */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              User Management System
-            </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              Comprehensive user management with roles, permissions, and access control
-            </p>
-          </div>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-lg font-medium text-muted-foreground">
+          Users / User Management
+        </h1>
       </div>
 
       {/* Tab Navigation */}

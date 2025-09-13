@@ -6,12 +6,54 @@ const swaggerDefinition: SwaggerDefinition = {
   info: {
     title: 'WMS API Documentation',
     version: '1.0.0',
-    description: 'Warehouse Management System API documentation',
+    description: 'Warehouse Management System API documentation with comprehensive RBAC (Role-Based Access Control) system',
     contact: {
       name: 'WMS Team',
       email: 'support@wms.com',
     },
   },
+  tags: [
+    {
+      name: 'Authentication',
+      description: 'User authentication and authorization endpoints',
+    },
+    {
+      name: 'Users',
+      description: 'User management endpoints',
+    },
+    {
+      name: 'Roles',
+      description: 'Role management endpoints for RBAC system',
+    },
+    {
+      name: 'Permissions',
+      description: 'Permission management endpoints for RBAC system',
+    },
+    {
+      name: 'Role Permissions',
+      description: 'Role-Permission assignment endpoints for RBAC system',
+    },
+    {
+      name: 'User Roles',
+      description: 'User-Role assignment endpoints for RBAC system',
+    },
+    {
+      name: 'Products',
+      description: 'Product management endpoints',
+    },
+    {
+      name: 'Categories',
+      description: 'Category management endpoints',
+    },
+    {
+      name: 'Brands',
+      description: 'Brand management endpoints',
+    },
+    {
+      name: 'Warehouse',
+      description: 'Warehouse management endpoints',
+    },
+  ],
   servers: [
     {
       url: process.env.API_URL || 'http://localhost:8000',
@@ -61,43 +103,225 @@ const swaggerDefinition: SwaggerDefinition = {
         type: 'object',
         properties: {
           id: {
-            type: 'string',
+            type: 'integer',
             description: 'User unique identifier',
+          },
+          username: {
+            type: 'string',
+            description: 'User username',
           },
           email: {
             type: 'string',
             format: 'email',
             description: 'User email address',
           },
-          firstName: {
+          first_name: {
             type: 'string',
             description: 'User first name',
           },
-          lastName: {
+          last_name: {
             type: 'string',
             description: 'User last name',
           },
-          role: {
-            type: 'string',
-            enum: ['ADMIN', 'USER', 'MANAGER'],
-            description: 'User role',
-          },
-          isActive: {
+          is_active: {
             type: 'boolean',
             description: 'User account status',
           },
-          createdAt: {
+          is_super_admin: {
+            type: 'boolean',
+            description: 'Super admin status',
+          },
+          last_login: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Last login date',
+            nullable: true,
+          },
+          created_at: {
             type: 'string',
             format: 'date-time',
             description: 'Account creation date',
           },
-          updatedAt: {
+          updated_at: {
             type: 'string',
             format: 'date-time',
             description: 'Last update date',
           },
         },
-        required: ['id', 'email', 'firstName', 'lastName', 'role'],
+        required: ['id', 'username', 'email', 'first_name', 'last_name'],
+      },
+      Role: {
+        type: 'object',
+        required: [
+          'name',
+          'slug'
+        ],
+        properties: {
+          id: {
+            type: 'integer',
+            description: 'Role ID',
+          },
+          name: {
+            type: 'string',
+            description: 'Role name',
+          },
+          slug: {
+            type: 'string',
+            description: 'Role slug',
+          },
+          description: {
+            type: 'string',
+            description: 'Role description',
+          },
+          is_active: {
+            type: 'boolean',
+            description: 'Whether role is active',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+      Permission: {
+        type: 'object',
+        required: [
+          'name',
+          'slug'
+        ],
+        properties: {
+          id: {
+            type: 'integer',
+            description: 'Permission ID',
+          },
+          name: {
+            type: 'string',
+            description: 'Permission name',
+          },
+          slug: {
+            type: 'string',
+            description: 'Permission slug',
+          },
+          description: {
+            type: 'string',
+            description: 'Permission description',
+          },
+          module: {
+            type: 'string',
+            description: 'Module name',
+          },
+          is_active: {
+            type: 'boolean',
+            description: 'Whether permission is active',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+      RolePermission: {
+        type: 'object',
+        required: [
+          'role_id',
+          'permission_id'
+        ],
+        properties: {
+          id: {
+            type: 'integer',
+            description: 'Role Permission ID',
+          },
+          role_id: {
+            type: 'integer',
+            description: 'Role ID',
+          },
+          permission_id: {
+            type: 'integer',
+            description: 'Permission ID',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          role: {
+            $ref: '#/components/schemas/Role',
+          },
+          permission: {
+            $ref: '#/components/schemas/Permission',
+          },
+        },
+      },
+      UserRole: {
+        type: 'object',
+        required: [
+          'user_id',
+          'role_id'
+        ],
+        properties: {
+          id: {
+            type: 'integer',
+            description: 'User Role ID',
+          },
+          user_id: {
+            type: 'integer',
+            description: 'User ID',
+          },
+          role_id: {
+            type: 'integer',
+            description: 'Role ID',
+          },
+          assigned_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          assigned_by: {
+            type: 'integer',
+            description: 'ID of user who assigned the role',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+          },
+          user: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'integer',
+              },
+              username: {
+                type: 'string',
+              },
+              email: {
+                type: 'string',
+              },
+              first_name: {
+                type: 'string',
+              },
+              last_name: {
+                type: 'string',
+              },
+            },
+          },
+          role: {
+            $ref: '#/components/schemas/Role',
+          },
+        },
       },
       Product: {
         type: 'object',

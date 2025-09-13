@@ -3,12 +3,54 @@
   "info": {
     "title": "WMS API Documentation",
     "version": "1.0.0",
-    "description": "Warehouse Management System API documentation",
+    "description": "Warehouse Management System API documentation with comprehensive RBAC (Role-Based Access Control) system",
     "contact": {
       "name": "WMS Team",
       "email": "support@wms.com"
     }
   },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization endpoints"
+    },
+    {
+      "name": "Users",
+      "description": "User management endpoints"
+    },
+    {
+      "name": "Roles",
+      "description": "Role management endpoints for RBAC system"
+    },
+    {
+      "name": "Permissions",
+      "description": "Permission management endpoints for RBAC system"
+    },
+    {
+      "name": "Role Permissions",
+      "description": "Role-Permission assignment endpoints for RBAC system"
+    },
+    {
+      "name": "User Roles",
+      "description": "User-Role assignment endpoints for RBAC system"
+    },
+    {
+      "name": "Products",
+      "description": "Product management endpoints"
+    },
+    {
+      "name": "Categories",
+      "description": "Category management endpoints"
+    },
+    {
+      "name": "Brands",
+      "description": "Brand management endpoints"
+    },
+    {
+      "name": "Warehouse",
+      "description": "Warehouse management endpoints"
+    }
+  ],
   "servers": [
     {
       "url": "http://localhost:8000",
@@ -64,11 +106,48 @@
             "description": "User unique identifier",
             "example": "123"
           },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          },
           "email": {
             "type": "string",
             "format": "email",
             "description": "User email address",
             "example": "john.doe@example.com"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "User first name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "User last name"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "User account status"
+          },
+          "is_super_admin": {
+            "type": "boolean",
+            "description": "Super admin status"
+          },
+          "last_login": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last login date",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update date"
           },
           "firstName": {
             "type": "string",
@@ -79,37 +158,6 @@
             "type": "string",
             "description": "User last name",
             "example": "Doe"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "ADMIN",
-              "USER",
-              "MANAGER"
-            ],
-            "description": "User role"
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "User account status",
-            "example": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Account creation date",
-            "example": "2023-01-01T00:00:00Z"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last update date",
-            "example": "2023-01-01T12:00:00Z"
-          },
-          "username": {
-            "type": "string",
-            "description": "Unique username",
-            "example": "johndoe"
           },
           "phone": {
             "type": "string",
@@ -129,6 +177,11 @@
             "description": "User avatar image URL",
             "example": "/uploads/avatars/avatar-123.jpg"
           },
+          "isActive": {
+            "type": "boolean",
+            "description": "User account status",
+            "example": true
+          },
           "roleNames": {
             "type": "array",
             "items": {
@@ -139,6 +192,18 @@
               "admin",
               "manager"
             ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation date",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update date",
+            "example": "2023-01-01T12:00:00Z"
           }
         },
         "required": [
@@ -148,6 +213,179 @@
           "firstName",
           "lastName"
         ]
+      },
+      "Role": {
+        "type": "object",
+        "required": [
+          "name",
+          "slug"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Role ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Role name"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Role slug"
+          },
+          "description": {
+            "type": "string",
+            "description": "Role description"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether role is active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Permission": {
+        "type": "object",
+        "required": [
+          "name",
+          "slug"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Permission ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Permission name"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Permission slug"
+          },
+          "description": {
+            "type": "string",
+            "description": "Permission description"
+          },
+          "module": {
+            "type": "string",
+            "description": "Module name"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether permission is active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RolePermission": {
+        "type": "object",
+        "required": [
+          "role_id",
+          "permission_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Role Permission ID"
+          },
+          "role_id": {
+            "type": "integer",
+            "description": "Role ID"
+          },
+          "permission_id": {
+            "type": "integer",
+            "description": "Permission ID"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "permission": {
+            "$ref": "#/components/schemas/Permission"
+          }
+        }
+      },
+      "UserRole": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "role_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User Role ID"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "role_id": {
+            "type": "integer",
+            "description": "Role ID"
+          },
+          "assigned_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "assigned_by": {
+            "type": "integer",
+            "description": "ID of user who assigned the role"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "first_name": {
+                "type": "string"
+              },
+              "last_name": {
+                "type": "string"
+              }
+            }
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
       },
       "Product": {
         "type": "object",
@@ -380,6 +618,489 @@
           "success",
           "message"
         ]
+      },
+      "AttributeOption": {
+        "type": "object",
+        "required": [
+          "id",
+          "value",
+          "label",
+          "sort_order",
+          "is_active",
+          "created_at",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the attribute option",
+            "example": "1"
+          },
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "2"
+          },
+          "attribute_name": {
+            "type": "string",
+            "description": "Name of the associated attribute",
+            "example": "Color"
+          },
+          "attribute_type": {
+            "type": "string",
+            "description": "Type of the associated attribute",
+            "example": "select"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the attribute option",
+            "example": "red"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the option",
+            "example": "Red"
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the option",
+            "example": 1
+          },
+          "usage_count": {
+            "type": "integer",
+            "description": "Number of times this option is used",
+            "example": 8
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the option is active",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Option creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Option last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "CreateAttributeOptionRequest": {
+        "type": "object",
+        "required": [
+          "attribute_id",
+          "value",
+          "label"
+        ],
+        "properties": {
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "2"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the attribute option",
+            "example": "red"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the option",
+            "example": "Red"
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the option",
+            "default": 0,
+            "example": 1
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the option should be active",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateAttributeOptionRequest": {
+        "type": "object",
+        "properties": {
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "3"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the attribute option",
+            "example": "blue"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the option",
+            "example": "Blue"
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the option",
+            "example": 2
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the option should be active",
+            "example": false
+          }
+        }
+      },
+      "Attribute": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "type",
+          "is_required",
+          "is_filterable",
+          "is_searchable",
+          "sort_order",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the attribute",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the product attribute",
+            "example": "Color"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly identifier for the attribute",
+            "example": "color"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the attribute (text, select, multiselect, etc.)",
+            "example": "select"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the attribute",
+            "example": "Product color options"
+          },
+          "is_required": {
+            "type": "boolean",
+            "description": "Whether the attribute is required for products",
+            "example": false
+          },
+          "is_filterable": {
+            "type": "boolean",
+            "description": "Whether the attribute can be used for filtering",
+            "example": true
+          },
+          "is_searchable": {
+            "type": "boolean",
+            "description": "Whether the attribute is searchable",
+            "example": false
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the attribute",
+            "example": 1
+          },
+          "option_count": {
+            "type": "integer",
+            "description": "Number of available options for this attribute",
+            "example": 5
+          },
+          "value_count": {
+            "type": "integer",
+            "description": "Number of values assigned to products",
+            "example": 12
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the attribute is active",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Attribute creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Attribute last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "CreateAttributeRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "slug",
+          "type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the product attribute",
+            "example": "Color"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly identifier for the attribute",
+            "example": "color"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the attribute",
+            "example": "select"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the attribute",
+            "example": "Product color options"
+          },
+          "is_required": {
+            "type": "boolean",
+            "description": "Whether the attribute is required",
+            "default": false,
+            "example": false
+          },
+          "is_filterable": {
+            "type": "boolean",
+            "description": "Whether the attribute can be used for filtering",
+            "default": false,
+            "example": true
+          },
+          "is_searchable": {
+            "type": "boolean",
+            "description": "Whether the attribute is searchable",
+            "default": false,
+            "example": false
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the attribute",
+            "default": 0,
+            "example": 1
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the attribute should be active",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateAttributeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the product attribute",
+            "example": "Updated Color"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly identifier for the attribute",
+            "example": "updated-color"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the attribute",
+            "example": "multiselect"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the attribute",
+            "example": "Updated product color options"
+          },
+          "is_required": {
+            "type": "boolean",
+            "description": "Whether the attribute is required",
+            "example": true
+          },
+          "is_filterable": {
+            "type": "boolean",
+            "description": "Whether the attribute can be used for filtering",
+            "example": false
+          },
+          "is_searchable": {
+            "type": "boolean",
+            "description": "Whether the attribute is searchable",
+            "example": true
+          },
+          "sort_order": {
+            "type": "integer",
+            "description": "Display order of the attribute",
+            "example": 2
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the attribute should be active",
+            "example": false
+          }
+        }
+      },
+      "AttributeValue": {
+        "type": "object",
+        "required": [
+          "id",
+          "product_id",
+          "attribute_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the attribute value",
+            "example": "1"
+          },
+          "product_id": {
+            "type": "string",
+            "description": "ID of the associated product",
+            "example": "5"
+          },
+          "product_name": {
+            "type": "string",
+            "description": "Name of the associated product",
+            "example": "Premium Coffee Beans"
+          },
+          "product_sku": {
+            "type": "string",
+            "description": "SKU of the associated product",
+            "example": "COFFEE-001"
+          },
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "2"
+          },
+          "attribute_name": {
+            "type": "string",
+            "description": "Name of the associated attribute",
+            "example": "Color"
+          },
+          "attribute_type": {
+            "type": "string",
+            "description": "Type of the associated attribute",
+            "example": "select"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom value for text-type attributes",
+            "example": "Dark Red"
+          },
+          "option_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the selected option for select-type attributes",
+            "example": "3"
+          },
+          "option_label": {
+            "type": "string",
+            "nullable": true,
+            "description": "Label of the selected option",
+            "example": "Red"
+          },
+          "option_value": {
+            "type": "string",
+            "nullable": true,
+            "description": "Value of the selected option",
+            "example": "red"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Value creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Value last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "CreateAttributeValueRequest": {
+        "type": "object",
+        "required": [
+          "product_id",
+          "attribute_id"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "description": "ID of the associated product",
+            "example": "5"
+          },
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "2"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom value for text-type attributes",
+            "example": "Dark Red"
+          },
+          "option_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the selected option for select-type attributes",
+            "example": "3"
+          }
+        }
+      },
+      "UpdateAttributeValueRequest": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "description": "ID of the associated product",
+            "example": "6"
+          },
+          "attribute_id": {
+            "type": "string",
+            "description": "ID of the associated attribute",
+            "example": "3"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom value for text-type attributes",
+            "example": "Light Blue"
+          },
+          "option_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the selected option for select-type attributes",
+            "example": "4"
+          }
+        }
       },
       "LoginRequest": {
         "type": "object",
@@ -645,6 +1366,126 @@
           }
         }
       },
+      "Family": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the family",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the product family",
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the product family",
+            "example": "Consumer electronics and devices"
+          },
+          "category_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the associated category",
+            "example": "1"
+          },
+          "category_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the associated category",
+            "example": "Technology"
+          },
+          "product_count": {
+            "type": "integer",
+            "description": "Number of products in this family",
+            "example": 25
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the family is active",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Family creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Family last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "CreateFamilyRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the product family",
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the product family",
+            "example": "Consumer electronics and devices"
+          },
+          "category_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the associated category",
+            "example": "1"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the family should be active",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateFamilyRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the product family",
+            "example": "Updated Electronics"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the product family",
+            "example": "Updated consumer electronics and devices"
+          },
+          "category_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the associated category",
+            "example": "2"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the family should be active",
+            "example": false
+          }
+        }
+      },
       "CreateProductRequest": {
         "type": "object",
         "required": [
@@ -765,6 +1606,353 @@
             "type": "boolean",
             "description": "Product active status",
             "example": true
+          }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "name",
+          "first_name",
+          "last_name",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User unique identifier",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "john.doe@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name (first + last)",
+            "example": "John Doe"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "profilePicture": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture URL",
+            "example": "/uploads/profile-pictures/avatar-1-123456789.jpg"
+          },
+          "language": {
+            "type": "string",
+            "description": "User preferred language",
+            "example": "en"
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "User timezone",
+            "example": "UTC"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Account status",
+            "example": true
+          },
+          "email_verified": {
+            "type": "boolean",
+            "description": "Email verification status",
+            "example": true
+          },
+          "email_verified_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Email verification timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Last login timestamp",
+            "example": "2024-01-15T14:20:00Z"
+          },
+          "last_password_change": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Last password change timestamp",
+            "example": "2024-01-10T09:15:00Z"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation timestamp",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last profile update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "role_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User role names",
+            "example": [
+              "admin",
+              "manager"
+            ]
+          },
+          "role_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User role slugs",
+            "example": [
+              "admin",
+              "manager"
+            ]
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name (will be split into first and last name)",
+            "example": "John Smith"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johnsmith"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "john.smith@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1987654321"
+          },
+          "profilePicture": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture URL",
+            "example": "/uploads/profile-pictures/avatar-1-987654321.jpg"
+          },
+          "language": {
+            "type": "string",
+            "description": "User preferred language",
+            "example": "es"
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "User timezone",
+            "example": "America/New_York"
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "format": "password",
+            "description": "Current password for verification",
+            "example": "currentpass123"
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "description": "New password (minimum 8 characters)",
+            "example": "newpassword123"
+          }
+        }
+      },
+      "AvatarUploadResponse": {
+        "type": "object",
+        "properties": {
+          "avatarUrl": {
+            "type": "string",
+            "description": "URL of the uploaded avatar",
+            "example": "/uploads/profile-pictures/avatar-1-123456789.jpg"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "username": {
+                "type": "string",
+                "example": "johndoe"
+              },
+              "email": {
+                "type": "string",
+                "example": "john.doe@example.com"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe"
+              },
+              "profilePicture": {
+                "type": "string",
+                "nullable": true,
+                "example": "/uploads/profile-pictures/avatar-1-123456789.jpg"
+              }
+            }
+          }
+        }
+      },
+      "Unit": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "symbol",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the unit of measure",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the unit of measure",
+            "example": "Kilogram"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol or abbreviation for the unit",
+            "example": "kg"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the unit of measure",
+            "example": "Unit of mass in metric system"
+          },
+          "product_count": {
+            "type": "integer",
+            "description": "Number of products using this unit",
+            "example": 15
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the unit is active",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Unit creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Unit last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "CreateUnitRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "symbol"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the unit of measure",
+            "example": "Kilogram"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol or abbreviation for the unit",
+            "example": "kg"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the unit of measure",
+            "example": "Unit of mass in metric system"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the unit should be active",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateUnitRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the unit of measure",
+            "example": "Updated Kilogram"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol or abbreviation for the unit",
+            "example": "kg"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the unit of measure",
+            "example": "Updated unit of mass in metric system"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the unit should be active",
+            "example": false
           }
         }
       },
@@ -968,6 +2156,1008 @@
     }
   ],
   "paths": {
+    "/api/attribute-options": {
+      "get": {
+        "tags": [
+          "Attribute Options"
+        ],
+        "summary": "Get all attribute options",
+        "description": "Retrieve all attribute options with associated attribute information and usage counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute options retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "attribute_id": "2",
+                          "attribute_name": "Color",
+                          "attribute_type": "select",
+                          "value": "red",
+                          "label": "Red",
+                          "sort_order": 1,
+                          "usage_count": 8,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:30:00Z",
+                          "updated_at": "2024-01-15T10:30:00Z"
+                        }
+                      ],
+                      "message": "Attribute options retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Attribute Options"
+        ],
+        "summary": "Create a new attribute option",
+        "description": "Create a new option for a specific product attribute",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttributeOptionRequest"
+              },
+              "examples": {
+                "create_option": {
+                  "value": {
+                    "attribute_id": "2",
+                    "value": "red",
+                    "label": "Red",
+                    "sort_order": 1,
+                    "is_active": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Attribute option created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "attribute_id": "2",
+                        "value": "red",
+                        "label": "Red",
+                        "sort_order": 1,
+                        "is_active": true,
+                        "created_at": "2024-01-15T10:30:00Z"
+                      },
+                      "message": "Attribute option created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attribute-options/{id}": {
+      "put": {
+        "tags": [
+          "Attribute Options"
+        ],
+        "summary": "Update an attribute option",
+        "description": "Update an existing attribute option by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute option unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAttributeOptionRequest"
+              },
+              "examples": {
+                "update_option": {
+                  "value": {
+                    "attribute_id": "3",
+                    "value": "blue",
+                    "label": "Blue",
+                    "sort_order": 2,
+                    "is_active": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attribute option updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "attribute_id": "3",
+                        "value": "blue",
+                        "label": "Blue",
+                        "sort_order": 2,
+                        "is_active": false,
+                        "created_at": "2024-01-15T10:30:00Z",
+                        "updated_at": "2024-01-15T11:45:00Z"
+                      },
+                      "message": "Attribute option updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Attribute Options"
+        ],
+        "summary": "Delete an attribute option",
+        "description": "Permanently delete an attribute option by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute option unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute option deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Attribute option deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attributes": {
+      "get": {
+        "tags": [
+          "Attributes"
+        ],
+        "summary": "Get all product attributes",
+        "description": "Retrieve all active product attributes with option and value counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product attributes retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "name": "Color",
+                          "slug": "color",
+                          "type": "select",
+                          "description": "Product color options",
+                          "is_required": false,
+                          "is_filterable": true,
+                          "is_searchable": false,
+                          "sort_order": 1,
+                          "option_count": 5,
+                          "value_count": 12,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:30:00Z",
+                          "updated_at": "2024-01-15T10:30:00Z"
+                        }
+                      ],
+                      "message": "Product attributes retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Attributes"
+        ],
+        "summary": "Create a new product attribute",
+        "description": "Create a new product attribute with filtering and search capabilities",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttributeRequest"
+              },
+              "examples": {
+                "create_attribute": {
+                  "value": {
+                    "name": "Color",
+                    "slug": "color",
+                    "type": "select",
+                    "description": "Product color options",
+                    "is_required": false,
+                    "is_filterable": true,
+                    "is_searchable": false,
+                    "sort_order": 1,
+                    "is_active": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product attribute created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Color",
+                        "slug": "color",
+                        "type": "select",
+                        "is_active": true,
+                        "created_at": "2024-01-15T10:30:00Z"
+                      },
+                      "message": "Product attribute created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attributes/{id}": {
+      "put": {
+        "tags": [
+          "Attributes"
+        ],
+        "summary": "Update a product attribute",
+        "description": "Update an existing product attribute by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAttributeRequest"
+              },
+              "examples": {
+                "update_attribute": {
+                  "value": {
+                    "name": "Updated Color",
+                    "slug": "updated-color",
+                    "type": "multiselect",
+                    "description": "Updated product color options",
+                    "is_required": true,
+                    "is_filterable": false,
+                    "is_searchable": true,
+                    "sort_order": 2,
+                    "is_active": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product attribute updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Updated Color",
+                        "slug": "updated-color",
+                        "type": "multiselect",
+                        "description": "Updated product color options",
+                        "is_required": true,
+                        "is_filterable": false,
+                        "is_searchable": true,
+                        "sort_order": 2,
+                        "is_active": false,
+                        "created_at": "2024-01-15T10:30:00Z",
+                        "updated_at": "2024-01-15T11:45:00Z"
+                      },
+                      "message": "Product attribute updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Attributes"
+        ],
+        "summary": "Delete a product attribute",
+        "description": "Soft delete a product attribute by setting deleted_at timestamp",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product attribute deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Product attribute deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attributes/{id}/options": {
+      "get": {
+        "tags": [
+          "Attributes"
+        ],
+        "summary": "Get attribute options",
+        "description": "Retrieve all available options for a specific product attribute",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute options retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "value": "red",
+                          "label": "Red",
+                          "sort_order": 1,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:30:00Z"
+                        },
+                        {
+                          "id": "2",
+                          "value": "blue",
+                          "label": "Blue",
+                          "sort_order": 2,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:35:00Z"
+                        }
+                      ],
+                      "message": "Attribute options retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attribute-values": {
+      "get": {
+        "tags": [
+          "Attribute Values"
+        ],
+        "summary": "Get all attribute values",
+        "description": "Retrieve all attribute values with associated product and attribute information",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute values retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "product_id": "5",
+                          "product_name": "Premium Coffee Beans",
+                          "product_sku": "COFFEE-001",
+                          "attribute_id": "2",
+                          "attribute_name": "Color",
+                          "attribute_type": "select",
+                          "value": null,
+                          "option_id": "3",
+                          "option_label": "Red",
+                          "option_value": "red",
+                          "created_at": "2024-01-15T10:30:00Z",
+                          "updated_at": "2024-01-15T10:30:00Z"
+                        }
+                      ],
+                      "message": "Attribute values retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Attribute Values"
+        ],
+        "summary": "Create a new attribute value",
+        "description": "Assign an attribute value to a product (either custom value or selected option)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttributeValueRequest"
+              },
+              "examples": {
+                "create_value_with_option": {
+                  "value": {
+                    "product_id": "5",
+                    "attribute_id": "2",
+                    "option_id": "3"
+                  }
+                },
+                "create_value_with_text": {
+                  "value": {
+                    "product_id": "5",
+                    "attribute_id": "4",
+                    "value": "Custom text value"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Attribute value created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "product_id": "5",
+                        "attribute_id": "2",
+                        "value": null,
+                        "option_id": "3",
+                        "created_at": "2024-01-15T10:30:00Z"
+                      },
+                      "message": "Attribute value created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attribute-values/{id}": {
+      "put": {
+        "tags": [
+          "Attribute Values"
+        ],
+        "summary": "Update an attribute value",
+        "description": "Update an existing attribute value by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute value unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAttributeValueRequest"
+              },
+              "examples": {
+                "update_value": {
+                  "value": {
+                    "product_id": "6",
+                    "attribute_id": "3",
+                    "value": "Light Blue",
+                    "option_id": "4"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attribute value updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "product_id": "6",
+                        "attribute_id": "3",
+                        "value": "Light Blue",
+                        "option_id": "4",
+                        "created_at": "2024-01-15T10:30:00Z",
+                        "updated_at": "2024-01-15T11:45:00Z"
+                      },
+                      "message": "Attribute value updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Attribute Values"
+        ],
+        "summary": "Delete an attribute value",
+        "description": "Permanently delete an attribute value by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Attribute value unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute value deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Attribute value deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/attribute-values/product/{productId}": {
+      "get": {
+        "tags": [
+          "Attribute Values"
+        ],
+        "summary": "Get attribute values for a product",
+        "description": "Retrieve all attribute values assigned to a specific product",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product unique identifier",
+            "example": "5"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product attribute values retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "attribute_id": "2",
+                          "attribute_name": "Color",
+                          "attribute_type": "select",
+                          "value": null,
+                          "option_id": "3",
+                          "option_label": "Red",
+                          "created_at": "2024-01-15T10:30:00Z"
+                        },
+                        {
+                          "id": "2",
+                          "attribute_id": "4",
+                          "attribute_name": "Description",
+                          "attribute_type": "text",
+                          "value": "Custom description text",
+                          "option_id": null,
+                          "option_label": null,
+                          "created_at": "2024-01-15T10:35:00Z"
+                        }
+                      ],
+                      "message": "Product attribute values retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "tags": [
@@ -2069,6 +4259,527 @@
         }
       }
     },
+    "/api/families": {
+      "get": {
+        "tags": [
+          "Families"
+        ],
+        "summary": "Get all product families",
+        "description": "Retrieve all active product families with associated categories and product counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product families retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "name": "Electronics",
+                          "description": "Consumer electronics and devices",
+                          "category_id": "1",
+                          "category_name": "Technology",
+                          "product_count": 25,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:30:00Z",
+                          "updated_at": "2024-01-15T10:30:00Z"
+                        }
+                      ],
+                      "message": "Product families retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Families"
+        ],
+        "summary": "Create a new product family",
+        "description": "Create a new product family with category association",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFamilyRequest"
+              },
+              "examples": {
+                "create_family": {
+                  "value": {
+                    "name": "Electronics",
+                    "description": "Consumer electronics and devices",
+                    "category_id": "1",
+                    "is_active": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product family created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Electronics",
+                        "description": "Consumer electronics and devices",
+                        "is_active": true,
+                        "created_at": "2024-01-15T10:30:00Z"
+                      },
+                      "message": "Product family created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/families/{id}": {
+      "put": {
+        "tags": [
+          "Families"
+        ],
+        "summary": "Update a product family",
+        "description": "Update an existing product family by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Family unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFamilyRequest"
+              },
+              "examples": {
+                "update_family": {
+                  "value": {
+                    "name": "Updated Electronics",
+                    "description": "Updated consumer electronics and devices",
+                    "category_id": "2",
+                    "is_active": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product family updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Updated Electronics",
+                        "description": "Updated consumer electronics and devices",
+                        "category_id": "2",
+                        "is_active": false,
+                        "created_at": "2024-01-15T10:30:00Z",
+                        "updated_at": "2024-01-15T11:45:00Z"
+                      },
+                      "message": "Product family updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Families"
+        ],
+        "summary": "Delete a product family",
+        "description": "Soft delete a product family by setting deleted_at timestamp",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Family unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product family deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Product family deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/permissions": {
+      "get": {
+        "summary": "Get all permissions",
+        "tags": [
+          "Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Permission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new permission",
+        "tags": [
+          "Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "slug"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "module": {
+                    "type": "string"
+                  },
+                  "is_active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Permission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permissions/{id}": {
+      "get": {
+        "summary": "Get permission by ID",
+        "tags": [
+          "Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Permission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update permission",
+        "tags": [
+          "Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "module": {
+                    "type": "string"
+                  },
+                  "is_active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Permission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete permission",
+        "tags": [
+          "Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/products": {
       "get": {
         "tags": [
@@ -2536,6 +5247,1263 @@
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Get current user profile",
+        "description": "Retrieve the complete profile information of the currently authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Profile"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profile retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Update current user profile",
+        "description": "Update profile information for the currently authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              },
+              "examples": {
+                "update_profile": {
+                  "value": {
+                    "name": "John Smith",
+                    "username": "johnsmith",
+                    "email": "john.smith@example.com",
+                    "phone": "+1987654321",
+                    "language": "es",
+                    "timeZone": "America/New_York"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Profile"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profile updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Conflict - Email or username already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "data": null,
+                  "message": "User with this email or username already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/profile/password": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Change user password",
+        "description": "Change the password for the currently authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              },
+              "examples": {
+                "change_password": {
+                  "value": {
+                    "currentPassword": "currentpass123",
+                    "newPassword": "newpassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Password changed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid current password or weak new password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalid_current_password": {
+                    "value": {
+                      "success": false,
+                      "data": null,
+                      "message": "Current password is incorrect"
+                    }
+                  },
+                  "weak_password": {
+                    "value": {
+                      "success": false,
+                      "data": null,
+                      "message": "New password must be at least 8 characters long"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/profile/avatar": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Upload profile picture",
+        "description": "Upload a new profile picture for the currently authenticated user (JPEG/PNG, max 5MB)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "avatar"
+                ],
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Profile picture file (JPEG/PNG, max 5MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AvatarUploadResponse"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar uploaded successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - No file uploaded or invalid file type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "no_file": {
+                    "value": {
+                      "success": false,
+                      "data": null,
+                      "message": "No file uploaded"
+                    }
+                  },
+                  "invalid_type": {
+                    "value": {
+                      "success": false,
+                      "data": null,
+                      "message": "Only JPEG and PNG files are allowed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "413": {
+            "description": "Payload too large - File size exceeds 5MB limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Remove profile picture",
+        "description": "Remove the current profile picture for the authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Avatar removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "johndoe"
+                            },
+                            "email": {
+                              "type": "string",
+                              "example": "john.doe@example.com"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "John Doe"
+                            },
+                            "profilePicture": {
+                              "type": null,
+                              "example": null
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar removed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/role-permissions": {
+      "get": {
+        "summary": "Get all role-permission assignments",
+        "tags": [
+          "Role Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of role-permission assignments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RolePermission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new role-permission assignment",
+        "tags": [
+          "Role Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role_id",
+                  "permission_id"
+                ],
+                "properties": {
+                  "role_id": {
+                    "type": "integer"
+                  },
+                  "permission_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role-permission assignment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RolePermission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/role-permissions/{id}": {
+      "get": {
+        "summary": "Get role-permission assignment by ID",
+        "tags": [
+          "Role Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role-permission assignment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RolePermission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete role-permission assignment",
+        "tags": [
+          "Role Permissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role-permission assignment deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles": {
+      "get": {
+        "summary": "Get all roles",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new role",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "slug"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "is_active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Role"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles/{id}": {
+      "get": {
+        "summary": "Get role by ID",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Role"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update role",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "is_active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Role"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete role",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/units": {
+      "get": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Get all units of measure",
+        "description": "Retrieve all active units of measure with product counts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Units of measure retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "1",
+                          "name": "Kilogram",
+                          "symbol": "kg",
+                          "description": "Unit of mass in metric system",
+                          "product_count": 15,
+                          "is_active": true,
+                          "created_at": "2024-01-15T10:30:00Z",
+                          "updated_at": "2024-01-15T10:30:00Z"
+                        }
+                      ],
+                      "message": "Units of measure retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Create a new unit of measure",
+        "description": "Create a new unit of measure with symbol and description",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUnitRequest"
+              },
+              "examples": {
+                "create_unit": {
+                  "value": {
+                    "name": "Kilogram",
+                    "symbol": "kg",
+                    "description": "Unit of mass in metric system",
+                    "is_active": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Unit of measure created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Kilogram",
+                        "symbol": "kg",
+                        "description": "Unit of mass in metric system",
+                        "is_active": true,
+                        "created_at": "2024-01-15T10:30:00Z"
+                      },
+                      "message": "Unit of measure created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/units/{id}": {
+      "put": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Update a unit of measure",
+        "description": "Update an existing unit of measure by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unit unique identifier",
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUnitRequest"
+              },
+              "examples": {
+                "update_unit": {
+                  "value": {
+                    "name": "Updated Kilogram",
+                    "symbol": "kg",
+                    "description": "Updated unit of mass in metric system",
+                    "is_active": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unit of measure updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": "1",
+                        "name": "Updated Kilogram",
+                        "symbol": "kg",
+                        "description": "Updated unit of mass in metric system",
+                        "is_active": false,
+                        "created_at": "2024-01-15T10:30:00Z",
+                        "updated_at": "2024-01-15T11:45:00Z"
+                      },
+                      "message": "Unit of measure updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Delete a unit of measure",
+        "description": "Soft delete a unit of measure by setting deleted_at timestamp",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unit unique identifier",
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unit of measure deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "data": null,
+                      "message": "Unit of measure deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/user-roles": {
+      "get": {
+        "summary": "Get all user-role assignments",
+        "tags": [
+          "User Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user-role assignments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserRole"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new user-role assignment",
+        "tags": [
+          "User Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user_id",
+                  "role_id"
+                ],
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "role_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User-role assignment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserRole"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user-roles/{id}": {
+      "get": {
+        "summary": "Get user-role assignment by ID",
+        "tags": [
+          "User Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User-role assignment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserRole"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user-role assignment",
+        "tags": [
+          "User Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User-role assignment deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -3272,6 +7240,5 @@
         }
       }
     }
-  },
-  "tags": []
+  }
 }

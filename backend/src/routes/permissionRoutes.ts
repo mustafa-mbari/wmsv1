@@ -65,6 +65,10 @@ const prisma = new PrismaClient();
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Permission'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -120,6 +124,12 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
  *                   type: boolean
  *                 data:
  *                   $ref: '#/components/schemas/Permission'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -194,6 +204,20 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
  *                   type: boolean
  *                 data:
  *                   $ref: '#/components/schemas/Permission'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       409:
+ *         description: Conflict - Permission slug already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
@@ -291,6 +315,22 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
  *                   type: boolean
  *                 data:
  *                   $ref: '#/components/schemas/Permission'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Conflict - Permission slug already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.put('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
@@ -390,6 +430,14 @@ router.put('/:id', authenticateToken, requireSuperAdmin, async (req: Request, re
  *                   type: boolean
  *                 message:
  *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {

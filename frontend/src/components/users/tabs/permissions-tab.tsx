@@ -506,13 +506,7 @@ export function PermissionsTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Permissions Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage and view all system permissions
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedPermissions.length} {transformedPermissions.length === 1 ? 'permission' : 'permissions'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

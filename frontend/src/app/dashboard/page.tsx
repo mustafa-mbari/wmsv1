@@ -52,13 +52,11 @@ export default function DashboardPage() {
   };
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title={intl.formatMessage({ id: 'navigation.dashboard' })}
-        description={intl.formatMessage(
-          { id: 'pages.dashboard.welcome', defaultMessage: 'Welcome back, {name}!' }, 
-          { name: getUserDisplayName() }
-        )}
-      />
+      <div className="mb-6">
+        <h1 className="text-lg font-medium text-muted-foreground">
+          Dashboard / Overview
+        </h1>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

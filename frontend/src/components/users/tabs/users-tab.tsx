@@ -693,13 +693,7 @@ export function UsersTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Users Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage and view all system users and their permissions
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedUsers.length} {transformedUsers.length === 1 ? 'user' : 'users'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

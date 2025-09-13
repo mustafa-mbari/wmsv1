@@ -1590,6 +1590,8 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -1625,6 +1627,19 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                /** @description Conflict - Permission slug already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         delete?: never;
@@ -1664,6 +1679,9 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         /** Update permission */
@@ -1700,6 +1718,20 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                /** @description Conflict - Permission slug already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         post?: never;
@@ -1727,6 +1759,10 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         options?: never;
@@ -2363,6 +2399,8 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -2395,6 +2433,28 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                /** @description Role or Permission not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict - Assignment already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         delete?: never;
@@ -2434,6 +2494,9 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -2462,6 +2525,10 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         options?: never;
@@ -2498,6 +2565,8 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -2532,6 +2601,19 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                /** @description Conflict - Role slug already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         delete?: never;
@@ -2571,6 +2653,9 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         /** Update role */
@@ -2606,6 +2691,20 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                /** @description Conflict - Role slug already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         post?: never;
@@ -2633,6 +2732,10 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         options?: never;
@@ -2828,6 +2931,8 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -2860,6 +2965,28 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                /** @description User or Role not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict - Assignment already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
             };
         };
         delete?: never;
@@ -2899,6 +3026,9 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -2927,6 +3057,10 @@ export interface paths {
                         };
                     };
                 };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         options?: never;
@@ -3455,11 +3589,39 @@ export interface components {
              */
             id: string;
             /**
+             * @description Unique username
+             * @example johndoe
+             */
+            username: string;
+            /**
              * Format: email
              * @description User email address
              * @example john.doe@example.com
              */
             email: string;
+            /** @description User first name */
+            first_name?: string;
+            /** @description User last name */
+            last_name?: string;
+            /** @description User account status */
+            is_active?: boolean;
+            /** @description Super admin status */
+            is_super_admin?: boolean;
+            /**
+             * Format: date-time
+             * @description Last login date
+             */
+            last_login?: string | null;
+            /**
+             * Format: date-time
+             * @description Account creation date
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update date
+             */
+            updated_at?: string;
             /**
              * @description User first name
              * @example John
@@ -3470,33 +3632,6 @@ export interface components {
              * @example Doe
              */
             lastName: string;
-            /**
-             * @description User role
-             * @enum {string}
-             */
-            role?: "ADMIN" | "USER" | "MANAGER";
-            /**
-             * @description User account status
-             * @example true
-             */
-            isActive?: boolean;
-            /**
-             * Format: date-time
-             * @description Account creation date
-             * @example 2023-01-01T00:00:00Z
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Last update date
-             * @example 2023-01-01T12:00:00Z
-             */
-            updatedAt?: string;
-            /**
-             * @description Unique username
-             * @example johndoe
-             */
-            username: string;
             /**
              * @description User phone number
              * @example +1234567890
@@ -3513,6 +3648,11 @@ export interface components {
              */
             avatarUrl?: string | null;
             /**
+             * @description User account status
+             * @example true
+             */
+            isActive?: boolean;
+            /**
              * @description User roles
              * @example [
              *       "admin",
@@ -3520,6 +3660,90 @@ export interface components {
              *     ]
              */
             roleNames?: string[];
+            /**
+             * Format: date-time
+             * @description Account creation date
+             * @example 2023-01-01T00:00:00Z
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Last update date
+             * @example 2023-01-01T12:00:00Z
+             */
+            updatedAt?: string;
+        };
+        Role: {
+            /** @description Role ID */
+            id?: number;
+            /** @description Role name */
+            name: string;
+            /** @description Role slug */
+            slug: string;
+            /** @description Role description */
+            description?: string;
+            /** @description Whether role is active */
+            is_active?: boolean;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        Permission: {
+            /** @description Permission ID */
+            id?: number;
+            /** @description Permission name */
+            name: string;
+            /** @description Permission slug */
+            slug: string;
+            /** @description Permission description */
+            description?: string;
+            /** @description Module name */
+            module?: string;
+            /** @description Whether permission is active */
+            is_active?: boolean;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        RolePermission: {
+            /** @description Role Permission ID */
+            id?: number;
+            /** @description Role ID */
+            role_id: number;
+            /** @description Permission ID */
+            permission_id: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            role?: components["schemas"]["Role"];
+            permission?: components["schemas"]["Permission"];
+        };
+        UserRole: {
+            /** @description User Role ID */
+            id?: number;
+            /** @description User ID */
+            user_id: number;
+            /** @description Role ID */
+            role_id: number;
+            /** Format: date-time */
+            assigned_at?: string;
+            /** @description ID of user who assigned the role */
+            assigned_by?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            user?: {
+                id?: number;
+                username?: string;
+                email?: string;
+                first_name?: string;
+                last_name?: string;
+            };
+            role?: components["schemas"]["Role"];
         };
         Product: {
             /**
@@ -4351,24 +4575,6 @@ export interface components {
              */
             is_active?: boolean;
         };
-        Permission: {
-            /** @description Permission ID */
-            id?: number;
-            /** @description Permission name */
-            name: string;
-            /** @description Permission slug */
-            slug: string;
-            /** @description Permission description */
-            description?: string;
-            /** @description Module name */
-            module?: string;
-            /** @description Whether permission is active */
-            is_active?: boolean;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
         CreateProductRequest: {
             /**
              * @description Product name
@@ -4641,36 +4847,6 @@ export interface components {
                 profilePicture?: string | null;
             };
         };
-        RolePermission: {
-            /** @description Role Permission ID */
-            id?: number;
-            /** @description Role ID */
-            role_id: number;
-            /** @description Permission ID */
-            permission_id: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            role?: components["schemas"]["Role"];
-            permission?: components["schemas"]["Permission"];
-        };
-        Role: {
-            /** @description Role ID */
-            id?: number;
-            /** @description Role name */
-            name: string;
-            /** @description Role slug */
-            slug: string;
-            /** @description Role description */
-            description?: string;
-            /** @description Whether role is active */
-            is_active?: boolean;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
         Unit: {
             /**
              * @description Unique identifier for the unit of measure
@@ -4759,30 +4935,6 @@ export interface components {
              * @example false
              */
             is_active?: boolean;
-        };
-        UserRole: {
-            /** @description User Role ID */
-            id?: number;
-            /** @description User ID */
-            user_id: number;
-            /** @description Role ID */
-            role_id: number;
-            /** Format: date-time */
-            assigned_at?: string;
-            /** @description ID of user who assigned the role */
-            assigned_by?: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            user?: {
-                id?: number;
-                username?: string;
-                email?: string;
-                first_name?: string;
-                last_name?: string;
-            };
-            role?: components["schemas"]["Role"];
         };
         CreateUserRequest: {
             /**

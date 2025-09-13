@@ -119,10 +119,11 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={intl.formatMessage({ id: 'settings.title' })}
-        description={intl.formatMessage({ id: 'settings.description' })}
-      />
+      <div className="mb-6">
+        <h1 className="text-lg font-medium text-muted-foreground">
+          Settings / Configuration
+        </h1>
+      </div>
 
       {hasUnsavedChanges && (
         <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300">

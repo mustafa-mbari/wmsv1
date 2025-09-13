@@ -389,15 +389,17 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 px-12 py-6 bg-muted/30 min-h-screen -m-6">
-      <PageHeader 
-        title={intl.formatMessage({ id: 'profile.title' })}
-        description={intl.formatMessage({ id: 'profile.description', defaultMessage: 'Manage your account information and preferences' })}
-        actions={
-          <div className="flex space-x-2">
-            {!editMode ? (
-              <Button onClick={() => setEditMode(true)}>
-                <Edit className="mr-2 h-4 w-4" />
-                {intl.formatMessage({ id: 'profile.editProfile' })}
+      <div className="mb-6">
+        <h1 className="text-lg font-medium text-muted-foreground">
+          Profile / Account Settings
+        </h1>
+      </div>
+      <div className="flex justify-end mb-4">
+        <div className="flex space-x-2">
+          {!editMode ? (
+            <Button onClick={() => setEditMode(true)}>
+              <Edit className="mr-2 h-4 w-4" />
+              {intl.formatMessage({ id: 'profile.editProfile' })}
               </Button>
             ) : (
               <>

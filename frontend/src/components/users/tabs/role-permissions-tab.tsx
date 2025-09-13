@@ -455,13 +455,7 @@ export function RolePermissionsTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Role Permissions Directory</CardTitle>
-              <CardDescription className="mt-1">
-                View and manage permissions assigned to roles
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedRolePermissions.length} {transformedRolePermissions.length === 1 ? 'assignment' : 'assignments'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

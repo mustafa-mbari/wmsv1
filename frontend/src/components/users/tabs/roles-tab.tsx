@@ -464,13 +464,7 @@ export function RolesTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Roles Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage and view all system roles
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedRoles.length} {transformedRoles.length === 1 ? 'role' : 'roles'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

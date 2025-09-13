@@ -120,6 +120,9 @@ export function UserRolesTab() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState<UserRole | null>(null);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
   const canAccessUserRolesPage = isSuperAdmin() || isAdmin() || hasRole('manager');
   const canPerformAdminActions = isSuperAdmin();
@@ -147,9 +150,34 @@ export function UserRolesTab() {
         apiClient.get("/api/roles"),
       ]);
 
-      setUserRoles(userRolesRes.data.data || []);
-      setUsers(usersRes.data.data || []);
-      setRoles(rolesRes.data.data || []);
+      const userRolesData = userRolesRes.data.data || [];
+      const usersData = usersRes.data.data || [];
+      const rolesData = rolesRes.data.data || [];
+
+      // Log the fetched data for debugging
+      console.log("Fetched data:", {
+        userRoles: userRolesData.length,
+        users: usersData.length,
+        roles: rolesData.length,
+        userRolesSample: userRolesData.slice(0, 2),
+        usersSample: usersData.slice(0, 2),
+        rolesSample: rolesData.slice(0, 2)
+      });
+
+      // Filter out any users or roles that might be soft-deleted or invalid
+      const validUsers = usersData.filter(user => user && user.id && user.username && user.email);
+      const validRoles = rolesData.filter(role => role && role.id && role.name && role.slug);
+
+      setUserRoles(userRolesData);
+      setUsers(validUsers);
+      setRoles(validRoles);
+
+      if (validUsers.length === 0) {
+        console.warn("No valid users found");
+      }
+      if (validRoles.length === 0) {
+        console.warn("No valid roles found");
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       setUserRoles([]);
@@ -162,17 +190,92 @@ export function UserRolesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof userRoleFormSchema>) => {
     try {
-      await apiClient.post("/api/user-roles", {
-        user_id: parseInt(data.user_id),
-        role_id: parseInt(data.role_id),
+      // Ensure we have data loaded first
+      if (users.length === 0 || roles.length === 0) {
+        setDialogMessage("User and role data is still loading. Please wait a moment and try again.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      const userId = parseInt(data.user_id);
+      const roleId = parseInt(data.role_id);
+
+      // Validate that the user and role IDs are valid numbers
+      if (isNaN(userId) || isNaN(roleId)) {
+        setDialogMessage("Invalid user or role selection. Please refresh the page and try again.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      // Check if user exists in our current user list
+      const selectedUser = users.find(user => user.id === userId);
+      if (!selectedUser) {
+        setDialogMessage("Selected user not found. Please refresh the page and try again.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      // Check if role exists in our current role list
+      const selectedRole = roles.find(role => role.id === roleId);
+      if (!selectedRole) {
+        setDialogMessage("Selected role not found. Please refresh the page and try again.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      // Check if this assignment already exists
+      const existingAssignment = userRoles.find(
+        ur => ur.user_id === userId && ur.role_id === roleId
+      );
+      if (existingAssignment) {
+        setDialogMessage(`User "${selectedUser.username}" already has the role "${selectedRole.name}" assigned.`);
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      console.log(`Assigning role "${selectedRole.name}" to user "${selectedUser.username}"`, {
+        user_id: userId,
+        role_id: roleId,
+        user: selectedUser,
+        role: selectedRole
       });
-      alert("Role assigned to user successfully");
+
+      await apiClient.post("/api/user-roles", {
+        user_id: userId,
+        role_id: roleId,
+      });
+
+      setDialogMessage(`Role "${selectedRole.name}" assigned to user "${selectedUser.username}" successfully!`);
+      setIsSuccessDialogOpen(true);
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user role:", error);
-      alert("Failed to assign role to user");
+
+      // Extract more detailed error message
+      let errorMessage = "Failed to assign role to user";
+      if (error?.response?.status === 403) {
+        errorMessage = "Access denied: Only Super Admins can assign roles to users";
+      } else if (error?.response?.status === 409) {
+        errorMessage = "This user already has this role assigned";
+      } else if (error?.response?.status === 404) {
+        errorMessage = "User or role not found";
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      // Add more detailed logging for debugging
+      console.error("Role assignment error details:", {
+        error: error?.response?.data,
+        status: error?.response?.status,
+        users: users.length,
+        roles: roles.length,
+        userRoles: userRoles.length
+      });
+
+      setDialogMessage(errorMessage);
+      setIsErrorDialogOpen(true);
     }
   };
 
@@ -180,12 +283,27 @@ export function UserRolesTab() {
     if (currentUserRole) {
       try {
         await apiClient.delete(`/api/user-roles/${currentUserRole.id}`);
+        setDialogMessage("Role removed from user successfully!");
+        setIsSuccessDialogOpen(true);
         setIsDeleteDialogOpen(false);
         setCurrentUserRole(null);
         fetchData();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error deleting user role:", error);
-        alert("Failed to remove role from user");
+
+        let errorMessage = "Failed to remove role from user";
+        if (error?.response?.status === 403) {
+          errorMessage = "Access denied: Only Super Admins can remove role assignments";
+        } else if (error?.response?.status === 404) {
+          errorMessage = "User role assignment not found";
+        } else if (error?.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+
+        setDialogMessage(errorMessage);
+        setIsErrorDialogOpen(true);
+        setIsDeleteDialogOpen(false);
+        setCurrentUserRole(null);
       }
     }
   };
@@ -384,7 +502,10 @@ export function UserRolesTab() {
                         <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                           Cancel
                         </Button>
-                        <Button type="submit">
+                        <Button
+                          type="submit"
+                          disabled={loading || users.length === 0 || roles.length === 0}
+                        >
                           <Settings className="mr-2 h-4 w-4" />
                           Assign Role
                         </Button>
@@ -474,13 +595,7 @@ export function UserRolesTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">User Roles Directory</CardTitle>
-              <CardDescription className="mt-1">
-                View and manage roles assigned to users
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedUserRoles.length} {transformedUserRoles.length === 1 ? 'assignment' : 'assignments'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -511,6 +626,43 @@ export function UserRolesTab() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Remove Assignment
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Success Dialog */}
+      <AlertDialog open={isSuccessDialogOpen} onOpenChange={setIsSuccessDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Success</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsSuccessDialogOpen(false)}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Error Dialog */}
+      <AlertDialog open={isErrorDialogOpen} onOpenChange={setIsErrorDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Error</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setIsErrorDialogOpen(false)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              OK
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
