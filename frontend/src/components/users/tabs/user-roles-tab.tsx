@@ -218,6 +218,13 @@ export function UserRolesTab() {
     try {
       console.log("Form submitted with data:", data);
 
+      // Check if user has Super Admin permissions
+      if (!canPerformAdminActions) {
+        setDialogMessage("Access denied: You must be a Super Admin to assign roles to users. Please contact your system administrator.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
       // Ensure we have data loaded first
       if (users.length === 0 || roles.length === 0) {
         console.warn("No users or roles available", { users: users.length, roles: roles.length });
@@ -237,10 +244,12 @@ export function UserRolesTab() {
       roleId = parseInt(data.role_id);
 
       console.log("=== FORM SUBMISSION ===");
-      console.log("Selected user_id from form:", data.user_id);
-      console.log("Selected role_id from form:", data.role_id);
-      console.log("Parsed userId:", userId);
-      console.log("Parsed roleId:", roleId);
+      console.log("Selected user_id from form:", data.user_id, typeof data.user_id);
+      console.log("Selected role_id from form:", data.role_id, typeof data.role_id);
+      console.log("Parsed userId:", userId, typeof userId);
+      console.log("Parsed roleId:", roleId, typeof roleId);
+      console.log("Available users:", users.map(u => ({ id: u.id, idType: typeof u.id, username: u.username })));
+      console.log("Available roles:", roles.map(r => ({ id: r.id, idType: typeof r.id, name: r.name })));
       console.log("=======================");
 
       // Validate that the user and role IDs are valid numbers
@@ -250,9 +259,9 @@ export function UserRolesTab() {
         return;
       }
 
-      // Simple lookup - just find by ID
-      selectedUser = users.find(user => user.id === userId);
-      selectedRole = roles.find(role => role.id === roleId);
+      // Simple lookup - just find by ID with type safety
+      selectedUser = users.find(user => Number(user.id) === userId);
+      selectedRole = roles.find(role => Number(role.id) === roleId);
 
       if (!selectedUser) {
         console.error("User not found!", {
@@ -332,17 +341,23 @@ export function UserRolesTab() {
 
       // Extract more detailed error message
       let errorMessage = "Failed to assign role to user";
+
       if (error?.response?.status === 403) {
-        errorMessage = "Access denied: Only Super Admins can assign roles to users";
+        errorMessage = "Access denied: You must be a Super Admin to assign roles to users. Please contact your system administrator.";
+      } else if (error?.response?.status === 401) {
+        errorMessage = "Authentication required: Please log in again and try.";
       } else if (error?.response?.status === 409) {
         errorMessage = "This user already has this role assigned";
       } else if (error?.response?.status === 404) {
         const backendMessage = error?.response?.data?.message;
-        errorMessage = backendMessage || "User or role not found";
+        errorMessage = backendMessage || "User or role not found - they may have been deleted or modified";
+      } else if (error?.response?.status === 400) {
+        const backendMessage = error?.response?.data?.message;
+        errorMessage = backendMessage || "Invalid request data - please check your selections";
       } else if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error?.message) {
-        errorMessage = error.message;
+        errorMessage = `Network error: ${error.message}`;
       }
 
       setDialogMessage(errorMessage);
@@ -518,7 +533,6 @@ export function UserRolesTab() {
                           const userOptions: SearchableSelectOption[] = users.map((user) => ({
                             value: user.id.toString(),
                             label: getUserDisplayName(user),
-                            subtitle: user.email,
                           }));
 
                           return (
@@ -527,7 +541,10 @@ export function UserRolesTab() {
                               <FormControl>
                                 <SearchableSelect
                                   value={field.value}
-                                  onValueChange={field.onChange}
+                                  onValueChange={(value) => {
+                                    console.log("User selected:", value, typeof value);
+                                    field.onChange(value);
+                                  }}
                                   options={userOptions}
                                   placeholder="Select a user"
                                   searchPlaceholder="Search users..."
@@ -547,7 +564,6 @@ export function UserRolesTab() {
                           const roleOptions: SearchableSelectOption[] = roles.map((role) => ({
                             value: role.id.toString(),
                             label: role.name,
-                            subtitle: role.slug,
                           }));
 
                           return (
@@ -556,7 +572,10 @@ export function UserRolesTab() {
                               <FormControl>
                                 <SearchableSelect
                                   value={field.value}
-                                  onValueChange={field.onChange}
+                                  onValueChange={(value) => {
+                                    console.log("Role selected:", value, typeof value);
+                                    field.onChange(value);
+                                  }}
                                   options={roleOptions}
                                   placeholder="Select a role"
                                   searchPlaceholder="Search roles..."

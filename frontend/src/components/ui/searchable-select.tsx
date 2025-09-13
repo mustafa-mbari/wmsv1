@@ -74,18 +74,19 @@ export function SearchableSelect({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin">
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={`${option.label} ${option.subtitle || ""}`}
+                  value={`${option.label}${option.subtitle ? ` ${option.subtitle}` : ""}`}
                   onSelect={() => {
-                    onValueChange(option.value);
+                    const newValue = value === option.value ? "" : option.value;
+                    onValueChange(newValue);
                     setOpen(false);
                   }}
                 >

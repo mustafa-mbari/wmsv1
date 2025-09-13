@@ -360,13 +360,12 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
 
     logger.info(`Found role: ${role.name} (ID: ${role.id})`, { source: 'userRoleRoutes', method: 'POST /' });
 
-    // Check if assignment already exists
-    const existingAssignment = await prisma.user_roles.findUnique({
+    // Check if assignment already exists (excluding soft-deleted ones)
+    const existingAssignment = await prisma.user_roles.findFirst({
       where: {
-        user_id_role_id: {
-          user_id: parsedUserId,
-          role_id: parsedRoleId
-        }
+        user_id: parsedUserId,
+        role_id: parsedRoleId,
+        deleted_at: null
       }
     });
 
@@ -377,33 +376,79 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
       );
     }
 
-    const userRole = await prisma.user_roles.create({
-      data: {
+    // Check if there's a soft-deleted assignment that we can restore
+    const softDeletedAssignment = await prisma.user_roles.findFirst({
+      where: {
         user_id: parsedUserId,
         role_id: parsedRoleId,
-        assigned_at: new Date(),
-        assigned_by: assignedBy,
-        created_by: assignedBy
-      },
-      include: {
-        users_user_roles_user_idTousers: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            first_name: true,
-            last_name: true
-          }
-        },
-        roles: {
-          select: {
-            id: true,
-            name: true,
-            slug: true
-          }
-        }
+        deleted_at: { not: null }
       }
     });
+
+    let userRole;
+    if (softDeletedAssignment) {
+      // Restore the soft-deleted assignment
+      logger.info(`Restoring soft-deleted user-role assignment: User ${parsedUserId} - Role ${parsedRoleId}`, { source: 'userRoleRoutes', method: 'POST /' });
+      userRole = await prisma.user_roles.update({
+        where: { id: softDeletedAssignment.id },
+        data: {
+          deleted_at: null,
+          deleted_by: null,
+          assigned_at: new Date(),
+          assigned_by: assignedBy,
+          updated_at: new Date(),
+          updated_by: assignedBy
+        },
+        include: {
+          users_user_roles_user_idTousers: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              first_name: true,
+              last_name: true
+            }
+          },
+          roles: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          }
+        }
+      });
+    } else {
+      // Create new assignment
+      logger.info(`Creating new user-role assignment: User ${parsedUserId} - Role ${parsedRoleId}`, { source: 'userRoleRoutes', method: 'POST /' });
+      userRole = await prisma.user_roles.create({
+        data: {
+          user_id: parsedUserId,
+          role_id: parsedRoleId,
+          assigned_at: new Date(),
+          assigned_by: assignedBy,
+          created_by: assignedBy
+        },
+        include: {
+          users_user_roles_user_idTousers: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              first_name: true,
+              last_name: true
+            }
+          },
+          roles: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          }
+        }
+      });
+    }
 
     // Transform the data to use cleaner property names
     const transformedUserRole = {
@@ -429,7 +474,13 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
     logger.error('Error creating user-role assignment', {
       source: 'userRoleRoutes',
       method: 'POST /',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      errorDetails: error,
+      requestData: {
+        user_id: parsedUserId || 'undefined',
+        role_id: parsedRoleId || 'undefined',
+        assigned_by: assignedBy
+      }
     });
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
       createApiResponse(false, null, 'Failed to create user-role assignment')

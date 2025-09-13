@@ -320,10 +320,20 @@ router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Respo
     });
 
     const users = await prisma.users.findMany({
+      where: {
+        deleted_at: null
+      },
       include: {
         user_roles_user_roles_user_idTousers: {
+          where: {
+            deleted_at: null
+          },
           include: {
-            roles: true
+            roles: {
+              where: {
+                deleted_at: null
+              }
+            }
           }
         }
       }
@@ -425,14 +435,22 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
       userId: id
     });
     
-    const user = await prisma.users.findUnique({
-      where: { 
-        id: parseInt(id)
+    const user = await prisma.users.findFirst({
+      where: {
+        id: parseInt(id),
+        deleted_at: null
       },
       include: {
         user_roles_user_roles_user_idTousers: {
+          where: {
+            deleted_at: null
+          },
           include: {
-            roles: true
+            roles: {
+              where: {
+                deleted_at: null
+              }
+            }
           }
         }
       }
