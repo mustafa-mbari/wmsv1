@@ -11,6 +11,7 @@ shared/logs/
 
 # Ignore backend log files
 backend/logs/*.log
+@exceptions.log
 
 # Ignore backend environment file
 backend/.env
