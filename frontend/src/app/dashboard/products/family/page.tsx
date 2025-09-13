@@ -445,19 +445,13 @@ export default function ProductFamilyPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Product Families
+          <div>
+            <h1 className="text-lg font-medium text-muted-foreground">
+              Products / Family
               {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
+                <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions 
-                ? "Group related products into families for better organization" 
-                : "View product family groupings (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={fetchFamilies} variant="outline" size="default">
@@ -678,13 +672,7 @@ export default function ProductFamilyPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Product Family Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage product families and their associated products
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedFamilies.length} {transformedFamilies.length === 1 ? 'family' : 'families'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

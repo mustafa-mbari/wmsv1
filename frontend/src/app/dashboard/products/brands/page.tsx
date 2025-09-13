@@ -444,19 +444,13 @@ export default function BrandsPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Product Brands
+          <div>
+            <h1 className="text-lg font-medium text-muted-foreground">
+              Products / Brands
               {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
+                <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions 
-                ? "Manage product brands and manufacturer information" 
-                : "View product brand information (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={fetchBrands} variant="outline" size="default">
@@ -682,13 +676,7 @@ export default function BrandsPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Brand Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage product brands and manufacturer information
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedBrands.length} {transformedBrands.length === 1 ? 'brand' : 'brands'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

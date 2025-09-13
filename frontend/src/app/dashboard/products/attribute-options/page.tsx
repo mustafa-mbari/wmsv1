@@ -516,19 +516,13 @@ export default function AttributeOptionsPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Attribute Options
+          <div>
+            <h1 className="text-lg font-medium text-muted-foreground">
+              Products / Attribute Options
               {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
+                <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions 
-                ? "Manage options for product attributes like sizes, colors, materials, etc." 
-                : "View attribute options and their configurations (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={handleRefresh} variant="outline" size="default" disabled={loading}>
@@ -733,13 +727,7 @@ export default function AttributeOptionsPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Attribute Options</CardTitle>
-              <CardDescription className="mt-1">
-                Manage options for product attributes
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedOptions.length} {transformedOptions.length === 1 ? 'option' : 'options'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">

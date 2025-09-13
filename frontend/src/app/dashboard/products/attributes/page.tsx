@@ -436,19 +436,13 @@ export default function AttributesPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Product Attributes
+          <div>
+            <h1 className="text-lg font-medium text-muted-foreground">
+              Products / Attributes
               {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
+                <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions 
-                ? "Define product attributes and their data types" 
-                : "View product attribute definitions (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={fetchAttributes} variant="outline" size="default">
@@ -691,13 +685,7 @@ export default function AttributesPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold">Attribute Directory</CardTitle>
-              <CardDescription className="mt-1">
-                Manage product attributes and their configurations
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {transformedAttributes.length} {transformedAttributes.length === 1 ? 'attribute' : 'attributes'}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">
