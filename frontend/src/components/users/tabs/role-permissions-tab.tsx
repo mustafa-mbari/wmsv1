@@ -53,6 +53,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -109,6 +110,7 @@ const rolePermissionFormSchema = z.object({
 
 export function RolePermissionsTab() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [rolePermissions, setRolePermissions] = useState<RolePermission[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -162,13 +164,19 @@ export function RolePermissionsTab() {
         role_id: parseInt(data.role_id),
         permission_id: parseInt(data.permission_id),
       });
-      alert("Role permission assigned successfully");
+      showAlert({
+        title: "Success",
+        description: "Role permission assigned successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchData();
     } catch (error) {
       console.error("Error creating role permission:", error);
-      alert("Failed to assign permission to role");
+      showAlert({
+        title: "Error",
+        description: "Failed to assign permission to role"
+      });
     }
   };
 
@@ -181,7 +189,10 @@ export function RolePermissionsTab() {
         fetchData();
       } catch (error) {
         console.error("Error deleting role permission:", error);
-        alert("Failed to remove permission from role");
+        showAlert({
+          title: "Error",
+          description: "Failed to remove permission from role"
+        });
       }
     }
   };
@@ -490,6 +501,7 @@ export function RolePermissionsTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

@@ -63,6 +63,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 import { apiClient } from "@/lib/api-client";
+import { useAlert } from "@/hooks/useAlert";
 
 export interface Attribute {
   id: number;
@@ -89,6 +90,7 @@ const DATA_TYPES = [
 
 export default function AttributesPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -175,13 +177,19 @@ export default function AttributesPage() {
   const onCreateSubmit = async (data: z.infer<typeof attributeFormSchema>) => {
     try {
       console.log("Creating attribute:", data);
-      alert("Attribute created successfully");
+      showAlert({
+        title: "Success",
+        description: "Attribute created successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchAttributes();
     } catch (error) {
       console.error("Error creating attribute:", error);
-      alert("Failed to create attribute");
+      showAlert({
+        title: "Error",
+        description: "Failed to create attribute"
+      });
     }
   };
 
@@ -190,12 +198,18 @@ export default function AttributesPage() {
     
     try {
       console.log("Updating attribute:", data);
-      alert("Attribute updated successfully");
+      showAlert({
+        title: "Success",
+        description: "Attribute updated successfully"
+      });
       setIsEditDialogOpen(false);
       fetchAttributes();
     } catch (error) {
       console.error("Error updating attribute:", error);
-      alert("Failed to update attribute");
+      showAlert({
+        title: "Error",
+        description: "Failed to update attribute"
+      });
     }
   };
 
@@ -209,7 +223,10 @@ export default function AttributesPage() {
         fetchAttributes();
       } catch (error) {
         console.error("Error deleting attribute:", error);
-        alert("Failed to delete attribute");
+        showAlert({
+          title: "Error",
+          description: "Failed to delete attribute"
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -229,7 +246,10 @@ export default function AttributesPage() {
       fetchAttributes();
     } catch (error) {
       console.error("Error deleting attributes:", error);
-      alert("Failed to delete some attributes");
+      showAlert({
+        title: "Error",
+        description: "Failed to delete some attributes"
+      });
     }
   };
 
@@ -872,6 +892,7 @@ export default function AttributesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

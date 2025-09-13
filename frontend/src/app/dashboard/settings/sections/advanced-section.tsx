@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { useSettings } from '@/components/providers/settings-provider';
+import { useAlert } from '@/hooks/useAlert';
 import { 
   Bug, 
   Zap, 
@@ -27,6 +28,7 @@ import {
 export function AdvancedSection() {
   const intl = useIntl();
   const { settings, updateSetting, resetSettings, exportSettings, importSettings, clearCache } = useSettings();
+  const { showAlert, AlertComponent } = useAlert();
   const [importData, setImportData] = useState('');
   const [showImport, setShowImport] = useState(false);
 
@@ -47,22 +49,34 @@ export function AdvancedSection() {
     if (importSettings(importData)) {
       setImportData('');
       setShowImport(false);
-      alert(intl.formatMessage({ id: 'settings.messages.importSuccess' }));
+      showAlert({
+        title: "Success",
+        description: intl.formatMessage({ id: 'settings.messages.importSuccess' })
+      });
     } else {
-      alert('Failed to import settings. Please check the format.');
+      showAlert({
+        title: "Error",
+        description: 'Failed to import settings. Please check the format.'
+      });
     }
   };
 
   const handleResetAll = () => {
     if (window.confirm(intl.formatMessage({ id: 'settings.messages.confirmReset' }))) {
       resetSettings();
-      alert(intl.formatMessage({ id: 'settings.messages.settingsReset' }));
+      showAlert({
+        title: "Success",
+        description: intl.formatMessage({ id: 'settings.messages.settingsReset' })
+      });
     }
   };
 
   const handleClearCache = () => {
     clearCache();
-    alert(intl.formatMessage({ id: 'settings.messages.cacheCleared' }));
+    showAlert({
+      title: "Success",
+      description: intl.formatMessage({ id: 'settings.messages.cacheCleared' })
+    });
   };
 
   return (
@@ -322,6 +336,7 @@ export function AdvancedSection() {
           </div>
         </div>
       </Card>
+      <AlertComponent />
     </div>
   );
 }

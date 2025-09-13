@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const { login } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { showAlert, AlertComponent } = useAlert();
 
   useEffect(() => {
     setMounted(true);
@@ -31,10 +33,16 @@ export default function LoginPage() {
       const response = await fetch("http://localhost:8001/api/health");
       const data = await response.json();
       console.log("API Health test:", data);
-      alert("API connection works!");
+      showAlert({
+        title: "Success",
+        description: "API connection works!"
+      });
     } catch (error) {
       console.error("API test failed:", error);
-      alert("API connection failed!");
+      showAlert({
+        title: "Error",
+        description: "API connection failed!"
+      });
     }
   };
 
@@ -180,6 +188,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+        <AlertComponent />
       </div>
     </div>
   );

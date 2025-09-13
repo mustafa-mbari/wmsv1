@@ -47,6 +47,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,6 +83,7 @@ const roleFormSchema = z.object({
 
 export function RolesTab() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -135,13 +137,19 @@ export function RolesTab() {
   const onCreateSubmit = async (data: z.infer<typeof roleFormSchema>) => {
     try {
       await apiClient.post("/api/roles", data);
-      alert("Role created successfully");
+      showAlert({
+        title: "Success",
+        description: "Role created successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchRoles();
     } catch (error) {
       console.error("Error creating role:", error);
-      alert("Failed to create role");
+      showAlert({
+        title: "Error",
+        description: "Failed to create role"
+      });
     }
   };
 
@@ -150,12 +158,18 @@ export function RolesTab() {
 
     try {
       await apiClient.put(`/api/roles/${currentRole.id}`, data);
-      alert("Role updated successfully");
+      showAlert({
+        title: "Success",
+        description: "Role updated successfully"
+      });
       setIsEditDialogOpen(false);
       fetchRoles();
     } catch (error) {
       console.error("Error updating role:", error);
-      alert("Failed to update role");
+      showAlert({
+        title: "Error",
+        description: "Failed to update role"
+      });
     }
   };
 
@@ -168,7 +182,10 @@ export function RolesTab() {
         fetchRoles();
       } catch (error) {
         console.error("Error deleting role:", error);
-        alert("Failed to delete role");
+        showAlert({
+          title: "Error",
+          description: "Failed to delete role"
+        });
       }
     }
   };
@@ -589,6 +606,7 @@ export function RolesTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

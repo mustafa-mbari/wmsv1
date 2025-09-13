@@ -63,6 +63,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { useAlert } from "@/hooks/useAlert";
 
 // User data interface for table display
 export interface UserData extends TableData {
@@ -129,6 +130,7 @@ const userFormSchema = z.object({
 
 export function UsersTab() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -206,18 +208,27 @@ export function UsersTab() {
   const onCreateSubmit = async (data: z.infer<typeof userFormSchema>) => {
     try {
       if (!data.password) {
-        alert("Please enter a password for the new user");
+        showAlert({
+          title: "Password Required",
+          description: "Please enter a password for the new user"
+        });
         return;
       }
       const { confirmPassword, ...userData } = data;
       await apiClient.post("/api/auth/register", userData);
-      alert("User created successfully");
+      showAlert({
+        title: "Success",
+        description: "User created successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchUsers();
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("Failed to create user");
+      showAlert({
+        title: "Error",
+        description: "Failed to create user"
+      });
     }
   };
 
@@ -229,12 +240,18 @@ export function UsersTab() {
       const updateData = password ? { ...restData, password } : restData;
 
       await apiClient.put(`/api/users/${currentUser.id}`, updateData);
-      alert("User updated successfully");
+      showAlert({
+        title: "Success",
+        description: "User updated successfully"
+      });
       setIsEditDialogOpen(false);
       fetchUsers();
     } catch (error) {
       console.error("Error updating user:", error);
-      alert("Failed to update user");
+      showAlert({
+        title: "Error",
+        description: "Failed to update user"
+      });
     }
   };
 
@@ -248,7 +265,10 @@ export function UsersTab() {
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("Failed to delete user");
+        showAlert({
+          title: "Error",
+          description: "Failed to delete user"
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -270,7 +290,10 @@ export function UsersTab() {
       fetchUsers();
     } catch (error) {
       console.error("Error deleting users:", error);
-      alert("Failed to delete some users");
+      showAlert({
+        title: "Error",
+        description: "Failed to delete some users"
+      });
     }
   };
 
@@ -460,7 +483,10 @@ export function UsersTab() {
 
     switch (action) {
       case "email":
-        alert(`Email functionality for ${userIds.length} user(s) would be implemented here.`);
+        showAlert({
+          title: "Email Functionality",
+          description: `Email functionality for ${userIds.length} user(s) would be implemented here.`
+        });
         break;
       case "delete":
         if (canPerformAdminActions) {
@@ -1055,6 +1081,7 @@ export function UsersTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

@@ -58,6 +58,7 @@ import {
   Layers,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -79,6 +80,7 @@ export interface ProductFamily {
 
 export default function ProductFamilyPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [families, setFamilies] = useState<ProductFamily[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -194,7 +196,10 @@ export default function ProductFamilyPage() {
       }
     } catch (error: any) {
       console.error("Error creating family:", error);
-      alert(error.response?.data?.message || "Failed to create product family");
+      showAlert({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to create product family"
+      });
     }
   };
 
@@ -221,7 +226,10 @@ export default function ProductFamilyPage() {
       }
     } catch (error: any) {
       console.error("Error updating family:", error);
-      alert(error.response?.data?.message || "Failed to update product family");
+      showAlert({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to update product family"
+      });
     }
   };
 
@@ -240,7 +248,10 @@ export default function ProductFamilyPage() {
         }
       } catch (error: any) {
         console.error("Error deleting family:", error);
-        alert(error.response?.data?.message || "Failed to delete product family");
+        showAlert({
+          title: "Error",
+          description: error.response?.data?.message || "Failed to delete product family"
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -260,7 +271,10 @@ export default function ProductFamilyPage() {
       fetchFamilies();
     } catch (error) {
       console.error("Error deleting families:", error);
-      alert("Failed to delete some product families");
+      showAlert({
+        title: "Error",
+        description: "Failed to delete some product families"
+      });
     }
   };
 
@@ -844,6 +858,7 @@ export default function ProductFamilyPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

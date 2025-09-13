@@ -47,6 +47,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,6 +86,7 @@ const permissionFormSchema = z.object({
 
 export function PermissionsTab() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -140,13 +142,19 @@ export function PermissionsTab() {
   const onCreateSubmit = async (data: z.infer<typeof permissionFormSchema>) => {
     try {
       await apiClient.post("/api/permissions", data);
-      alert("Permission created successfully");
+      showAlert({
+        title: "Success",
+        description: "Permission created successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchPermissions();
     } catch (error) {
       console.error("Error creating permission:", error);
-      alert("Failed to create permission");
+      showAlert({
+        title: "Error",
+        description: "Failed to create permission"
+      });
     }
   };
 
@@ -155,12 +163,18 @@ export function PermissionsTab() {
 
     try {
       await apiClient.put(`/api/permissions/${currentPermission.id}`, data);
-      alert("Permission updated successfully");
+      showAlert({
+        title: "Success",
+        description: "Permission updated successfully"
+      });
       setIsEditDialogOpen(false);
       fetchPermissions();
     } catch (error) {
       console.error("Error updating permission:", error);
-      alert("Failed to update permission");
+      showAlert({
+        title: "Error",
+        description: "Failed to update permission"
+      });
     }
   };
 
@@ -173,7 +187,10 @@ export function PermissionsTab() {
         fetchPermissions();
       } catch (error) {
         console.error("Error deleting permission:", error);
-        alert("Failed to delete permission");
+        showAlert({
+          title: "Error",
+          description: "Failed to delete permission"
+        });
       }
     }
   };
@@ -645,6 +662,7 @@ export function PermissionsTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

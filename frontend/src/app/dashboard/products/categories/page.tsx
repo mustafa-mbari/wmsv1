@@ -59,6 +59,7 @@ import {
   Download,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,6 +83,7 @@ export interface Category {
 
 export default function CategoriesPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -184,7 +186,10 @@ export default function CategoriesPage() {
       }
     } catch (error: any) {
       console.error("Error creating category:", error);
-      alert(error.response?.data?.message || "Failed to create category");
+      showAlert({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to create category"
+      });
     }
   };
 
@@ -211,7 +216,10 @@ export default function CategoriesPage() {
       }
     } catch (error: any) {
       console.error("Error updating category:", error);
-      alert(error.response?.data?.message || "Failed to update category");
+      showAlert({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to update category"
+      });
     }
   };
 
@@ -230,7 +238,10 @@ export default function CategoriesPage() {
         }
       } catch (error: any) {
         console.error("Error deleting category:", error);
-        alert(error.response?.data?.message || "Failed to delete category");
+        showAlert({
+          title: "Error",
+          description: error.response?.data?.message || "Failed to delete category"
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -254,7 +265,10 @@ export default function CategoriesPage() {
       fetchCategories();
     } catch (error: any) {
       console.error("Error deleting categories:", error);
-      alert("Failed to delete some categories");
+      showAlert({
+        title: "Error",
+        description: "Failed to delete some categories"
+      });
     }
   };
 
@@ -858,6 +872,7 @@ export default function CategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }

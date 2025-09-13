@@ -58,6 +58,7 @@ import {
   Scale,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useAlert } from "@/hooks/useAlert";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -90,6 +91,7 @@ const UNIT_TYPES = [
 
 export default function UnitsPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const { showAlert, AlertComponent } = useAlert();
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -179,13 +181,19 @@ export default function UnitsPage() {
   const onCreateSubmit = async (data: z.infer<typeof unitFormSchema>) => {
     try {
       console.log("Creating unit:", data);
-      alert("Unit created successfully");
+      showAlert({
+        title: "Success",
+        description: "Unit created successfully"
+      });
       setIsCreateDialogOpen(false);
       createForm.reset();
       fetchUnits();
     } catch (error) {
       console.error("Error creating unit:", error);
-      alert("Failed to create unit");
+      showAlert({
+        title: "Error",
+        description: "Failed to create unit"
+      });
     }
   };
 
@@ -194,12 +202,18 @@ export default function UnitsPage() {
     
     try {
       console.log("Updating unit:", data);
-      alert("Unit updated successfully");
+      showAlert({
+        title: "Success",
+        description: "Unit updated successfully"
+      });
       setIsEditDialogOpen(false);
       fetchUnits();
     } catch (error) {
       console.error("Error updating unit:", error);
-      alert("Failed to update unit");
+      showAlert({
+        title: "Error",
+        description: "Failed to update unit"
+      });
     }
   };
 
@@ -213,7 +227,10 @@ export default function UnitsPage() {
         fetchUnits();
       } catch (error) {
         console.error("Error deleting unit:", error);
-        alert("Failed to delete unit");
+        showAlert({
+          title: "Error",
+          description: "Failed to delete unit"
+        });
       } finally {
         setIsDeleteLoading(false);
       }
@@ -233,7 +250,10 @@ export default function UnitsPage() {
       fetchUnits();
     } catch (error) {
       console.error("Error deleting units:", error);
-      alert("Failed to delete some units");
+      showAlert({
+        title: "Error",
+        description: "Failed to delete some units"
+      });
     }
   };
 
@@ -859,6 +879,7 @@ export default function UnitsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertComponent />
     </div>
   );
 }
