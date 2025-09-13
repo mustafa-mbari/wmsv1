@@ -58,6 +58,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdvancedTable } from "@/components/ui/advanced-table";
+import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 
 export interface UserRole {
   id: number;
@@ -324,51 +325,59 @@ export function UserRolesTab() {
                       <FormField
                         control={createForm.control}
                         name="user_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>User*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        render={({ field }) => {
+                          const userOptions: SearchableSelectOption[] = users.map((user) => ({
+                            value: user.id.toString(),
+                            label: getUserDisplayName(user),
+                            subtitle: user.email,
+                          }));
+
+                          return (
+                            <FormItem>
+                              <FormLabel>User*</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a user" />
-                                </SelectTrigger>
+                                <SearchableSelect
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  options={userOptions}
+                                  placeholder="Select a user"
+                                  searchPlaceholder="Search users..."
+                                  emptyMessage="No users found."
+                                />
                               </FormControl>
-                              <SelectContent>
-                                {users.map((user) => (
-                                  <SelectItem key={user.id} value={user.id.toString()}>
-                                    {getUserDisplayName(user)} ({user.email})
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
 
                       <FormField
                         control={createForm.control}
                         name="role_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Role*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        render={({ field }) => {
+                          const roleOptions: SearchableSelectOption[] = roles.map((role) => ({
+                            value: role.id.toString(),
+                            label: role.name,
+                            subtitle: role.slug,
+                          }));
+
+                          return (
+                            <FormItem>
+                              <FormLabel>Role*</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a role" />
-                                </SelectTrigger>
+                                <SearchableSelect
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  options={roleOptions}
+                                  placeholder="Select a role"
+                                  searchPlaceholder="Search roles..."
+                                  emptyMessage="No roles found."
+                                />
                               </FormControl>
-                              <SelectContent>
-                                {roles.map((role) => (
-                                  <SelectItem key={role.id} value={role.id.toString()}>
-                                    {role.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
 
                       <DialogFooter>
