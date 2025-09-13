@@ -4,6 +4,165 @@
  */
 
 export interface paths {
+    "/api/attribute-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all attribute options
+         * @description Retrieve all attribute options with associated attribute information and usage counts
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute options retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /**
+         * Create a new attribute option
+         * @description Create a new option for a specific product attribute
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAttributeOptionRequest"];
+                };
+            };
+            responses: {
+                /** @description Attribute option created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attribute-options/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update an attribute option
+         * @description Update an existing attribute option by ID
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute option unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAttributeOptionRequest"];
+                };
+            };
+            responses: {
+                /** @description Attribute option updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        post?: never;
+        /**
+         * Delete an attribute option
+         * @description Permanently delete an attribute option by ID
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute option unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute option deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attributes": {
         parameters: {
             query?: never;
@@ -190,6 +349,213 @@ export interface paths {
             requestBody?: never;
             responses: {
                 /** @description Attribute options retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attribute-values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all attribute values
+         * @description Retrieve all attribute values with associated product and attribute information
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute values retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /**
+         * Create a new attribute value
+         * @description Assign an attribute value to a product (either custom value or selected option)
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAttributeValueRequest"];
+                };
+            };
+            responses: {
+                /** @description Attribute value created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attribute-values/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update an attribute value
+         * @description Update an existing attribute value by ID
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute value unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAttributeValueRequest"];
+                };
+            };
+            responses: {
+                /** @description Attribute value updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        post?: never;
+        /**
+         * Delete an attribute value
+         * @description Permanently delete an attribute value by ID
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Attribute value unique identifier
+                     * @example 1
+                     */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute value deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attribute-values/product/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get attribute values for a product
+         * @description Retrieve all attribute values assigned to a specific product
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /**
+                     * @description Product unique identifier
+                     * @example 5
+                     */
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product attribute values retrieved successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1521,6 +1887,280 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current user profile
+         * @description Retrieve the complete profile information of the currently authenticated user
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Profile retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["Profile"];
+                            /** @example Profile retrieved successfully */
+                            message?: string;
+                        };
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update current user profile
+         * @description Update profile information for the currently authenticated user
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description Profile updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["Profile"];
+                            /** @example Profile updated successfully */
+                            message?: string;
+                        };
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                /** @description Conflict - Email or username already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /** @example {
+                         *       "success": false,
+                         *       "data": null,
+                         *       "message": "User with this email or username already exists"
+                         *     } */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        trace?: never;
+    };
+    "/api/profile/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change user password
+         * @description Change the password for the currently authenticated user
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangePasswordRequest"];
+                };
+            };
+            responses: {
+                /** @description Password changed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"];
+                    };
+                };
+                /** @description Bad request - Invalid current password or weak new password */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload profile picture
+         * @description Upload a new profile picture for the currently authenticated user (JPEG/PNG, max 5MB)
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description Profile picture file (JPEG/PNG, max 5MB)
+                         */
+                        avatar: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Avatar uploaded successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["AvatarUploadResponse"];
+                            /** @example Avatar uploaded successfully */
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Bad request - No file uploaded or invalid file type */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                /** @description Payload too large - File size exceeds 5MB limit */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        /**
+         * Remove profile picture
+         * @description Remove the current profile picture for the authenticated user
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Avatar removed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: {
+                                user?: {
+                                    /** @example 1 */
+                                    id?: number;
+                                    /** @example johndoe */
+                                    username?: string;
+                                    /** @example john.doe@example.com */
+                                    email?: string;
+                                    /** @example John Doe */
+                                    name?: string;
+                                    /** @example null */
+                                    profilePicture?: Record<string, never>;
+                                };
+                            };
+                            /** @example Avatar removed successfully */
+                            message?: string;
+                        };
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/units": {
         parameters: {
             query?: never;
@@ -2430,6 +3070,121 @@ export interface components {
             /** @description Detailed error information */
             error?: string | null;
         };
+        AttributeOption: {
+            /**
+             * @description Unique identifier for the attribute option
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description ID of the associated attribute
+             * @example 2
+             */
+            attribute_id?: string;
+            /**
+             * @description Name of the associated attribute
+             * @example Color
+             */
+            attribute_name?: string;
+            /**
+             * @description Type of the associated attribute
+             * @example select
+             */
+            attribute_type?: string;
+            /**
+             * @description Value of the attribute option
+             * @example red
+             */
+            value: string;
+            /**
+             * @description Display label for the option
+             * @example Red
+             */
+            label: string;
+            /**
+             * @description Display order of the option
+             * @example 1
+             */
+            sort_order: number;
+            /**
+             * @description Number of times this option is used
+             * @example 8
+             */
+            usage_count?: number;
+            /**
+             * @description Whether the option is active
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Option creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Option last update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+        };
+        CreateAttributeOptionRequest: {
+            /**
+             * @description ID of the associated attribute
+             * @example 2
+             */
+            attribute_id: string;
+            /**
+             * @description Value of the attribute option
+             * @example red
+             */
+            value: string;
+            /**
+             * @description Display label for the option
+             * @example Red
+             */
+            label: string;
+            /**
+             * @description Display order of the option
+             * @default 0
+             * @example 1
+             */
+            sort_order: number;
+            /**
+             * @description Whether the option should be active
+             * @default true
+             * @example true
+             */
+            is_active: boolean;
+        };
+        UpdateAttributeOptionRequest: {
+            /**
+             * @description ID of the associated attribute
+             * @example 3
+             */
+            attribute_id?: string;
+            /**
+             * @description Value of the attribute option
+             * @example blue
+             */
+            value?: string;
+            /**
+             * @description Display label for the option
+             * @example Blue
+             */
+            label?: string;
+            /**
+             * @description Display order of the option
+             * @example 2
+             */
+            sort_order?: number;
+            /**
+             * @description Whether the option should be active
+             * @example false
+             */
+            is_active?: boolean;
+        };
         Attribute: {
             /**
              * @description Unique identifier for the attribute
@@ -2503,39 +3258,6 @@ export interface components {
              * @example 2024-01-15T10:30:00Z
              */
             updated_at: string;
-        };
-        AttributeOption: {
-            /**
-             * @description Unique identifier for the attribute option
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description Value of the attribute option
-             * @example red
-             */
-            value: string;
-            /**
-             * @description Display label for the option
-             * @example Red
-             */
-            label: string;
-            /**
-             * @description Display order of the option
-             * @example 1
-             */
-            sort_order: number;
-            /**
-             * @description Whether the option is active
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * Format: date-time
-             * @description Option creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
         };
         CreateAttributeRequest: {
             /**
@@ -2635,6 +3357,119 @@ export interface components {
              * @example false
              */
             is_active?: boolean;
+        };
+        AttributeValue: {
+            /**
+             * @description Unique identifier for the attribute value
+             * @example 1
+             */
+            id: string;
+            /**
+             * @description ID of the associated product
+             * @example 5
+             */
+            product_id: string;
+            /**
+             * @description Name of the associated product
+             * @example Premium Coffee Beans
+             */
+            product_name?: string;
+            /**
+             * @description SKU of the associated product
+             * @example COFFEE-001
+             */
+            product_sku?: string;
+            /**
+             * @description ID of the associated attribute
+             * @example 2
+             */
+            attribute_id: string;
+            /**
+             * @description Name of the associated attribute
+             * @example Color
+             */
+            attribute_name?: string;
+            /**
+             * @description Type of the associated attribute
+             * @example select
+             */
+            attribute_type?: string;
+            /**
+             * @description Custom value for text-type attributes
+             * @example Dark Red
+             */
+            value?: string | null;
+            /**
+             * @description ID of the selected option for select-type attributes
+             * @example 3
+             */
+            option_id?: string | null;
+            /**
+             * @description Label of the selected option
+             * @example Red
+             */
+            option_label?: string | null;
+            /**
+             * @description Value of the selected option
+             * @example red
+             */
+            option_value?: string | null;
+            /**
+             * Format: date-time
+             * @description Value creation timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Value last update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+        };
+        CreateAttributeValueRequest: {
+            /**
+             * @description ID of the associated product
+             * @example 5
+             */
+            product_id: string;
+            /**
+             * @description ID of the associated attribute
+             * @example 2
+             */
+            attribute_id: string;
+            /**
+             * @description Custom value for text-type attributes
+             * @example Dark Red
+             */
+            value?: string | null;
+            /**
+             * @description ID of the selected option for select-type attributes
+             * @example 3
+             */
+            option_id?: string | null;
+        };
+        UpdateAttributeValueRequest: {
+            /**
+             * @description ID of the associated product
+             * @example 6
+             */
+            product_id?: string;
+            /**
+             * @description ID of the associated attribute
+             * @example 3
+             */
+            attribute_id?: string;
+            /**
+             * @description Custom value for text-type attributes
+             * @example Light Blue
+             */
+            value?: string | null;
+            /**
+             * @description ID of the selected option for select-type attributes
+             * @example 4
+             */
+            option_id?: string | null;
         };
         LoginRequest: {
             /**
@@ -2993,6 +3828,186 @@ export interface components {
              * @example true
              */
             isActive?: boolean;
+        };
+        Profile: {
+            /**
+             * @description User unique identifier
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Unique username
+             * @example johndoe
+             */
+            username: string;
+            /**
+             * Format: email
+             * @description User email address
+             * @example john.doe@example.com
+             */
+            email: string;
+            /**
+             * @description Full name (first + last)
+             * @example John Doe
+             */
+            name: string;
+            /**
+             * @description User first name
+             * @example John
+             */
+            first_name: string;
+            /**
+             * @description User last name
+             * @example Doe
+             */
+            last_name: string;
+            /**
+             * @description User phone number
+             * @example +1234567890
+             */
+            phone?: string | null;
+            /**
+             * @description Profile picture URL
+             * @example /uploads/profile-pictures/avatar-1-123456789.jpg
+             */
+            profilePicture?: string | null;
+            /**
+             * @description User preferred language
+             * @example en
+             */
+            language?: string;
+            /**
+             * @description User timezone
+             * @example UTC
+             */
+            timeZone?: string;
+            /**
+             * @description Account status
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * @description Email verification status
+             * @example true
+             */
+            email_verified?: boolean;
+            /**
+             * Format: date-time
+             * @description Email verification timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            email_verified_at?: string | null;
+            /**
+             * Format: date-time
+             * @description Last login timestamp
+             * @example 2024-01-15T14:20:00Z
+             */
+            last_login_at?: string | null;
+            /**
+             * Format: date-time
+             * @description Last password change timestamp
+             * @example 2024-01-10T09:15:00Z
+             */
+            last_password_change?: string | null;
+            /**
+             * Format: date-time
+             * @description Account creation timestamp
+             * @example 2024-01-01T00:00:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Last profile update timestamp
+             * @example 2024-01-15T10:30:00Z
+             */
+            updated_at: string;
+            /**
+             * @description User role names
+             * @example [
+             *       "admin",
+             *       "manager"
+             *     ]
+             */
+            role_names?: string[];
+            /**
+             * @description User role slugs
+             * @example [
+             *       "admin",
+             *       "manager"
+             *     ]
+             */
+            role_slugs?: string[];
+        };
+        UpdateProfileRequest: {
+            /**
+             * @description Full name (will be split into first and last name)
+             * @example John Smith
+             */
+            name?: string;
+            /**
+             * @description Unique username
+             * @example johnsmith
+             */
+            username?: string;
+            /**
+             * Format: email
+             * @description User email address
+             * @example john.smith@example.com
+             */
+            email?: string;
+            /**
+             * @description User phone number
+             * @example +1987654321
+             */
+            phone?: string | null;
+            /**
+             * @description Profile picture URL
+             * @example /uploads/profile-pictures/avatar-1-987654321.jpg
+             */
+            profilePicture?: string | null;
+            /**
+             * @description User preferred language
+             * @example es
+             */
+            language?: string;
+            /**
+             * @description User timezone
+             * @example America/New_York
+             */
+            timeZone?: string;
+        };
+        ChangePasswordRequest: {
+            /**
+             * Format: password
+             * @description Current password for verification
+             * @example currentpass123
+             */
+            currentPassword: string;
+            /**
+             * Format: password
+             * @description New password (minimum 8 characters)
+             * @example newpassword123
+             */
+            newPassword: string;
+        };
+        AvatarUploadResponse: {
+            /**
+             * @description URL of the uploaded avatar
+             * @example /uploads/profile-pictures/avatar-1-123456789.jpg
+             */
+            avatarUrl?: string;
+            user?: {
+                /** @example 1 */
+                id?: number;
+                /** @example johndoe */
+                username?: string;
+                /** @example john.doe@example.com */
+                email?: string;
+                /** @example John Doe */
+                name?: string;
+                /** @example /uploads/profile-pictures/avatar-1-123456789.jpg */
+                profilePicture?: string | null;
+            };
         };
         Unit: {
             /**

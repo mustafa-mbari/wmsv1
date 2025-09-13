@@ -1,3 +1,189 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Profile:
+ *       type: object
+ *       required:
+ *         - id
+ *         - username
+ *         - email
+ *         - name
+ *         - first_name
+ *         - last_name
+ *         - is_active
+ *         - created_at
+ *         - updated_at
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: User unique identifier
+ *           example: 1
+ *         username:
+ *           type: string
+ *           description: Unique username
+ *           example: "johndoe"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: "john.doe@example.com"
+ *         name:
+ *           type: string
+ *           description: Full name (first + last)
+ *           example: "John Doe"
+ *         first_name:
+ *           type: string
+ *           description: User first name
+ *           example: "John"
+ *         last_name:
+ *           type: string
+ *           description: User last name
+ *           example: "Doe"
+ *         phone:
+ *           type: string
+ *           nullable: true
+ *           description: User phone number
+ *           example: "+1234567890"
+ *         profilePicture:
+ *           type: string
+ *           nullable: true
+ *           description: Profile picture URL
+ *           example: "/uploads/profile-pictures/avatar-1-123456789.jpg"
+ *         language:
+ *           type: string
+ *           description: User preferred language
+ *           example: "en"
+ *         timeZone:
+ *           type: string
+ *           description: User timezone
+ *           example: "UTC"
+ *         is_active:
+ *           type: boolean
+ *           description: Account status
+ *           example: true
+ *         email_verified:
+ *           type: boolean
+ *           description: Email verification status
+ *           example: true
+ *         email_verified_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Email verification timestamp
+ *           example: "2024-01-15T10:30:00Z"
+ *         last_login_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Last login timestamp
+ *           example: "2024-01-15T14:20:00Z"
+ *         last_password_change:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Last password change timestamp
+ *           example: "2024-01-10T09:15:00Z"
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Account creation timestamp
+ *           example: "2024-01-01T00:00:00Z"
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Last profile update timestamp
+ *           example: "2024-01-15T10:30:00Z"
+ *         role_names:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: User role names
+ *           example: ["admin", "manager"]
+ *         role_slugs:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: User role slugs
+ *           example: ["admin", "manager"]
+ *     UpdateProfileRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Full name (will be split into first and last name)
+ *           example: "John Smith"
+ *         username:
+ *           type: string
+ *           description: Unique username
+ *           example: "johnsmith"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email address
+ *           example: "john.smith@example.com"
+ *         phone:
+ *           type: string
+ *           nullable: true
+ *           description: User phone number
+ *           example: "+1987654321"
+ *         profilePicture:
+ *           type: string
+ *           nullable: true
+ *           description: Profile picture URL
+ *           example: "/uploads/profile-pictures/avatar-1-987654321.jpg"
+ *         language:
+ *           type: string
+ *           description: User preferred language
+ *           example: "es"
+ *         timeZone:
+ *           type: string
+ *           description: User timezone
+ *           example: "America/New_York"
+ *     ChangePasswordRequest:
+ *       type: object
+ *       required:
+ *         - currentPassword
+ *         - newPassword
+ *       properties:
+ *         currentPassword:
+ *           type: string
+ *           format: password
+ *           description: Current password for verification
+ *           example: "currentpass123"
+ *         newPassword:
+ *           type: string
+ *           format: password
+ *           description: New password (minimum 8 characters)
+ *           example: "newpassword123"
+ *     AvatarUploadResponse:
+ *       type: object
+ *       properties:
+ *         avatarUrl:
+ *           type: string
+ *           description: URL of the uploaded avatar
+ *           example: "/uploads/profile-pictures/avatar-1-123456789.jpg"
+ *         user:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *               example: 1
+ *             username:
+ *               type: string
+ *               example: "johndoe"
+ *             email:
+ *               type: string
+ *               example: "john.doe@example.com"
+ *             name:
+ *               type: string
+ *               example: "John Doe"
+ *             profilePicture:
+ *               type: string
+ *               nullable: true
+ *               example: "/uploads/profile-pictures/avatar-1-123456789.jpg"
+ */
+
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared'
 import logger from '../utils/logger/logger';
@@ -11,7 +197,38 @@ import { authenticateToken } from '../middleware/authMiddleware';
 const router = Router();
 const prisma = new PrismaClient();
 
-// GET /api/profile - Get current user profile
+/**
+ * @swagger
+ * /api/profile:
+ *   get:
+ *     tags: [Profile]
+ *     summary: Get current user profile
+ *     description: Retrieve the complete profile information of the currently authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Profile'
+ *                 message:
+ *                   type: string
+ *                   example: "Profile retrieved successfully"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
 
@@ -90,7 +307,65 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// PATCH /api/profile - Update current user profile
+/**
+ * @swagger
+ * /api/profile:
+ *   patch:
+ *     tags: [Profile]
+ *     summary: Update current user profile
+ *     description: Update profile information for the currently authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateProfileRequest'
+ *           examples:
+ *             update_profile:
+ *               value:
+ *                 name: "John Smith"
+ *                 username: "johnsmith"
+ *                 email: "john.smith@example.com"
+ *                 phone: "+1987654321"
+ *                 language: "es"
+ *                 timeZone: "America/New_York"
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Profile'
+ *                 message:
+ *                   type: string
+ *                   example: "Profile updated successfully"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Conflict - Email or username already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               success: false
+ *               data: null
+ *               message: "User with this email or username already exists"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.patch('/', authenticateToken, async (req: Request, res: Response) => {
   try {
 
@@ -231,7 +506,63 @@ router.patch('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/profile/password - Change password
+/**
+ * @swagger
+ * /api/profile/password:
+ *   post:
+ *     tags: [Profile]
+ *     summary: Change user password
+ *     description: Change the password for the currently authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePasswordRequest'
+ *           examples:
+ *             change_password:
+ *               value:
+ *                 currentPassword: "currentpass123"
+ *                 newPassword: "newpassword123"
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *             examples:
+ *               success:
+ *                 value:
+ *                   success: true
+ *                   data: null
+ *                   message: "Password changed successfully"
+ *       400:
+ *         description: Bad request - Invalid current password or weak new password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               invalid_current_password:
+ *                 value:
+ *                   success: false
+ *                   data: null
+ *                   message: "Current password is incorrect"
+ *               weak_password:
+ *                 value:
+ *                   success: false
+ *                   data: null
+ *                   message: "New password must be at least 8 characters long"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.post('/password', authenticateToken, async (req: Request, res: Response) => {
   try {
 
@@ -353,7 +684,72 @@ const upload = multer({
   }
 });
 
-// POST /api/profile/avatar - Upload profile picture
+/**
+ * @swagger
+ * /api/profile/avatar:
+ *   post:
+ *     tags: [Profile]
+ *     summary: Upload profile picture
+ *     description: Upload a new profile picture for the currently authenticated user (JPEG/PNG, max 5MB)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile picture file (JPEG/PNG, max 5MB)
+ *     responses:
+ *       200:
+ *         description: Avatar uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/AvatarUploadResponse'
+ *                 message:
+ *                   type: string
+ *                   example: "Avatar uploaded successfully"
+ *       400:
+ *         description: Bad request - No file uploaded or invalid file type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               no_file:
+ *                 value:
+ *                   success: false
+ *                   data: null
+ *                   message: "No file uploaded"
+ *               invalid_type:
+ *                 value:
+ *                   success: false
+ *                   data: null
+ *                   message: "Only JPEG and PNG files are allowed"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       413:
+ *         description: Payload too large - File size exceeds 5MB limit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.post('/avatar', authenticateToken, upload.single('avatar') as any, async (req: Request, res: Response) => {
   try {
     if (!req.file) {
@@ -452,7 +848,57 @@ router.post('/avatar', authenticateToken, upload.single('avatar') as any, async 
   }
 });
 
-// DELETE /api/profile/avatar - Remove profile picture
+/**
+ * @swagger
+ * /api/profile/avatar:
+ *   delete:
+ *     tags: [Profile]
+ *     summary: Remove profile picture
+ *     description: Remove the current profile picture for the authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Avatar removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         username:
+ *                           type: string
+ *                           example: "johndoe"
+ *                         email:
+ *                           type: string
+ *                           example: "john.doe@example.com"
+ *                         name:
+ *                           type: string
+ *                           example: "John Doe"
+ *                         profilePicture:
+ *                           type: null
+ *                           example: null
+ *                 message:
+ *                   type: string
+ *                   example: "Avatar removed successfully"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.delete('/avatar', authenticateToken, async (req: Request, res: Response) => {
   try {
     logger.info('Removing avatar', { 
