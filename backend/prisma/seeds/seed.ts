@@ -21,6 +21,10 @@ import { ProductAttributeSeeder } from './classes/ProductAttributeSeeder';
 import { ProductAttributeOptionSeeder } from './classes/ProductAttributeOptionSeeder';
 import { ProductAttributeValueSeeder } from './classes/ProductAttributeValueSeeder';
 import { BrandSeeder } from './classes/BrandSeeder';
+import { WarehouseZoneSeeder } from './classes/WarehouseZoneSeeder';
+import { WarehouseAisleSeeder } from './classes/WarehouseAisleSeeder';
+import { WarehouseLocationSeeder } from './classes/WarehouseLocationSeeder';
+import { BinTypeSeeder } from './classes/BinTypeSeeder';
 
 async function main() {
   const prisma = new PrismaClient();
@@ -97,6 +101,10 @@ async function main() {
 
     // Warehouse management (requires users for managers)
     runner.registerSeeder('warehouses', () => new WarehouseSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('warehouse_zones', () => new WarehouseZoneSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('warehouse_aisles', () => new WarehouseAisleSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('warehouse_locations', () => new WarehouseLocationSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('bin_types', () => new BinTypeSeeder(prisma, { systemUserId }));
 
     // Validate dependencies
     logger.info('Validating dependencies', {

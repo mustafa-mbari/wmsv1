@@ -2,6 +2,7 @@
   {
     "name": "Main Warehouse",
     "code": "WH001",
+    "lc_warehouse_code": "01",
     "address": "1234 Industrial Drive",
     "city": "Manufacturing City",
     "state": "State1",
@@ -14,7 +15,8 @@
   },
   {
     "name": "Secondary Storage",
-    "code": "WH002", 
+    "code": "WH002",
+    "lc_warehouse_code": "02", 
     "address": "5678 Storage Boulevard",
     "city": "Storage Town",
     "state": "State2", 
@@ -27,7 +29,8 @@
   },
   {
     "name": "Distribution Center",
-    "code": "DC001",
+    "code": "WH003",
+    "lc_warehouse_code": "03",
     "address": "9999 Distribution Way",
     "city": "Logistics Hub",
     "state": "State3",
@@ -40,7 +43,8 @@
   },
   {
     "name": "Cold Storage",
-    "code": "CS001",
+    "code": "WH004",
+    "lc_warehouse_code": "04",
     "address": "2222 Freezer Lane",
     "city": "Cold City",
     "state": "State1",
