@@ -296,17 +296,21 @@ export function UserRolesTab() {
         return;
       }
 
-      console.log(`Assigning role "${selectedRole.name}" to user "${selectedUser.username}"`, {
+      const requestData = {
         user_id: userId,
         role_id: roleId,
+      };
+
+      console.log(`Assigning role "${selectedRole.name}" to user "${selectedUser.username}"`, {
+        requestData,
         user: selectedUser,
-        role: selectedRole
+        role: selectedRole,
+        userIdType: typeof userId,
+        roleIdType: typeof roleId,
+        originalFormData: data
       });
 
-      await apiClient.post("/api/user-roles", {
-        user_id: userId,
-        role_id: roleId,
-      });
+      await apiClient.post("/api/user-roles", requestData);
 
       setDialogMessage(`Role "${selectedRole.name}" assigned to user "${selectedUser.username}" successfully!`);
       setIsSuccessDialogOpen(true);
@@ -316,6 +320,28 @@ export function UserRolesTab() {
     } catch (error: any) {
       console.error("Error creating user role:", error);
 
+      // Log full error details for debugging
+      console.error("Full error details:", {
+        status: error?.response?.status,
+        statusText: error?.response?.statusText,
+        data: error?.response?.data,
+        headers: error?.response?.headers,
+        config: error?.config,
+        requestData: {
+          user_id: userId,
+          role_id: roleId,
+          userIdType: typeof userId,
+          roleIdType: typeof roleId
+        },
+        contextData: {
+          users: users.length,
+          roles: roles.length,
+          userRoles: userRoles.length,
+          selectedUser: selectedUser,
+          selectedRole: selectedRole
+        }
+      });
+
       // Extract more detailed error message
       let errorMessage = "Failed to assign role to user";
       if (error?.response?.status === 403) {
@@ -323,19 +349,13 @@ export function UserRolesTab() {
       } else if (error?.response?.status === 409) {
         errorMessage = "This user already has this role assigned";
       } else if (error?.response?.status === 404) {
-        errorMessage = "User or role not found";
+        const backendMessage = error?.response?.data?.message;
+        errorMessage = backendMessage || "User or role not found";
       } else if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
       }
-
-      // Add more detailed logging for debugging
-      console.error("Role assignment error details:", {
-        error: error?.response?.data,
-        status: error?.response?.status,
-        users: users.length,
-        roles: roles.length,
-        userRoles: userRoles.length
-      });
 
       setDialogMessage(errorMessage);
       setIsErrorDialogOpen(true);

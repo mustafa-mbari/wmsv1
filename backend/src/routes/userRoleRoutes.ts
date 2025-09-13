@@ -298,48 +298,80 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
     const { user_id, role_id } = req.body;
     const assignedBy = (req as any).user?.id;
 
-    logger.info(`Creating new user-role assignment: User ${user_id} - Role ${role_id}`, {
+    // Validate and convert IDs to integers
+    const parsedUserId = parseInt(user_id);
+    const parsedRoleId = parseInt(role_id);
+
+    if (isNaN(parsedUserId) || isNaN(parsedRoleId)) {
+      logger.warn(`Invalid user or role ID: user_id=${user_id}, role_id=${role_id}`, {
+        source: 'userRoleRoutes',
+        method: 'POST /',
+        userIdType: typeof user_id,
+        roleIdType: typeof role_id
+      });
+      return res.status(HttpStatus.BAD_REQUEST).json(
+        createApiResponse(false, null, 'Invalid user ID or role ID')
+      );
+    }
+
+    logger.info(`Creating new user-role assignment: User ${parsedUserId} - Role ${parsedRoleId}`, {
       source: 'userRoleRoutes',
       method: 'POST /',
-      assignedBy
+      assignedBy,
+      originalRequestBody: { user_id, role_id },
+      parsedIds: { parsedUserId, parsedRoleId }
     });
 
     // Verify user exists
     const user = await prisma.users.findUnique({
-      where: { id: user_id, deleted_at: null }
+      where: { id: parsedUserId, deleted_at: null }
     });
 
     if (!user) {
-      logger.warn(`User not found: ${user_id}`, { source: 'userRoleRoutes', method: 'POST /' });
+      logger.warn(`User not found: ${parsedUserId}`, {
+        source: 'userRoleRoutes',
+        method: 'POST /',
+        searchedId: parsedUserId,
+        originalId: user_id
+      });
       return res.status(HttpStatus.NOT_FOUND).json(
         createApiResponse(false, null, 'User not found')
       );
     }
 
+    logger.info(`Found user: ${user.username} (ID: ${user.id})`, { source: 'userRoleRoutes', method: 'POST /' });
+
     // Verify role exists
     const role = await prisma.roles.findUnique({
-      where: { id: role_id, deleted_at: null }
+      where: { id: parsedRoleId, deleted_at: null }
     });
 
     if (!role) {
-      logger.warn(`Role not found: ${role_id}`, { source: 'userRoleRoutes', method: 'POST /' });
+      logger.warn(`Role not found: ${parsedRoleId}`, {
+        source: 'userRoleRoutes',
+        method: 'POST /',
+        searchedId: parsedRoleId,
+        originalId: role_id
+      });
       return res.status(HttpStatus.NOT_FOUND).json(
         createApiResponse(false, null, 'Role not found')
       );
     }
 
+    logger.info(`Found role: ${role.name} (ID: ${role.id})`, { source: 'userRoleRoutes', method: 'POST /' });
+
     // Check if assignment already exists
     const existingAssignment = await prisma.user_roles.findUnique({
       where: {
         user_id_role_id: {
-          user_id,
-          role_id
+          user_id: parsedUserId,
+          role_id: parsedRoleId
         }
       }
     });
 
     if (existingAssignment) {
-      logger.warn(`User-role assignment already exists: User ${user_id} - Role ${role_id}`, { source: 'userRoleRoutes', method: 'POST /' });
+      logger.warn(`User-role assignment already exists: User ${parsedUserId} - Role ${parsedRoleId}`, { source: 'userRoleRoutes', method: 'POST /' });
       return res.status(HttpStatus.CONFLICT).json(
         createApiResponse(false, null, 'User-role assignment already exists')
       );
@@ -347,8 +379,8 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
 
     const userRole = await prisma.user_roles.create({
       data: {
-        user_id,
-        role_id,
+        user_id: parsedUserId,
+        role_id: parsedRoleId,
         assigned_at: new Date(),
         assigned_by: assignedBy,
         created_by: assignedBy
