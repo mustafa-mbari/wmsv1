@@ -38,11 +38,19 @@ export function AppearanceSection() {
   const accentColors = [
     { value: 'default' as const, color: 'hsl(221.2, 83.2%, 53.3%)', labelKey: 'settings.appearance.accentColors.default' },
     { value: 'blue' as const, color: 'hsl(217.2, 91.2%, 59.8%)', labelKey: 'settings.appearance.accentColors.blue' },
+    { value: 'darkBlue' as const, color: 'hsl(220, 90%, 35%)', labelKey: 'settings.appearance.accentColors.darkBlue' },
+    { value: 'navyBlue' as const, color: 'hsl(218, 81%, 25%)', labelKey: 'settings.appearance.accentColors.navyBlue' },
+    { value: 'custom' as const, color: '#283991', labelKey: 'settings.appearance.accentColors.custom' },
     { value: 'green' as const, color: 'hsl(142.1, 76.2%, 36.3%)', labelKey: 'settings.appearance.accentColors.green' },
     { value: 'purple' as const, color: 'hsl(262.1, 83.3%, 57.8%)', labelKey: 'settings.appearance.accentColors.purple' },
+    { value: 'darkPurple' as const, color: 'hsl(258, 75%, 35%)', labelKey: 'settings.appearance.accentColors.darkPurple' },
+    { value: 'deepPurple' as const, color: 'hsl(265, 85%, 25%)', labelKey: 'settings.appearance.accentColors.deepPurple' },
     { value: 'red' as const, color: 'hsl(0, 72.2%, 50.6%)', labelKey: 'settings.appearance.accentColors.red' },
     { value: 'orange' as const, color: 'hsl(24.6, 95%, 53.1%)', labelKey: 'settings.appearance.accentColors.orange' },
     { value: 'pink' as const, color: 'hsl(330.4, 81.2%, 60.4%)', labelKey: 'settings.appearance.accentColors.pink' },
+    { value: 'black' as const, color: 'hsl(0, 0%, 15%)', labelKey: 'settings.appearance.accentColors.black' },
+    { value: 'slate' as const, color: 'hsl(215, 16%, 35%)', labelKey: 'settings.appearance.accentColors.slate' },
+    { value: 'teal' as const, color: 'hsl(173, 80%, 40%)', labelKey: 'settings.appearance.accentColors.teal' },
   ];
 
   const fontSizeOptions = [
@@ -102,15 +110,15 @@ export function AppearanceSection() {
             Choose your preferred accent color for highlights and interactive elements
           </p>
         </div>
-        <div className="grid grid-cols-7 gap-3">
+        <div className="grid grid-cols-10 gap-0">
           {accentColors.map((color) => (
             <button
               key={color.value}
               onClick={() => updateSetting('accentColor', color.value)}
               className={`
-                relative aspect-square rounded-lg border-2 transition-all hover:scale-110
-                ${settings.accentColor === color.value 
-                  ? 'border-foreground shadow-lg' 
+                relative w-12 h-12 rounded-md border-2 transition-all hover:scale-105
+                ${settings.accentColor === color.value
+                  ? 'border-foreground shadow-lg'
                   : 'border-muted-foreground/20 hover:border-muted-foreground/40'
                 }
               `}
@@ -119,8 +127,8 @@ export function AppearanceSection() {
             >
               {settings.accentColor === color.value && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-4 w-4 rounded-full bg-white/90 flex items-center justify-center">
-                    <Palette className="h-2.5 w-2.5 text-black" />
+                  <div className="h-3 w-3 rounded-full bg-white/90 flex items-center justify-center">
+                    <Palette className="h-1.5 w-1.5 text-black" />
                   </div>
                 </div>
               )}

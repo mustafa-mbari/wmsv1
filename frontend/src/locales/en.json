@@ -272,11 +272,19 @@
       "accentColors": {
         "default": "Default",
         "blue": "Blue",
+        "darkBlue": "Dark Blue",
+        "navyBlue": "Navy Blue",
+        "custom": "Custom Blue",
         "green": "Green",
         "purple": "Purple",
+        "darkPurple": "Dark Purple",
+        "deepPurple": "Deep Purple",
         "red": "Red",
         "orange": "Orange",
-        "pink": "Pink"
+        "pink": "Pink",
+        "black": "Black",
+        "slate": "Slate",
+        "teal": "Teal"
       },
       "fontSize": "Font Size",
       "fontSizeOptions": {

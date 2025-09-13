@@ -7,7 +7,7 @@ import { useLocale } from './intl-provider';
 export interface SettingsState {
   // Appearance
   theme: 'light' | 'dark' | 'system';
-  accentColor: 'default' | 'blue' | 'green' | 'purple' | 'red' | 'orange' | 'pink';
+  accentColor: 'default' | 'blue' | 'darkBlue' | 'navyBlue' | 'custom' | 'green' | 'purple' | 'darkPurple' | 'deepPurple' | 'red' | 'orange' | 'pink' | 'black' | 'slate' | 'teal';
   fontSize: 'small' | 'medium' | 'large';
   compactMode: boolean;
   animations: boolean;
@@ -201,6 +201,21 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           primaryForeground: '210 40% 98%',
           ring: '217.2 91.2% 59.8%',
         },
+        darkBlue: {
+          primary: '220 90% 35%',
+          primaryForeground: '210 40% 98%',
+          ring: '220 90% 35%',
+        },
+        navyBlue: {
+          primary: '218 81% 25%',
+          primaryForeground: '210 40% 98%',
+          ring: '218 81% 25%',
+        },
+        custom: {
+          primary: '225 67% 37%', // #283991 converted to HSL
+          primaryForeground: '210 40% 98%',
+          ring: '225 67% 37%',
+        },
         green: {
           primary: '142.1 76.2% 36.3%',
           primaryForeground: '355.7 100% 97.3%',
@@ -210,6 +225,16 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           primary: '262.1 83.3% 57.8%',
           primaryForeground: '210 40% 98%',
           ring: '262.1 83.3% 57.8%',
+        },
+        darkPurple: {
+          primary: '258 75% 35%',
+          primaryForeground: '210 40% 98%',
+          ring: '258 75% 35%',
+        },
+        deepPurple: {
+          primary: '265 85% 25%',
+          primaryForeground: '210 40% 98%',
+          ring: '265 85% 25%',
         },
         red: {
           primary: '0 72.2% 50.6%',
@@ -225,6 +250,21 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           primary: '330.4 81.2% 60.4%',
           primaryForeground: '210 40% 98%',
           ring: '330.4 81.2% 60.4%',
+        },
+        black: {
+          primary: '0 0% 15%',
+          primaryForeground: '210 40% 98%',
+          ring: '0 0% 15%',
+        },
+        slate: {
+          primary: '215 16% 35%',
+          primaryForeground: '210 40% 98%',
+          ring: '215 16% 35%',
+        },
+        teal: {
+          primary: '173 80% 40%',
+          primaryForeground: '210 40% 98%',
+          ring: '173 80% 40%',
         },
       };
 
