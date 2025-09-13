@@ -62,7 +62,23 @@ import { apiClient } from "@/lib/api-client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedUserTable, UserData } from "@/components/ui/advanced-user-table";
+import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+
+// User data interface for table display
+export interface UserData extends TableData {
+  id: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  is_active: boolean;
+  email_verified: boolean;
+  last_login_at?: string;
+  created_at: string;
+  role_names: string[];
+  role_slugs: string[];
+}
 
 // Extended User type with role information from the API (matching backend response)
 export interface UserWithRoles {
@@ -316,6 +332,123 @@ export function UsersTab() {
     }
   };
 
+  // Define column configuration for the users table
+  const columnConfig: ColumnConfig<UserData>[] = [
+    {
+      key: "first_name",
+      label: "Name",
+      width: 200,
+      sortable: true,
+      filterable: true,
+      render: (user) => (
+        <div className="flex items-center space-x-2">
+          <User className="h-4 w-4 text-muted-foreground" />
+          <span className="font-medium">
+            {user.first_name} {user.last_name}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "username",
+      label: "Username",
+      width: 150,
+      sortable: true,
+      filterable: true,
+      render: (user) => (
+        <span className="font-mono text-sm">{user.username}</span>
+      ),
+    },
+    {
+      key: "email",
+      label: "Email",
+      width: 250,
+      sortable: true,
+      filterable: true,
+      render: (user) => (
+        <div className="flex items-center space-x-2">
+          <span className="text-sm">{user.email}</span>
+          {user.email_verified && (
+            <Badge variant="outline" className="text-xs">Verified</Badge>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "role_names",
+      label: "Roles",
+      width: 200,
+      filterable: true,
+      filterType: "select",
+      render: (user) => (
+        <div className="flex flex-wrap gap-1">
+          {user.role_names.map((role, index) => (
+            <Badge
+              key={index}
+              variant={getRoleBadgeVariant(role) as any}
+              className="text-xs"
+            >
+              {role}
+            </Badge>
+          ))}
+          {user.role_names.length === 0 && (
+            <span className="text-muted-foreground text-sm">No roles</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      width: 150,
+      filterable: true,
+      render: (user) => (
+        <span className="text-sm">{user.phone || "N/A"}</span>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      width: 120,
+      sortable: true,
+      filterable: true,
+      filterType: "select",
+      render: (user) => (
+        <Badge variant={user.is_active ? "default" : "secondary"}>
+          {user.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      key: "last_login_at",
+      label: "Last Login",
+      width: 150,
+      sortable: true,
+      render: (user) => (
+        <span className="text-xs text-muted-foreground">
+          {user.last_login_at
+            ? new Date(user.last_login_at).toLocaleDateString()
+            : "Never"}
+        </span>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      width: 130,
+      sortable: true,
+      render: (user) => (
+        <span className="text-xs text-muted-foreground">
+          {new Date(user.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+  ];
+
   // Handle user selection from the table
   const handleUserSelection = (userIds: string[]) => {
     console.log("Selected users:", userIds);
@@ -426,17 +559,10 @@ export function UsersTab() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <h2 className="text-2xl font-bold tracking-tight">
-              User Management
               {!canPerformAdminActions && (
                 <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
               )}
             </h2>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions
-                ? "Manage users and their permissions across the warehouse management system"
-                : "View user information and their role assignments (read-only access)"
-              }
-            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={fetchUsers} variant="outline" size="default">
@@ -689,25 +815,35 @@ export function UsersTab() {
 
       {/* Main Users Table */}
       <Card className="shadow-lg border-0 bg-card">
-        <CardHeader className="border-b bg-muted/30 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">Users Directory</CardTitle>
-            </div>
-          </div>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedUserTable
+            <AdvancedTable
               data={transformedUsers}
+              columns={columnConfig}
               loading={loading}
-              onUserSelect={handleUserSelection}
+              title="Users Directory"
+              onRowSelect={handleUserSelection}
               onBulkAction={handleBulkAction}
-              onUserEdit={handleUserEdit}
-              onUserDelete={handleUserDelete}
-              onUserView={handleUserView}
-              onUserManageRoles={handleUserManageRoles}
-              onUserToggleStatus={handleUserToggleStatus}
+              onRowEdit={canPerformAdminActions ? handleUserEdit : undefined}
+              onRowDelete={canPerformAdminActions ? handleUserDelete : undefined}
+              onRowView={handleUserView}
+              onRowToggleStatus={canPerformAdminActions ? handleUserToggleStatus : undefined}
+              onRowAction={(action, user) => {
+                if (action === 'manageRoles') {
+                  handleUserManageRoles(user);
+                }
+              }}
+              actions={{
+                view: { label: "View Details" },
+                edit: canPerformAdminActions ? { label: "Edit User" } : undefined,
+                delete: canPerformAdminActions ? { label: "Delete User" } : undefined,
+                manageRoles: canPerformAdminActions ? { label: "Manage Roles" } : undefined,
+              }}
+              bulkActions={canPerformAdminActions ? [
+                { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
+                { label: "Email", action: "email", icon: <Settings className="h-4 w-4 mr-2" /> },
+              ] : []}
+              emptyMessage="No users found"
             />
           </div>
         </CardContent>
