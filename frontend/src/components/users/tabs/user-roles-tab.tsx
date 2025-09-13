@@ -186,6 +186,12 @@ export function UserRolesTab() {
       setUsers(validUsers);
       setRoles(validRoles);
 
+      // Simple logging to see what IDs we actually have
+      console.log("=== AVAILABLE DATA ===");
+      console.log("Users:", validUsers.map(u => ({ id: u.id, username: u.username })));
+      console.log("Roles:", validRoles.map(r => ({ id: r.id, name: r.name })));
+      console.log("======================");
+
       if (validUsers.length === 0) {
         console.warn("No valid users found");
       }
@@ -230,6 +236,13 @@ export function UserRolesTab() {
       userId = parseInt(data.user_id);
       roleId = parseInt(data.role_id);
 
+      console.log("=== FORM SUBMISSION ===");
+      console.log("Selected user_id from form:", data.user_id);
+      console.log("Selected role_id from form:", data.role_id);
+      console.log("Parsed userId:", userId);
+      console.log("Parsed roleId:", roleId);
+      console.log("=======================");
+
       // Validate that the user and role IDs are valid numbers
       if (isNaN(userId) || isNaN(roleId)) {
         setDialogMessage("Invalid user or role selection. Please refresh the page and try again.");
@@ -237,47 +250,24 @@ export function UserRolesTab() {
         return;
       }
 
-      // Check if user exists in our current user list
-      console.log("Looking for user with ID:", userId, "in users:", users.map(u => ({ id: u.id, username: u.username })));
-
-      // Try both number comparison and string comparison for robustness
-      selectedUser = users.find(user =>
-        user.id === userId ||
-        user.id.toString() === userId.toString() ||
-        parseInt(user.id.toString()) === userId
-      );
-
-      console.log("Found user:", selectedUser);
+      // Simple lookup - just find by ID
+      selectedUser = users.find(user => user.id === userId);
+      selectedRole = roles.find(role => role.id === roleId);
 
       if (!selectedUser) {
-        console.error("User not found - debugging info:", {
-          userId,
-          userIdType: typeof userId,
-          usersAvailable: users.length,
-          userIds: users.map(u => ({ id: u.id, type: typeof u.id })),
-          formData: data,
-          searchedUserId: userId,
-          availableUserIds: users.map(u => u.id)
+        console.error("User not found!", {
+          searchingFor: userId,
+          availableUsers: users.map(u => ({ id: u.id, username: u.username }))
         });
         setDialogMessage("Selected user not found. Please refresh the page and try again.");
         setIsErrorDialogOpen(true);
         return;
       }
 
-      // Check if role exists in our current role list
-      selectedRole = roles.find(role =>
-        role.id === roleId ||
-        role.id.toString() === roleId.toString() ||
-        parseInt(role.id.toString()) === roleId
-      );
-
       if (!selectedRole) {
-        console.error("Role not found - debugging info:", {
-          roleId,
-          roleIdType: typeof roleId,
-          rolesAvailable: roles.length,
-          roleIds: roles.map(r => ({ id: r.id, type: typeof r.id })),
-          availableRoleIds: roles.map(r => r.id)
+        console.error("Role not found!", {
+          searchingFor: roleId,
+          availableRoles: roles.map(r => ({ id: r.id, name: r.name }))
         });
         setDialogMessage("Selected role not found. Please refresh the page and try again.");
         setIsErrorDialogOpen(true);
@@ -285,17 +275,9 @@ export function UserRolesTab() {
       }
 
       // Check if this assignment already exists
-      const existingAssignment = userRoles.find(ur => {
-        const userMatches = ur.user_id === userId ||
-          ur.user_id.toString() === userId.toString() ||
-          parseInt(ur.user_id.toString()) === userId;
-
-        const roleMatches = ur.role_id === roleId ||
-          ur.role_id.toString() === roleId.toString() ||
-          parseInt(ur.role_id.toString()) === roleId;
-
-        return userMatches && roleMatches;
-      });
+      const existingAssignment = userRoles.find(ur =>
+        ur.user_id === userId && ur.role_id === roleId
+      );
       if (existingAssignment) {
         setDialogMessage(`User "${selectedUser.username}" already has the role "${selectedRole.name}" assigned.`);
         setIsErrorDialogOpen(true);
