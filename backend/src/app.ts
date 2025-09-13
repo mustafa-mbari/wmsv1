@@ -20,6 +20,10 @@ import unitRoutes from './routes/unitRoutes';
 import attributeRoutes from './routes/attributeRoutes';
 import attributeOptionRoutes from './routes/attributeOptionRoutes';
 import attributeValueRoutes from './routes/attributeValueRoutes';
+import permissionRoutes from './routes/permissionRoutes';
+import roleRoutes from './routes/roleRoutes';
+import rolePermissionRoutes from './routes/rolePermissionRoutes';
+import userRoleRoutes from './routes/userRoleRoutes';
 
 dotenv.config();
 
@@ -80,6 +84,12 @@ app.get('/api-docs.json', (req: Request, res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
+
+// Role and permission routes
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/role-permissions', rolePermissionRoutes);
+app.use('/api/user-roles', userRoleRoutes);
 
 // Product-related routes
 app.use('/api/products', productRoutes);
