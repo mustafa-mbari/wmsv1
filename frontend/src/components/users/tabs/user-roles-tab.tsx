@@ -203,6 +203,12 @@ export function UserRolesTab() {
   };
 
   const onCreateSubmit = async (data: z.infer<typeof userRoleFormSchema>) => {
+    // Declare variables at function scope so they're available in catch block
+    let userId: number;
+    let roleId: number;
+    let selectedUser: User | undefined;
+    let selectedRole: Role | undefined;
+
     try {
       console.log("Form submitted with data:", data);
 
@@ -221,8 +227,8 @@ export function UserRolesTab() {
         return;
       }
 
-      const userId = parseInt(data.user_id);
-      const roleId = parseInt(data.role_id);
+      userId = parseInt(data.user_id);
+      roleId = parseInt(data.role_id);
 
       // Validate that the user and role IDs are valid numbers
       if (isNaN(userId) || isNaN(roleId)) {
@@ -235,7 +241,7 @@ export function UserRolesTab() {
       console.log("Looking for user with ID:", userId, "in users:", users.map(u => ({ id: u.id, username: u.username })));
 
       // Try both number comparison and string comparison for robustness
-      const selectedUser = users.find(user =>
+      selectedUser = users.find(user =>
         user.id === userId ||
         user.id.toString() === userId.toString() ||
         parseInt(user.id.toString()) === userId
@@ -259,7 +265,7 @@ export function UserRolesTab() {
       }
 
       // Check if role exists in our current role list
-      const selectedRole = roles.find(role =>
+      selectedRole = roles.find(role =>
         role.id === roleId ||
         role.id.toString() === roleId.toString() ||
         parseInt(role.id.toString()) === roleId
@@ -328,8 +334,8 @@ export function UserRolesTab() {
         headers: error?.response?.headers,
         config: error?.config,
         requestData: {
-          user_id: userId,
-          role_id: roleId,
+          user_id: userId || 'undefined',
+          role_id: roleId || 'undefined',
           userIdType: typeof userId,
           roleIdType: typeof roleId
         },
@@ -337,8 +343,8 @@ export function UserRolesTab() {
           users: users.length,
           roles: roles.length,
           userRoles: userRoles.length,
-          selectedUser: selectedUser,
-          selectedRole: selectedRole
+          selectedUser: selectedUser || null,
+          selectedRole: selectedRole || null
         }
       });
 
