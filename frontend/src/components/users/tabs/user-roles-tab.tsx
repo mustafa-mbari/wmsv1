@@ -59,6 +59,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdvancedTable } from "@/components/ui/advanced-table";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
+import { useAlert } from "@/hooks/useAlert";
 
 export interface UserRole {
   id: number;
@@ -165,8 +166,21 @@ export function UserRolesTab() {
       });
 
       // Filter out any users or roles that might be soft-deleted or invalid
-      const validUsers = usersData.filter(user => user && user.id && user.username && user.email);
-      const validRoles = rolesData.filter(role => role && role.id && role.name && role.slug);
+      const validUsers = usersData.filter(user => {
+        const isValid = user && user.id && user.username && user.email;
+        if (!isValid && user) {
+          console.warn("Invalid user data:", user);
+        }
+        return isValid;
+      });
+
+      const validRoles = rolesData.filter(role => {
+        const isValid = role && role.id && role.name && role.slug;
+        if (!isValid && role) {
+          console.warn("Invalid role data:", role);
+        }
+        return isValid;
+      });
 
       setUserRoles(userRolesData);
       setUsers(validUsers);
@@ -190,9 +204,19 @@ export function UserRolesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof userRoleFormSchema>) => {
     try {
+      console.log("Form submitted with data:", data);
+
       // Ensure we have data loaded first
       if (users.length === 0 || roles.length === 0) {
+        console.warn("No users or roles available", { users: users.length, roles: roles.length });
         setDialogMessage("User and role data is still loading. Please wait a moment and try again.");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      // Validate form data
+      if (!data.user_id || !data.role_id) {
+        setDialogMessage("Please select both a user and a role.");
         setIsErrorDialogOpen(true);
         return;
       }
@@ -208,25 +232,64 @@ export function UserRolesTab() {
       }
 
       // Check if user exists in our current user list
-      const selectedUser = users.find(user => user.id === userId);
+      console.log("Looking for user with ID:", userId, "in users:", users.map(u => ({ id: u.id, username: u.username })));
+
+      // Try both number comparison and string comparison for robustness
+      const selectedUser = users.find(user =>
+        user.id === userId ||
+        user.id.toString() === userId.toString() ||
+        parseInt(user.id.toString()) === userId
+      );
+
+      console.log("Found user:", selectedUser);
+
       if (!selectedUser) {
+        console.error("User not found - debugging info:", {
+          userId,
+          userIdType: typeof userId,
+          usersAvailable: users.length,
+          userIds: users.map(u => ({ id: u.id, type: typeof u.id })),
+          formData: data,
+          searchedUserId: userId,
+          availableUserIds: users.map(u => u.id)
+        });
         setDialogMessage("Selected user not found. Please refresh the page and try again.");
         setIsErrorDialogOpen(true);
         return;
       }
 
       // Check if role exists in our current role list
-      const selectedRole = roles.find(role => role.id === roleId);
+      const selectedRole = roles.find(role =>
+        role.id === roleId ||
+        role.id.toString() === roleId.toString() ||
+        parseInt(role.id.toString()) === roleId
+      );
+
       if (!selectedRole) {
+        console.error("Role not found - debugging info:", {
+          roleId,
+          roleIdType: typeof roleId,
+          rolesAvailable: roles.length,
+          roleIds: roles.map(r => ({ id: r.id, type: typeof r.id })),
+          availableRoleIds: roles.map(r => r.id)
+        });
         setDialogMessage("Selected role not found. Please refresh the page and try again.");
         setIsErrorDialogOpen(true);
         return;
       }
 
       // Check if this assignment already exists
-      const existingAssignment = userRoles.find(
-        ur => ur.user_id === userId && ur.role_id === roleId
-      );
+      const existingAssignment = userRoles.find(ur => {
+        const userMatches = ur.user_id === userId ||
+          ur.user_id.toString() === userId.toString() ||
+          parseInt(ur.user_id.toString()) === userId;
+
+        const roleMatches = ur.role_id === roleId ||
+          ur.role_id.toString() === roleId.toString() ||
+          parseInt(ur.role_id.toString()) === roleId;
+
+        return userMatches && roleMatches;
+      });
       if (existingAssignment) {
         setDialogMessage(`User "${selectedUser.username}" already has the role "${selectedRole.name}" assigned.`);
         setIsErrorDialogOpen(true);
@@ -313,7 +376,7 @@ export function UserRolesTab() {
     setIsDeleteDialogOpen(true);
   };
 
-  const getUserDisplayName = (user?: UserRole['user']) => {
+  const getUserDisplayName = (user?: UserRole['user'] | User) => {
     if (!user) return "Unknown User";
     if (user.first_name && user.last_name) {
       return `${user.first_name} ${user.last_name}`;
