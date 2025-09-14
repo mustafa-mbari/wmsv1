@@ -34,7 +34,7 @@ export class WarehouseAisleSeeder extends BaseSeed<AisleSeedData> {
   }
 
   getModelName(): string {
-    return 'warehouse_aisles';
+    return 'aisles';
   }
 
   getJsonFileName(): string {
@@ -196,70 +196,6 @@ export class WarehouseAisleSeeder extends BaseSeed<AisleSeedData> {
     });
   }
 
-  // Override getModel to work with warehouse schema
-  protected getModel() {
-    return {
-      count: () => this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.aisles`,
-      create: (data: any) => this.prisma.$queryRaw`
-        INSERT INTO warehouse.aisles (
-          aisle_id, zone_id, aisle_name, aisle_code, description, length, width, height,
-          dimension_unit, capacity, aisle_direction, start_x, start_y, end_x, end_y,
-          center_x, center_y, coordinate_unit, is_active, status, custom_attributes,
-          created_at, updated_at, created_by, updated_by
-        ) VALUES (
-          ${data.data.aisle_id}, ${data.data.zone_id}, ${data.data.aisle_name}, ${data.data.aisle_code},
-          ${data.data.description}, ${data.data.length}, ${data.data.width}, ${data.data.height},
-          ${data.data.dimension_unit}, ${data.data.capacity}, ${data.data.aisle_direction},
-          ${data.data.start_x}, ${data.data.start_y}, ${data.data.end_x}, ${data.data.end_y},
-          ${data.data.center_x}, ${data.data.center_y}, ${data.data.coordinate_unit},
-          ${data.data.is_active}, ${data.data.status}, ${data.data.custom_attributes}::jsonb,
-          ${data.data.created_at}, ${data.data.updated_at}, ${data.data.created_by}, ${data.data.updated_by}
-        )
-      `,
-      update: (params: any) => this.prisma.$queryRaw`
-        UPDATE warehouse.aisles SET
-          zone_id = ${params.data.zone_id},
-          aisle_name = ${params.data.aisle_name},
-          aisle_code = ${params.data.aisle_code},
-          description = ${params.data.description},
-          length = ${params.data.length},
-          width = ${params.data.width},
-          height = ${params.data.height},
-          dimension_unit = ${params.data.dimension_unit},
-          capacity = ${params.data.capacity},
-          aisle_direction = ${params.data.aisle_direction},
-          start_x = ${params.data.start_x},
-          start_y = ${params.data.start_y},
-          end_x = ${params.data.end_x},
-          end_y = ${params.data.end_y},
-          center_x = ${params.data.center_x},
-          center_y = ${params.data.center_y},
-          coordinate_unit = ${params.data.coordinate_unit},
-          is_active = ${params.data.is_active},
-          status = ${params.data.status},
-          custom_attributes = ${params.data.custom_attributes}::jsonb,
-          updated_at = ${params.data.updated_at},
-          updated_by = ${params.data.updated_by}
-        WHERE aisle_id = ${params.where.aisle_id || ''}
-      `
-    };
-  }
-
-  // Override hasExistingData to work with warehouse schema
-  protected async hasExistingData(): Promise<boolean> {
-    try {
-      const result = await this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.aisles`;
-      const count = Array.isArray(result) && result[0] ? Number((result[0] as any).count) : 0;
-      return count > 0;
-    } catch (error) {
-      logger.error(`Error checking existing data for aisles`, {
-        source: 'WarehouseAisleSeeder',
-        method: 'hasExistingData',
-        error: error instanceof Error ? error.message : error
-      });
-      return false;
-    }
-  }
 
   // Helper method to get aisles by zone
   async getAislesByZone(): Promise<{ [zoneId: string]: any[] }> {

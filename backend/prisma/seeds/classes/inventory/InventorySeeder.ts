@@ -36,7 +36,7 @@ export class InventoryInventorySeeder extends BaseSeed<InventorySeedData> {
   }
 
   getModelName(): string {
-    return 'inventory_inventory';
+    return 'inventory';
   }
 
   getJsonFileName(): string {

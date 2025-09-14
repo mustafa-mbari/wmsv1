@@ -219,8 +219,17 @@ export abstract class BaseSeed<T = any> {
         }
 
       } catch (error) {
-        result.errors.push(`Error processing record: ${error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        result.errors.push(`Error processing record: ${errorMessage}`);
         result.success = false;
+        logger.error('Record processing failed', {
+          source: 'BaseSeed',
+          method: 'processBatch',
+          model: this.getModelName(),
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined,
+          record: JSON.stringify(record)
+        });
       }
     }
 
@@ -248,7 +257,13 @@ export abstract class BaseSeed<T = any> {
     try {
       return await operation();
     } catch (error) {
-      logger.error('Database operation failed', { source: 'BaseSeed', method: 'safeExecute', error: error instanceof Error ? error.message : error });
+      logger.error('Database operation failed', {
+        source: 'BaseSeed',
+        method: 'safeExecute',
+        model: this.getModelName(),
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined
+      });
       return null;
     }
   }

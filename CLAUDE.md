@@ -119,3 +119,4 @@ cd backend && npm run docs:generate
 - Shared components in `frontend/src/components/`
 - Database migrations in `backend/prisma/migrations/`
 - Seeding scripts in `backend/prisma/seeds/`
+- Add to memorize, in database the tables are distributed on schemas (public, product, inventory, warehouse)

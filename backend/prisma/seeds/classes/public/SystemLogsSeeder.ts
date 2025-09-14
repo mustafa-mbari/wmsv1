@@ -98,13 +98,23 @@ export class PublicSystemLogsSeeder extends BaseSeed<SystemLogSeedData> {
       action: record.action.trim(),
       message: record.message.trim(),
       context: record.context || null,
-      user_id: record.user_id || null,
+      user_id: record.user_id ? Number(record.user_id) : null,
       ip_address: record.ip_address?.trim() || null,
       user_agent: record.user_agent?.trim() || null,
       module: record.module?.trim() || null,
       entity_type: record.entity_type?.trim() || null,
-      entity_id: record.entity_id || null,
+      entity_id: record.entity_id ? Number(record.entity_id) : null,
       created_at: record.created_at ? new Date(record.created_at) : new Date()
+    };
+  }
+
+  // Override addAuditFields to handle system_logs audit fields correctly
+  protected addAuditFields(record: any): any {
+    return {
+      ...record,
+      created_by: null,
+      deleted_by: null
+      // Note: system_logs table uses created_at from data and doesn't have updated_at/updated_by
     };
   }
 

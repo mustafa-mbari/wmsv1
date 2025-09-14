@@ -30,7 +30,7 @@ export class ProductAttributeValueSeeder extends BaseSeed<ProductAttributeValueS
 
   protected async loadData(): Promise<ProductAttributeValueSeedData[]> {
     try {
-      const rawData = await this.jsonReader.readJsonFile('product_attribute_values.json');
+      const rawData = await this.jsonReader.readJsonFile(this.getJsonFileName());
       
       // Check if it's an array (direct attribute values)
       if (Array.isArray(rawData)) {

@@ -31,7 +31,7 @@ export class ProductAttributeOptionSeeder extends BaseSeed<ProductAttributeOptio
 
   protected async loadData(): Promise<ProductAttributeOptionSeedData[]> {
     try {
-      const rawData = await this.jsonReader.readJsonFile('product_attribute_options.json');
+      const rawData = await this.jsonReader.readJsonFile(this.getJsonFileName());
       
       // Check if it's an array (direct attribute options)
       if (Array.isArray(rawData)) {

@@ -129,6 +129,17 @@ export class InventoryInventoryMovementsSeeder extends BaseSeed<InventoryMovemen
     };
   }
 
+  // Override addAuditFields to match the schema (no updated_at field)
+  protected addAuditFields(record: any): any {
+    return {
+      ...record,
+      created_by: null,
+      updated_by: null,
+      created_at: new Date()
+      // Note: No updated_at field in inventory_movements schema
+    };
+  }
+
   async findExistingRecord(record: InventoryMovementSeedData): Promise<any> {
     return await this.safeExecute(async () => {
       return await this.getModel().findFirst({

@@ -8,14 +8,15 @@ export interface ZoneSeedData {
   warehouse_code: string; // Reference to warehouse by code
   zone_name: string;
   zone_code: string;
+  lc_zone_code?: string; // This field exists in data but not in schema
   zone_type: 'receiving' | 'shipping' | 'storage' | 'picking' | 'packing' | 'staging';
   description?: string;
-  area?: number;
+  area?: number; // These fields exist in data but not in schema
   area_unit?: string;
   capacity?: number;
   priority?: number;
-  center_x: number;
-  center_y: number;
+  center_x?: number;
+  center_y?: number;
   coordinate_unit?: string;
   temperature_controlled?: boolean;
   min_temperature?: number;
@@ -33,7 +34,7 @@ export class WarehouseZoneSeeder extends BaseSeed<ZoneSeedData> {
   }
 
   getModelName(): string {
-    return 'warehouse_zones';
+    return 'zones';
   }
 
   getJsonFileName(): string {
@@ -100,17 +101,6 @@ export class WarehouseZoneSeeder extends BaseSeed<ZoneSeedData> {
       return false;
     }
 
-    // Coordinates validation
-    if (typeof record.center_x !== 'number' || typeof record.center_y !== 'number') {
-      logger.error('Invalid coordinates - must be numbers', {
-        source: 'WarehouseZoneSeeder',
-        method: 'validateRecord',
-        center_x: record.center_x,
-        center_y: record.center_y
-      });
-      return false;
-    }
-
     // Temperature validation if temperature controlled
     if (record.temperature_controlled) {
       if (record.min_temperature && record.max_temperature && record.min_temperature > record.max_temperature) {
@@ -122,16 +112,6 @@ export class WarehouseZoneSeeder extends BaseSeed<ZoneSeedData> {
         });
         return false;
       }
-    }
-
-    // Area validation
-    if (record.area && record.area < 0) {
-      logger.error('Area cannot be negative', {
-        source: 'WarehouseZoneSeeder',
-        method: 'validateRecord',
-        area: record.area
-      });
-      return false;
     }
 
     // Capacity validation
@@ -166,20 +146,10 @@ export class WarehouseZoneSeeder extends BaseSeed<ZoneSeedData> {
       zone_code: record.zone_code.toUpperCase().trim(),
       zone_type: record.zone_type,
       description: record.description?.trim() || null,
-      area: record.area || null,
-      area_unit: record.area_unit?.trim() || null,
       capacity: record.capacity || null,
-      priority: record.priority ?? 0,
-      center_x: record.center_x,
-      center_y: record.center_y,
-      coordinate_unit: record.coordinate_unit?.trim() || null,
       temperature_controlled: record.temperature_controlled ?? false,
-      min_temperature: record.min_temperature || null,
-      max_temperature: record.max_temperature || null,
-      temperature_unit: record.temperature_unit?.trim() || null,
       is_active: record.is_active !== false,
-      status: record.status || 'operational',
-      custom_attributes: record.custom_attributes || null
+      status: record.status || 'operational'
     };
   }
 
@@ -194,69 +164,6 @@ export class WarehouseZoneSeeder extends BaseSeed<ZoneSeedData> {
     });
   }
 
-  // Override getModel to work with warehouse schema
-  protected getModel() {
-    return {
-      count: () => this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.zones`,
-      create: (data: any) => this.prisma.$queryRaw`
-        INSERT INTO warehouse.zones (
-          zone_id, warehouse_id, zone_name, zone_code, zone_type, description,
-          area, area_unit, capacity, priority, center_x, center_y, coordinate_unit,
-          temperature_controlled, min_temperature, max_temperature, temperature_unit,
-          is_active, status, custom_attributes, created_at, updated_at, created_by, updated_by
-        ) VALUES (
-          ${data.data.zone_id}, ${data.data.warehouse_id}, ${data.data.zone_name}, ${data.data.zone_code},
-          ${data.data.zone_type}, ${data.data.description}, ${data.data.area}, ${data.data.area_unit},
-          ${data.data.capacity}, ${data.data.priority}, ${data.data.center_x}, ${data.data.center_y},
-          ${data.data.coordinate_unit}, ${data.data.temperature_controlled}, ${data.data.min_temperature},
-          ${data.data.max_temperature}, ${data.data.temperature_unit}, ${data.data.is_active},
-          ${data.data.status}, ${data.data.custom_attributes}::jsonb, ${data.data.created_at},
-          ${data.data.updated_at}, ${data.data.created_by}, ${data.data.updated_by}
-        )
-      `,
-      update: (params: any) => this.prisma.$queryRaw`
-        UPDATE warehouse.zones SET
-          warehouse_id = ${params.data.warehouse_id},
-          zone_name = ${params.data.zone_name},
-          zone_code = ${params.data.zone_code},
-          zone_type = ${params.data.zone_type},
-          description = ${params.data.description},
-          area = ${params.data.area},
-          area_unit = ${params.data.area_unit},
-          capacity = ${params.data.capacity},
-          priority = ${params.data.priority},
-          center_x = ${params.data.center_x},
-          center_y = ${params.data.center_y},
-          coordinate_unit = ${params.data.coordinate_unit},
-          temperature_controlled = ${params.data.temperature_controlled},
-          min_temperature = ${params.data.min_temperature},
-          max_temperature = ${params.data.max_temperature},
-          temperature_unit = ${params.data.temperature_unit},
-          is_active = ${params.data.is_active},
-          status = ${params.data.status},
-          custom_attributes = ${params.data.custom_attributes}::jsonb,
-          updated_at = ${params.data.updated_at},
-          updated_by = ${params.data.updated_by}
-        WHERE zone_id = ${params.where.zone_id || ''}
-      `
-    };
-  }
-
-  // Override hasExistingData to work with warehouse schema
-  protected async hasExistingData(): Promise<boolean> {
-    try {
-      const result = await this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.zones`;
-      const count = Array.isArray(result) && result[0] ? Number((result[0] as any).count) : 0;
-      return count > 0;
-    } catch (error) {
-      logger.error(`Error checking existing data for zones`, {
-        source: 'WarehouseZoneSeeder',
-        method: 'hasExistingData',
-        error: error instanceof Error ? error.message : error
-      });
-      return false;
-    }
-  }
 
   // Helper method to get zones by warehouse
   async getZonesByWarehouse(): Promise<{ [warehouseId: string]: any[] }> {

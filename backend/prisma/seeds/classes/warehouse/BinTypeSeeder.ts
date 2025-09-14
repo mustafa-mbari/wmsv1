@@ -44,7 +44,7 @@ export class BinTypeSeeder extends BaseSeed<BinTypeSeedData> {
   }
 
   getModelName(): string {
-    return 'warehouse_bin_types';
+    return 'bin_types';
   }
 
   getJsonFileName(): string {
@@ -165,42 +165,24 @@ export class BinTypeSeeder extends BaseSeed<BinTypeSeedData> {
   }
 
   async transformRecord(record: BinTypeSeedData): Promise<any> {
-    // Calculate standard volume if not provided
-    const calculatedVolume = record.standard_volume ||
-      (record.standard_length * record.standard_width * record.standard_height) / 1000000; // Convert cm³ to m³
-
     return {
-      type_id: record.type_id.trim(),
-      type_code: record.type_code.toUpperCase().trim(),
+      bin_type_id: record.type_id.trim(),
       type_name: record.type_name.trim(),
+      type_code: record.type_code.toUpperCase().trim(),
       description: record.description?.trim() || null,
-      storage_class: record.storage_class?.toUpperCase().trim() || null,
-      standard_length: record.standard_length,
-      standard_width: record.standard_width,
-      standard_height: record.standard_height,
-      standard_volume: calculatedVolume,
-      standard_weight: record.standard_weight || null,
-      max_payload: record.max_payload,
+      default_capacity: record.capacity || null,
+      weight_capacity: record.max_payload || null,
       is_stackable: record.is_stackable !== false,
-      max_stack_count: record.max_stack_count || 1,
-      stackable_with: record.stackable_with ? JSON.stringify(record.stackable_with) : null,
-      material: record.material.trim(),
+      stackable_height: record.max_stack_count || null,
+      length: record.standard_length || null,
+      width: record.standard_width || null,
+      height: record.standard_height || null,
+      dimension_unit: 'CM', // Default unit since data has length/width/height in cm
+      material: record.material?.trim() || null,
       color: record.color?.trim() || null,
-      is_transparent: record.is_transparent || false,
-      is_foldable: record.is_foldable || false,
-      requires_cleaning: record.requires_cleaning || false,
-      cleaning_frequency_days: record.cleaning_frequency_days || null,
-      is_hazardous_material: record.is_hazardous_material || false,
-      temperature_range: record.temperature_range?.trim() || null,
-      default_barcode_prefix: record.default_barcode_prefix?.trim() || null,
-      default_color_code: record.default_color_code?.trim() || null,
-      label_position: record.label_position?.trim() || null,
-      average_cost: record.average_cost || null,
-      expected_lifespan_months: record.expected_lifespan_months || null,
-      depreciation_rate: record.depreciation_rate || null,
-      custom_fields: record.custom_fields || null,
-      notes: record.notes?.trim() || null,
-      is_active: record.is_active !== false
+      is_active: record.is_active !== false,
+      hazmat_approved: record.is_hazardous_material || false,
+      temperature_controlled: record.temperature_controlled || false
     };
   }
 
@@ -208,7 +190,7 @@ export class BinTypeSeeder extends BaseSeed<BinTypeSeedData> {
     return await this.safeExecute(async () => {
       const result = await this.prisma.$queryRaw`
         SELECT * FROM warehouse.bin_types
-        WHERE type_id = ${record.type_id} OR type_code = ${record.type_code.toUpperCase()}
+        WHERE bin_type_id = ${record.type_id} OR type_code = ${record.type_code.toUpperCase()}
         LIMIT 1
       `;
       return Array.isArray(result) && result.length > 0 ? result[0] : null;
@@ -216,99 +198,6 @@ export class BinTypeSeeder extends BaseSeed<BinTypeSeedData> {
   }
 
   // Override getModel to work with warehouse schema
-  protected getModel() {
-    return {
-      count: async () => {
-        const result = await this.prisma.$queryRaw<Array<{ count: bigint }>>`SELECT COUNT(*) as count FROM warehouse.bin_types`;
-        return Array.isArray(result) && result[0] ? Number(result[0].count) : 0;
-      },
-      findMany: async () => {
-        return await this.prisma.$queryRaw`SELECT * FROM warehouse.bin_types ORDER BY created_at`;
-      },
-      create: async (data: any) => {
-        return await this.prisma.$queryRaw`
-          INSERT INTO warehouse.bin_types (
-            type_id, type_code, type_name, description, storage_class,
-            standard_length, standard_width, standard_height, standard_volume,
-            standard_weight, max_payload, is_stackable, max_stack_count, stackable_with,
-            material, color, is_transparent, is_foldable, requires_cleaning,
-            cleaning_frequency_days, is_hazardous_material, temperature_range,
-            default_barcode_prefix, default_color_code, label_position,
-            average_cost, expected_lifespan_months, depreciation_rate,
-            custom_fields, notes, is_active, created_at, updated_at, created_by, updated_by
-          ) VALUES (
-            ${data.type_id}, ${data.type_code}, ${data.type_name},
-            ${data.description}, ${data.storage_class}, ${data.standard_length},
-            ${data.standard_width}, ${data.standard_height}, ${data.standard_volume},
-            ${data.standard_weight}, ${data.max_payload}, ${data.is_stackable},
-            ${data.max_stack_count}, ${data.stackable_with ? JSON.stringify(data.stackable_with) : null}::jsonb, ${data.material},
-            ${data.color}, ${data.is_transparent}, ${data.is_foldable},
-            ${data.requires_cleaning}, ${data.cleaning_frequency_days},
-            ${data.is_hazardous_material}, ${data.temperature_range},
-            ${data.default_barcode_prefix}, ${data.default_color_code},
-            ${data.label_position}, ${data.average_cost}, ${data.expected_lifespan_months},
-            ${data.depreciation_rate}, ${data.custom_fields ? JSON.stringify(data.custom_fields) : null}::jsonb, ${data.notes},
-            ${data.is_active}, ${data.created_at}, ${data.updated_at},
-            ${data.created_by}, ${data.updated_by}
-          )
-        `;
-      },
-      update: async (params: any) => {
-        return await this.prisma.$queryRaw`
-          UPDATE warehouse.bin_types SET
-            type_code = ${params.data.type_code},
-            type_name = ${params.data.type_name},
-            description = ${params.data.description},
-            storage_class = ${params.data.storage_class},
-            standard_length = ${params.data.standard_length},
-            standard_width = ${params.data.standard_width},
-            standard_height = ${params.data.standard_height},
-            standard_volume = ${params.data.standard_volume},
-            standard_weight = ${params.data.standard_weight},
-            max_payload = ${params.data.max_payload},
-            is_stackable = ${params.data.is_stackable},
-            max_stack_count = ${params.data.max_stack_count},
-            stackable_with = ${params.data.stackable_with ? JSON.stringify(params.data.stackable_with) : null}::jsonb,
-            material = ${params.data.material},
-            color = ${params.data.color},
-            is_transparent = ${params.data.is_transparent},
-            is_foldable = ${params.data.is_foldable},
-            requires_cleaning = ${params.data.requires_cleaning},
-            cleaning_frequency_days = ${params.data.cleaning_frequency_days},
-            is_hazardous_material = ${params.data.is_hazardous_material},
-            temperature_range = ${params.data.temperature_range},
-            default_barcode_prefix = ${params.data.default_barcode_prefix},
-            default_color_code = ${params.data.default_color_code},
-            label_position = ${params.data.label_position},
-            average_cost = ${params.data.average_cost},
-            expected_lifespan_months = ${params.data.expected_lifespan_months},
-            depreciation_rate = ${params.data.depreciation_rate},
-            custom_fields = ${params.data.custom_fields ? JSON.stringify(params.data.custom_fields) : null}::jsonb,
-            notes = ${params.data.notes},
-            is_active = ${params.data.is_active},
-            updated_at = ${params.data.updated_at},
-            updated_by = ${params.data.updated_by}
-          WHERE type_id = ${params.where.type_id}
-        `;
-      }
-    };
-  }
-
-  // Override hasExistingData to work with warehouse schema
-  protected async hasExistingData(): Promise<boolean> {
-    try {
-      const result = await this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.bin_types`;
-      const count = Array.isArray(result) && result[0] ? Number((result[0] as any).count) : 0;
-      return count > 0;
-    } catch (error) {
-      logger.error(`Error checking existing data for bin types`, {
-        source: 'BinTypeSeeder',
-        method: 'hasExistingData',
-        error: error instanceof Error ? error.message : error
-      });
-      return false;
-    }
-  }
 
   // Helper method to get bin type statistics
   async getBinTypeStatistics(): Promise<{
