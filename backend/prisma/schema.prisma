@@ -969,22 +969,146 @@ model locations {
 }
 
 model racks {
-  id Int @id @default(autoincrement())
-  // Add racks model fields here based on actual schema
+  rack_id           String    @id @db.VarChar
+  aisle_id          String?   @db.VarChar
+  rack_name         String?   @db.VarChar
+  rack_code         String?   @db.VarChar
+  description       String?
+  rack_type         String?   @db.VarChar
+  position_in_aisle Int?
+  side              String?   @db.VarChar
+  levels_count      Int?
+  max_weight        Decimal?  @db.Decimal
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  accessibility     String?   @db.VarChar
+  safety_rating     String?   @db.VarChar
+  material          String?   @db.VarChar
+  manufacturer      String?   @db.VarChar
+  model_number      String?   @db.VarChar
+  installation_date DateTime? @db.Date
+  last_inspection   DateTime? @db.Date
+  next_inspection   DateTime? @db.Date
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
   @@map("racks")
   @@schema("warehouse")
 }
 
 model warehouses {
-  id Int @id @default(autoincrement())
-  // Add warehouses model fields here based on actual schema
+  warehouse_id      String    @id @db.VarChar
+  warehouse_name    String?   @db.VarChar
+  warehouse_code    String?   @db.VarChar
+  description       String?
+  warehouse_type    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  address_line1     String?   @db.VarChar
+  address_line2     String?   @db.VarChar
+  city              String?   @db.VarChar
+  state_province    String?   @db.VarChar
+  postal_code       String?   @db.VarChar
+  country           String?   @db.VarChar
+  latitude          Float?    @db.DoublePrecision
+  longitude         Float?    @db.DoublePrecision
+  time_zone         String?   @db.VarChar
+  operating_hours   Json?     @db.JsonB
+  contact_person    String?   @db.VarChar
+  phone             String?   @db.VarChar
+  email             String?   @db.VarChar
+  total_area        Decimal?  @db.Decimal
+  storage_area      Decimal?  @db.Decimal
+  office_area       Decimal?  @db.Decimal
+  area_unit         String?   @db.VarChar
+  ceiling_height    Decimal?  @db.Decimal
+  dock_doors        Int?
+  truck_capacity    Int?
+  climate_controlled Boolean?
+  temperature_min   Decimal?  @db.Decimal
+  temperature_max   Decimal?  @db.Decimal
+  humidity_control  Boolean?
+  security_level    String?   @db.VarChar
+  insurance_info    String?
+  certifications    Json?     @db.JsonB
+  manager_id        String?   @db.VarChar
+  established_date  DateTime? @db.Date
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
   @@map("warehouses")
   @@schema("warehouse")
 }
 
 model zones {
-  id Int @id @default(autoincrement())
-  // Add zones model fields here based on actual schema
+  zone_id           String    @id @db.VarChar
+  warehouse_id      String?   @db.VarChar
+  zone_name         String?   @db.VarChar
+  zone_code         String?   @db.VarChar
+  description       String?
+  zone_type         String?   @db.VarChar
+  parent_zone_id    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  capacity          Decimal?  @db.Decimal
+  temperature_controlled Boolean?
+  temperature_min   Decimal?  @db.Decimal
+  temperature_max   Decimal?  @db.Decimal
+  humidity_control  Boolean?
+  hazmat_approved   Boolean?
+  security_level    String?   @db.VarChar
+  picking_priority  Int?
+  replenishment_priority Int?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  start_x           Float?    @db.DoublePrecision
+  start_y           Float?    @db.DoublePrecision
+  end_x             Float?    @db.DoublePrecision
+  end_y             Float?    @db.DoublePrecision
+  center_x          Float?    @db.DoublePrecision
+  center_y          Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
   @@map("zones")
   @@schema("warehouse")
 }

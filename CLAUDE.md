@@ -12,6 +12,7 @@ WMSv1 is a TypeScript monorepo warehouse management system with three main works
 
 ## Development Commands
 
+
 ### Essential Commands
 ```bash
 # Start both backend and frontend in development mode
