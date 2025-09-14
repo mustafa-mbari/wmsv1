@@ -59,7 +59,7 @@ cd backend && npm run docs:generate
 - Do not use soft delete, All deletions must be hard deletes to ensure data consistency and avoid hidden records
 - Complex warehouse structure with zones, aisles, locations, and bin types
 - Always update the Swagger documentation when making changes
-- When creating new tables or making changes in the database, always update Swagger and the seeder classes, and create seed data
+- When creating new tables or making changes in the database, always update schema.prisma, Swagger and the seeder classes, and create seed data
 
 ### API Structure
 - RESTful API with Swagger documentation
@@ -100,7 +100,8 @@ cd backend && npm run docs:generate
 - Backend uses nodemon for development
 - TypeScript strict mode across all workspaces
 - API documentation validation with Swagger
-- Always test data fetching functionality.
+- Always test data fetching functionality
+- Do not use mock data, Always work with real API responses or seeded database data 
 
 ### Development Workflow
 1. Always run `npm run install:all` after cloning
