@@ -224,7 +224,7 @@ export class SeedRunner {
     const errors: string[] = [];
     const allSeeders = this.getAvailableSeeders();
 
-    for (const [seederName, dependencies] of this.dependencies.entries()) {
+    for (const [seederName, dependencies] of Array.from(this.dependencies.entries())) {
       for (const dependency of dependencies) {
         if (!allSeeders.includes(dependency)) {
           errors.push(`${seederName} depends on ${dependency} which is not registered`);

@@ -6,25 +6,42 @@ import { SeedRunner } from './utils/SeedRunner';
 import logger from '../../src/utils/logger/logger';
 
 // Import all seeders from separate files
-import { UserSeeder } from './classes/UserSeeder';
-import { RoleSeeder } from './classes/RoleSeeder';
-import { PermissionSeeder } from './classes/PermissionSeeder';
-import { RolePermissionSeeder } from './classes/RolePermissionSeeder';
-import { UserRoleSeeder } from './classes/UserRoleSeeder';
-import { ProductCategorySeeder } from './classes/ProductCategorySeeder';
-import { ProductFamilySeeder } from './classes/ProductFamilySeeder';
-import { ProductSeeder } from './classes/ProductSeeder';
-import { UnitsOfMeasureSeeder } from './classes/UnitsOfMeasureSeeder';
-import { WarehouseSeeder } from './classes/WarehouseSeeder';
-import { ClassTypeSeeder } from './classes/ClassTypeSeeder';
-import { ProductAttributeSeeder } from './classes/ProductAttributeSeeder';
-import { ProductAttributeOptionSeeder } from './classes/ProductAttributeOptionSeeder';
-import { ProductAttributeValueSeeder } from './classes/ProductAttributeValueSeeder';
-import { BrandSeeder } from './classes/BrandSeeder';
-import { WarehouseZoneSeeder } from './classes/WarehouseZoneSeeder';
-import { WarehouseAisleSeeder } from './classes/WarehouseAisleSeeder';
-import { WarehouseLocationSeeder } from './classes/WarehouseLocationSeeder';
-import { BinTypeSeeder } from './classes/BinTypeSeeder';
+//public imports
+import { UserSeeder } from './classes/public/UserSeeder';
+import { RoleSeeder } from './classes/public/RoleSeeder';
+import { PermissionSeeder } from './classes/public/PermissionSeeder';
+import { RolePermissionSeeder } from './classes/public/RolePermissionSeeder';
+import { UserRoleSeeder } from './classes/public/UserRoleSeeder';
+import { ClassTypeSeeder } from './classes/public/ClassTypeSeeder';
+import { UnitsOfMeasureSeeder } from './classes/public/UnitsOfMeasureSeeder';
+import { PublicNotificationsSeeder } from './classes/public/NotificationsSeeder';
+import { SystemSettingsSeeder } from './classes/public/SystemSettingsSeeder';
+//product imports
+import { ProductCategorySeeder } from './classes/product/ProductCategorySeeder';
+import { ProductFamilySeeder } from './classes/product/ProductFamilySeeder';
+import { ProductSeeder } from './classes/product/ProductSeeder';
+import { ProductAttributeSeeder } from './classes/product/ProductAttributeSeeder';
+import { ProductAttributeOptionSeeder } from './classes/product/ProductAttributeOptionSeeder';
+import { ProductAttributeValueSeeder } from './classes/product/ProductAttributeValueSeeder';
+import { BrandSeeder } from './classes/product/BrandSeeder';
+//inventory imports
+import { InventoryInventorySeeder } from './classes/inventory/InventorySeeder';
+import { InventoryInventoryCountsSeeder } from './classes/inventory/InventoryCountsSeeder';
+import { InventoryInventoryCountDetailsSeeder } from './classes/inventory/InventoryCountDetailsSeeder';
+import { InventoryInventoryMovementsSeeder } from './classes/inventory/InventoryMovementsSeeder';
+import { InventoryInventoryReservationsSeeder } from './classes/inventory/InventoryReservationsSeeder';
+//warehouse imports
+import { WarehouseSeeder } from './classes/warehouse/WarehouseSeeder';
+import { WarehouseRacksSeeder } from './classes/warehouse/RacksSeeder';
+import { WarehouseLevelsSeeder } from './classes/warehouse/LevelsSeeder';
+import { WarehouseBinsSeeder } from './classes/warehouse/BinsSeeder';
+import { WarehouseBinContentsSeeder } from './classes/warehouse/BinContentsSeeder';
+import { WarehouseBinMovementsSeeder } from './classes/warehouse/BinMovementsSeeder';
+import { PublicSystemLogsSeeder } from './classes/public/SystemLogsSeeder';
+import { WarehouseZoneSeeder } from './classes/warehouse/ZoneSeeder';
+import { WarehouseAisleSeeder } from './classes/warehouse/AisleSeeder';
+import { WarehouseLocationSeeder } from './classes/warehouse/LocationSeeder';
+import { BinTypeSeeder } from './classes/warehouse/BinTypeSeeder';
 
 async function main() {
   const prisma = new PrismaClient();
@@ -76,12 +93,13 @@ async function main() {
       source: 'seed',
       method: 'main'
     });
-    
+
     // Foundation seeders (no dependencies)
     runner.registerSeeder('permissions', () => new PermissionSeeder(prisma, { systemUserId }));
     runner.registerSeeder('class_types', () => new ClassTypeSeeder(prisma, { systemUserId }));
     runner.registerSeeder('units_of_measure', () => new UnitsOfMeasureSeeder(prisma, { systemUserId }));
     runner.registerSeeder('brands', () => new BrandSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('system_settings', () => new SystemSettingsSeeder(prisma, { systemUserId }));
 
     // User management (permissions → roles → role_permissions → users → user_roles)
     runner.registerSeeder('roles', () => new RoleSeeder(prisma, { systemUserId }));
@@ -106,19 +124,44 @@ async function main() {
     runner.registerSeeder('warehouse_locations', () => new WarehouseLocationSeeder(prisma, { systemUserId }));
     runner.registerSeeder('bin_types', () => new BinTypeSeeder(prisma, { systemUserId }));
 
+    // Warehouse physical structure (aisles → racks → levels → bins → bin_contents → bin_movements)
+    runner.registerSeeder('racks', () => new WarehouseRacksSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('levels', () => new WarehouseLevelsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('bins', () => new WarehouseBinsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('bin_contents', () => new WarehouseBinContentsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('bin_movements', () => new WarehouseBinMovementsSeeder(prisma, { systemUserId }));
+
+    // Inventory system (depend on products, locations, users)
+    runner.registerSeeder('inventory', () => new InventoryInventorySeeder(prisma, { systemUserId }));
+    runner.registerSeeder('inventory_counts', () => new InventoryInventoryCountsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('inventory_count_details', () => new InventoryInventoryCountDetailsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('inventory_movements', () => new InventoryInventoryMovementsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('inventory_reservations', () => new InventoryInventoryReservationsSeeder(prisma, { systemUserId }));
+
+    // System logs and notifications (depend on users)
+    runner.registerSeeder('system_logs', () => new PublicSystemLogsSeeder(prisma, { systemUserId }));
+    runner.registerSeeder('notifications', () => new PublicNotificationsSeeder(prisma, { systemUserId }));
+
     // Validate dependencies
-    logger.info('Validating dependencies', {
-      source: 'seed',
-      method: 'main'
-    });
-    const validation = runner.validateDependencies();
-    if (!validation.valid) {
-      logger.error('Dependency validation failed', {
+    if (!skipValidation) {
+      logger.info('Validating dependencies', {
         source: 'seed',
-        method: 'main',
-        errors: validation.errors
+        method: 'main'
       });
-      process.exit(1);
+      const validation = runner.validateDependencies();
+      if (!validation.valid) {
+        logger.error('Dependency validation failed', {
+          source: 'seed',
+          method: 'main',
+          errors: validation.errors
+        });
+        process.exit(1);
+      }
+    } else {
+      logger.info('Skipping dependency validation', {
+        source: 'seed',
+        method: 'main'
+      });
     }
 
     // Show available seeders

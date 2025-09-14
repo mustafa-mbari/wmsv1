@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM public.users WHERE deleted_at IS NULL;

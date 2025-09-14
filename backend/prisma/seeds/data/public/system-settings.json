@@ -1,0 +1,137 @@
+[
+  {
+    "key": "warehouse_name",
+    "value": "WMS Warehouse System",
+    "type": "string",
+    "description": "Name of the warehouse management system",
+    "group": "general",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "company_name",
+    "value": "WMS Corp",
+    "type": "string",
+    "description": "Company name for warehouse operations",
+    "group": "company",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "default_currency",
+    "value": "USD",
+    "type": "string",
+    "description": "Default currency for monetary values",
+    "group": "financial",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "timezone",
+    "value": "UTC",
+    "type": "string",
+    "description": "Default system timezone",
+    "group": "general",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "max_upload_size",
+    "value": "10485760",
+    "type": "number",
+    "description": "Maximum file upload size in bytes (10MB)",
+    "group": "system",
+    "is_public": false,
+    "is_editable": true
+  },
+  {
+    "key": "enable_notifications",
+    "value": "true",
+    "type": "boolean",
+    "description": "Enable system notifications",
+    "group": "notifications",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "low_stock_threshold",
+    "value": "10",
+    "type": "number",
+    "description": "Default low stock threshold for alerts",
+    "group": "inventory",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "audit_retention_days",
+    "value": "365",
+    "type": "number",
+    "description": "Number of days to retain audit logs",
+    "group": "system",
+    "is_public": false,
+    "is_editable": true
+  },
+  {
+    "key": "default_language",
+    "value": "en",
+    "type": "string",
+    "description": "Default system language",
+    "group": "localization",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "enable_barcode_scanning",
+    "value": "true",
+    "type": "boolean",
+    "description": "Enable barcode scanning functionality",
+    "group": "features",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "auto_location_assignment",
+    "value": "false",
+    "type": "boolean",
+    "description": "Automatically assign locations for incoming inventory",
+    "group": "warehouse",
+    "is_public": true,
+    "is_editable": true
+  },
+  {
+    "key": "session_timeout_minutes",
+    "value": "60",
+    "type": "number",
+    "description": "User session timeout in minutes",
+    "group": "security",
+    "is_public": false,
+    "is_editable": true
+  },
+  {
+    "key": "backup_frequency_hours",
+    "value": "24",
+    "type": "number",
+    "description": "Database backup frequency in hours",
+    "group": "system",
+    "is_public": false,
+    "is_editable": false
+  },
+  {
+    "key": "api_rate_limit_per_minute",
+    "value": "1000",
+    "type": "number",
+    "description": "API rate limit requests per minute",
+    "group": "security",
+    "is_public": false,
+    "is_editable": true
+  },
+  {
+    "key": "enable_rfid",
+    "value": "false",
+    "type": "boolean",
+    "description": "Enable RFID tracking functionality",
+    "group": "features",
+    "is_public": true,
+    "is_editable": true
+  }
+]

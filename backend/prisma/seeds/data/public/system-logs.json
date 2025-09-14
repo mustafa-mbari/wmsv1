@@ -1,0 +1,195 @@
+[
+  {
+    "level": "info",
+    "action": "user_login",
+    "message": "User successfully logged into the system",
+    "context": {
+      "login_method": "username_password",
+      "session_id": "sess_abc123",
+      "browser": "Chrome"
+    },
+    "user_id": 1,
+    "ip_address": "192.168.1.100",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "module": "authentication",
+    "entity_type": "user",
+    "entity_id": 1,
+    "created_at": "2024-09-01T09:00:00Z"
+  },
+  {
+    "level": "warn",
+    "action": "login_attempt_failed",
+    "message": "Failed login attempt with invalid credentials",
+    "context": {
+      "username": "admin",
+      "failure_reason": "invalid_password",
+      "attempt_count": 3
+    },
+    "ip_address": "192.168.1.105",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "module": "authentication",
+    "created_at": "2024-09-01T10:30:00Z"
+  },
+  {
+    "level": "info",
+    "action": "inventory_created",
+    "message": "New inventory item created in the system",
+    "context": {
+      "inventory_id": "INV001",
+      "product_id": "PROD001",
+      "quantity": 100,
+      "location": "Zone A"
+    },
+    "user_id": 2,
+    "ip_address": "192.168.1.101",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "module": "inventory",
+    "entity_type": "inventory",
+    "entity_id": 1,
+    "created_at": "2024-09-01T11:15:00Z"
+  },
+  {
+    "level": "error",
+    "action": "database_connection_failed",
+    "message": "Failed to connect to database server",
+    "context": {
+      "database_host": "localhost",
+      "database_name": "wmlab",
+      "error_code": "ECONNREFUSED",
+      "retry_count": 5
+    },
+    "module": "database",
+    "created_at": "2024-09-01T12:00:00Z"
+  },
+  {
+    "level": "info",
+    "action": "order_processed",
+    "message": "Sales order successfully processed and items allocated",
+    "context": {
+      "order_id": "ORD001",
+      "customer_id": "CUST001",
+      "total_items": 15,
+      "total_value": 1250.00
+    },
+    "user_id": 3,
+    "ip_address": "192.168.1.102",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    "module": "orders",
+    "entity_type": "order",
+    "entity_id": 1,
+    "created_at": "2024-09-02T08:45:00Z"
+  },
+  {
+    "level": "warn",
+    "action": "low_stock_detected",
+    "message": "Product inventory has fallen below minimum threshold",
+    "context": {
+      "product_id": "PROD005",
+      "current_stock": 3,
+      "min_threshold": 5,
+      "location": "BIN005"
+    },
+    "user_id": null,
+    "module": "inventory",
+    "entity_type": "product",
+    "entity_id": 5,
+    "created_at": "2024-09-02T14:20:00Z"
+  },
+  {
+    "level": "info",
+    "action": "cycle_count_completed",
+    "message": "Cycle count operation completed for specified zone",
+    "context": {
+      "count_id": "IC001",
+      "zone": "Zone A",
+      "items_counted": 120,
+      "variances_found": 2,
+      "completion_time": "8.5 hours"
+    },
+    "user_id": 1,
+    "ip_address": "192.168.1.103",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "module": "inventory",
+    "entity_type": "inventory_count",
+    "entity_id": 1,
+    "created_at": "2024-09-02T17:00:00Z"
+  },
+  {
+    "level": "error",
+    "action": "file_upload_failed",
+    "message": "Failed to upload file to server storage",
+    "context": {
+      "filename": "product_image.jpg",
+      "file_size": "2.5MB",
+      "upload_path": "/uploads/products/",
+      "error": "Insufficient disk space"
+    },
+    "user_id": 4,
+    "ip_address": "192.168.1.104",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "module": "file_management",
+    "created_at": "2024-09-03T09:30:00Z"
+  },
+  {
+    "level": "info",
+    "action": "report_generated",
+    "message": "Inventory report successfully generated and exported",
+    "context": {
+      "report_type": "inventory_summary",
+      "date_range": "2024-09-01 to 2024-09-03",
+      "format": "PDF",
+      "file_size": "1.2MB",
+      "record_count": 500
+    },
+    "user_id": 2,
+    "ip_address": "192.168.1.101",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "module": "reporting",
+    "created_at": "2024-09-03T16:45:00Z"
+  },
+  {
+    "level": "warn",
+    "action": "unauthorized_access_attempt",
+    "message": "Attempt to access restricted resource without proper authorization",
+    "context": {
+      "resource": "/admin/system-settings",
+      "user_role": "warehouse_operator",
+      "required_permission": "system_admin"
+    },
+    "user_id": 5,
+    "ip_address": "192.168.1.106",
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36",
+    "module": "authorization",
+    "entity_type": "user",
+    "entity_id": 5,
+    "created_at": "2024-09-04T13:15:00Z"
+  },
+  {
+    "level": "info",
+    "action": "backup_completed",
+    "message": "Scheduled database backup completed successfully",
+    "context": {
+      "backup_type": "full",
+      "backup_size": "156.7MB",
+      "backup_location": "/backups/2024-09-04/",
+      "duration": "12 minutes"
+    },
+    "module": "backup",
+    "created_at": "2024-09-04T23:00:00Z"
+  },
+  {
+    "level": "error",
+    "action": "api_request_failed",
+    "message": "External API request failed with timeout error",
+    "context": {
+      "api_endpoint": "https://api.supplier.com/products",
+      "request_method": "POST",
+      "timeout_duration": "30 seconds",
+      "retry_count": 3
+    },
+    "user_id": 3,
+    "ip_address": "192.168.1.102",
+    "module": "integration",
+    "created_at": "2024-09-05T10:22:00Z"
+  }
+]
