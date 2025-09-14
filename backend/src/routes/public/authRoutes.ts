@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { LoginDto, createApiResponse, HttpStatus, validateEmail } from '@my-app/shared'
-import logger from '../utils/logger/logger';
-import prisma from '../utils/prismaClient'; // Adjust the import based on your project structure
+import logger from '../../utils/logger/logger';
+import prisma from '../../utils/prismaClient';
 import bcrypt from 'bcryptjs'; // or 'bcrypt' depending on your bcrypt version
-import { generateToken, authenticateToken } from '../middleware/authMiddleware';
+import { generateToken, authenticateToken } from '../../middleware/authMiddleware';
 
 const router = Router();
 

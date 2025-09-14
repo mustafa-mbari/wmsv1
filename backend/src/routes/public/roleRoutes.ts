@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
-import logger from '../utils/logger/logger';
+import logger from '../../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, requireSuperAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, requireSuperAdmin } from '../../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -216,12 +216,12 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { name, slug, description, is_active = true } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Creating new role: ${name}`, {
       source: 'roleRoutes',
       method: 'POST /',
-      userId
+      userId: userId?.toString()
     });
 
     // Check if slug already exists
@@ -249,7 +249,7 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
     logger.info(`Created role: ${role.name} (ID: ${role.id})`, {
       source: 'roleRoutes',
       method: 'POST /',
-      userId
+      userId: userId?.toString()
     });
 
     res.status(HttpStatus.CREATED).json(createApiResponse(true, role));
@@ -327,12 +327,12 @@ router.put('/:id', authenticateToken, requireSuperAdmin, async (req: Request, re
   try {
     const roleId = parseInt(req.params.id);
     const { name, slug, description, is_active } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Updating role ID: ${roleId}`, {
       source: 'roleRoutes',
       method: 'PUT /:id',
-      userId
+      userId: userId?.toString()
     });
 
     // Check if role exists
@@ -378,7 +378,7 @@ router.put('/:id', authenticateToken, requireSuperAdmin, async (req: Request, re
     logger.info(`Updated role: ${role.name} (ID: ${role.id})`, {
       source: 'roleRoutes',
       method: 'PUT /:id',
-      userId
+      userId: userId?.toString()
     });
 
     res.json(createApiResponse(true, role));
@@ -432,12 +432,12 @@ router.put('/:id', authenticateToken, requireSuperAdmin, async (req: Request, re
 router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const roleId = parseInt(req.params.id);
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Deleting role ID: ${roleId}`, {
       source: 'roleRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     // Check if role exists
@@ -467,7 +467,7 @@ router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request,
     logger.info(`Deleted role: ${existingRole.name} (ID: ${roleId})`, {
       source: 'roleRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     res.json(createApiResponse(true, null, 'Role deleted successfully'));

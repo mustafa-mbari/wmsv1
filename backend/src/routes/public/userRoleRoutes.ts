@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
-import logger from '../utils/logger/logger';
+import logger from '../../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, requireSuperAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, requireSuperAdmin } from '../../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -307,6 +307,7 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
       logger.warn(`Invalid user or role ID: user_id=${user_id}, role_id=${role_id}`, {
         source: 'userRoleRoutes',
         method: 'POST /',
+        assignedBy: assignedBy?.toString(),
         userIdType: typeof user_id,
         roleIdType: typeof role_id
       });
@@ -527,12 +528,12 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
 router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const userRoleId = parseInt(req.params.id);
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Deleting user-role assignment ID: ${userRoleId}`, {
       source: 'userRoleRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     // Check if user-role assignment exists
@@ -566,7 +567,7 @@ router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request,
     logger.info(`Deleted user-role assignment: ${existingUserRole.users_user_roles_user_idTousers.username} - ${existingUserRole.roles.name} (ID: ${userRoleId})`, {
       source: 'userRoleRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     res.json(createApiResponse(true, null, 'User-role assignment deleted successfully'));

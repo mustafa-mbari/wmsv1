@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared'
-import logger from '../utils/logger/logger';
+import logger from '../../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
-import { authenticateToken, requireAdmin, requireSuperAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, requireAdmin, requireSuperAdmin } from '../../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();

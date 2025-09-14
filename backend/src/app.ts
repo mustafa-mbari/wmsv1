@@ -8,23 +8,43 @@ import logger from './utils/logger/logger';
 import { requestLogger } from './middleware/requestLogger';
 import { swaggerSpec } from './config/swagger';
 
-// Import routes
-import userRoutes from './routes/userRoutes';
-import authRoutes from './routes/authRoutes';
-import profileRoutes from './routes/profileRoutes';
-import productRoutes from './routes/productRoutes';
-import categoryRoutes from './routes/categoryRoutes';
-import familyRoutes from './routes/familyRoutes';
-import brandRoutes from './routes/brandRoutes';
-import unitRoutes from './routes/unitRoutes';
-import attributeRoutes from './routes/attributeRoutes';
-import attributeOptionRoutes from './routes/attributeOptionRoutes';
-import attributeValueRoutes from './routes/attributeValueRoutes';
-import permissionRoutes from './routes/permissionRoutes';
-import roleRoutes from './routes/roleRoutes';
-import rolePermissionRoutes from './routes/rolePermissionRoutes';
-import userRoleRoutes from './routes/userRoleRoutes';
-import warehouseRoutes from './routes/warehouseRoutes';
+// Import routes - Public Schema
+import userRoutes from './routes/public/userRoutes';
+import authRoutes from './routes/public/authRoutes';
+import profileRoutes from './routes/public/profileRoutes';
+import permissionRoutes from './routes/public/permissionRoutes';
+import roleRoutes from './routes/public/roleRoutes';
+import rolePermissionRoutes from './routes/public/rolePermissionRoutes';
+import userRoleRoutes from './routes/public/userRoleRoutes';
+import unitRoutes from './routes/public/unitRoutes';
+import classTypeRoutes from './routes/public/classTypeRoutes';
+import notificationRoutes from './routes/public/notificationRoutes';
+import systemLogRoutes from './routes/public/systemLogRoutes';
+import systemSettingRoutes from './routes/public/systemSettingRoutes';
+
+// Import routes - Product Schema
+import productRoutes from './routes/product/productRoutes';
+import categoryRoutes from './routes/product/categoryRoutes';
+import familyRoutes from './routes/product/familyRoutes';
+import brandRoutes from './routes/product/brandRoutes';
+import attributeRoutes from './routes/product/attributeRoutes';
+import attributeOptionRoutes from './routes/product/attributeOptionRoutes';
+import attributeValueRoutes from './routes/product/attributeValueRoutes';
+
+// Import routes - Inventory Schema
+import inventoryRoutes from './routes/inventory/inventoryRoutes';
+import inventoryCountRoutes from './routes/inventory/inventoryCountRoutes';
+import inventoryMovementRoutes from './routes/inventory/inventoryMovementRoutes';
+import inventoryReservationRoutes from './routes/inventory/inventoryReservationRoutes';
+
+// Import routes - Warehouse Schema
+import warehouseRoutes from './routes/warehouse/warehouseRoutes';
+import aisleRoutes from './routes/warehouse/aisleRoutes';
+import zoneRoutes from './routes/warehouse/zoneRoutes';
+import rackRoutes from './routes/warehouse/rackRoutes';
+import levelRoutes from './routes/warehouse/levelRoutes';
+import binRoutes from './routes/warehouse/binRoutes';
+import locationRoutes from './routes/warehouse/locationRoutes';
 
 dotenv.config();
 
@@ -81,29 +101,43 @@ app.get('/api-docs.json', (req: Request, res: Response) => {
   res.send(swaggerSpec);
 });
 
-// Routes
+// Routes - Public Schema
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
-
-// Role and permission routes
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/role-permissions', rolePermissionRoutes);
 app.use('/api/user-roles', userRoleRoutes);
+app.use('/api/units', unitRoutes);
+app.use('/api/class-types', classTypeRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/system-logs', systemLogRoutes);
+app.use('/api/system-settings', systemSettingRoutes);
 
-// Product-related routes
+// Routes - Product Schema
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/families', familyRoutes);
 app.use('/api/brands', brandRoutes);
-app.use('/api/units', unitRoutes);
 app.use('/api/attributes', attributeRoutes);
 app.use('/api/attribute-options', attributeOptionRoutes);
 app.use('/api/attribute-values', attributeValueRoutes);
 
-// Warehouse-related routes
-app.use('/api/warehouse', warehouseRoutes);
+// Routes - Inventory Schema
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/inventory-counts', inventoryCountRoutes);
+app.use('/api/inventory-movements', inventoryMovementRoutes);
+app.use('/api/inventory-reservations', inventoryReservationRoutes);
+
+// Routes - Warehouse Schema
+app.use('/api/warehouses', warehouseRoutes);
+app.use('/api/aisles', aisleRoutes);
+app.use('/api/zones', zoneRoutes);
+app.use('/api/racks', rackRoutes);
+app.use('/api/levels', levelRoutes);
+app.use('/api/bins', binRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

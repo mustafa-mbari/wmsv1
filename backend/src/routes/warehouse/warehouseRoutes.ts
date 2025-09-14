@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
-import logger from '../utils/logger/logger';
-import { authenticateToken } from '../middleware/authMiddleware';
+import logger from '../../utils/logger/logger';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 const router = Router();
 

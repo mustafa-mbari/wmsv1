@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
-import logger from '../utils/logger/logger';
+import logger from '../../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, requireSuperAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, requireSuperAdmin } from '../../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -251,12 +251,12 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { role_id, permission_id } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Creating new role-permission assignment: Role ${role_id} - Permission ${permission_id}`, {
       source: 'rolePermissionRoutes',
       method: 'POST /',
-      userId
+      userId: userId?.toString()
     });
 
     // Verify role exists
@@ -328,7 +328,7 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
     logger.info(`Created role-permission assignment: ${rolePermission.roles.name} - ${rolePermission.permissions.name} (ID: ${rolePermission.id})`, {
       source: 'rolePermissionRoutes',
       method: 'POST /',
-      userId
+      userId: userId?.toString()
     });
 
     res.status(HttpStatus.CREATED).json(createApiResponse(true, rolePermission));
@@ -382,12 +382,12 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res:
 router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const rolePermissionId = parseInt(req.params.id);
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
 
     logger.info(`Deleting role-permission assignment ID: ${rolePermissionId}`, {
       source: 'rolePermissionRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     // Check if role-permission assignment exists
@@ -421,7 +421,7 @@ router.delete('/:id', authenticateToken, requireSuperAdmin, async (req: Request,
     logger.info(`Deleted role-permission assignment: ${existingRolePermission.roles.name} - ${existingRolePermission.permissions.name} (ID: ${rolePermissionId})`, {
       source: 'rolePermissionRoutes',
       method: 'DELETE /:id',
-      userId
+      userId: userId?.toString()
     });
 
     res.json(createApiResponse(true, null, 'Role-permission assignment deleted successfully'));

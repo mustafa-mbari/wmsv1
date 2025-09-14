@@ -118,9 +118,9 @@
 
 import { Router, Request, Response } from 'express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
-import logger from '../utils/logger/logger';
+import logger from '../../utils/logger/logger';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, requireAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, requireAdmin } from '../../middleware/authMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
