@@ -80,16 +80,7 @@ const getNavigation = (intl: any) => [
       { name: intl.formatMessage({ id: 'menu.products.uom' }), href: "/dashboard/products/units" },
     ]
   },
-  { 
-    name: intl.formatMessage({ id: 'navigation.inventory' }), 
-    href: "/dashboard/inventory", 
-    icon: BarChart3,
-    children: [
-      { name: intl.formatMessage({ id: 'menu.inventory.currentStock' }), href: "/dashboard/inventory" },
-      { name: intl.formatMessage({ id: 'menu.inventory.adjustments' }), href: "/dashboard/inventory/adjustments" },
-      { name: intl.formatMessage({ id: 'menu.inventory.movements' }), href: "/dashboard/inventory/movements" },
-    ]
-  },
+  { name: intl.formatMessage({ id: 'navigation.inventory' }), href: "/dashboard/inventory", icon: BarChart3 },
   { name: intl.formatMessage({ id: 'navigation.warehouses' }), href: "/dashboard/warehouses", icon: Warehouse },
   { name: intl.formatMessage({ id: 'navigation.users' }), href: "/dashboard/users", icon: Users },
   { name: intl.formatMessage({ id: 'navigation.uiShowcase' }), href: "/dashboard/ui-showcase", icon: Palette },
@@ -121,8 +112,6 @@ function AppSidebar() {
   const getAutoOpenMenus = () => {
     if (pathname.startsWith('/dashboard/products')) {
       return ['Products'];
-    } else if (pathname.startsWith('/dashboard/inventory')) {
-      return ['Inventory'];
     }
     return [];
   };

@@ -294,13 +294,14 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', authenticateToken, requireSuperAdmin, async (req: Request, res: Response) => {
-  try {
-    const { user_id, role_id } = req.body;
-    const assignedBy = (req as any).user?.id;
+  const { user_id, role_id } = req.body;
+  const assignedBy = (req as any).user?.id;
 
-    // Validate and convert IDs to integers
-    const parsedUserId = parseInt(user_id);
-    const parsedRoleId = parseInt(role_id);
+  // Validate and convert IDs to integers
+  const parsedUserId = parseInt(user_id);
+  const parsedRoleId = parseInt(role_id);
+
+  try {
 
     if (isNaN(parsedUserId) || isNaN(parsedRoleId)) {
       logger.warn(`Invalid user or role ID: user_id=${user_id}, role_id=${role_id}`, {

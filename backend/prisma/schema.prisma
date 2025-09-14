@@ -5,7 +5,12 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["public", "product", "inventory", "warehouse"]
 }
+
+// ========================================
+// PUBLIC SCHEMA MODELS
+// ========================================
 
 model class_types {
   id          Int       @id @default(autoincrement())
@@ -23,6 +28,7 @@ model class_types {
   updater     users?    @relation("class_types_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@index([is_active, deleted_at])
+  @@schema("public")
 }
 
 model notifications {
@@ -56,6 +62,7 @@ model notifications {
   @@index([type, status], map: "notifications_type_status_index")
   @@index([user_id, status], map: "notifications_user_id_status_index")
   @@index([deleted_at])
+  @@schema("public")
 }
 
 model permissions {
@@ -78,174 +85,7 @@ model permissions {
 
   @@index([is_active, deleted_at])
   @@index([module, is_active])
-}
-
-model product_attribute_options {
-  id                       Int                        @id @default(autoincrement())
-  attribute_id             Int
-  value                    String                     @db.VarChar(200)
-  label                    String                     @db.VarChar(200)
-  sort_order               Int?                       @default(0)
-  is_active                Boolean?                   @default(true)
-  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
-  deleted_at               DateTime?                  @db.Timestamptz(6)
-  created_by               Int?
-  updated_by               Int?
-  deleted_by               Int?
-  product_attributes       product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_options_attribute_id_foreign")
-  creator                  users?                     @relation("product_attribute_options_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter                  users?                     @relation("product_attribute_options_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  updater                  users?                     @relation("product_attribute_options_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-  product_attribute_values product_attribute_values[]
-
-  @@unique([attribute_id, value], map: "product_attribute_options_attribute_id_value_unique")
-  @@index([is_active, deleted_at])
-}
-
-model product_attribute_values {
-  id                        Int                        @id @default(autoincrement())
-  product_id                Int
-  attribute_id              Int
-  value                     String?
-  option_id                 Int?
-  created_at                DateTime                   @default(now()) @db.Timestamptz(6)
-  updated_at                DateTime                   @default(now()) @db.Timestamptz(6)
-  deleted_at                DateTime?                  @db.Timestamptz(6)
-  created_by                Int?
-  updated_by                Int?
-  deleted_by                Int?
-  product_attributes        product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_attribute_id_foreign")
-  creator                   users?                     @relation("product_attribute_values_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter                   users?                     @relation("product_attribute_values_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  product_attribute_options product_attribute_options? @relation(fields: [option_id], references: [id], onUpdate: NoAction, map: "product_attribute_values_option_id_foreign")
-  products                  products                   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_product_id_foreign")
-  updater                   users?                     @relation("product_attribute_values_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-
-  @@unique([product_id, attribute_id], map: "product_attribute_values_product_id_attribute_id_unique")
-  @@index([deleted_at])
-}
-
-model product_attributes {
-  id                        Int                         @id @default(autoincrement())
-  name                      String                      @db.VarChar(100)
-  slug                      String                      @unique(map: "product_attributes_slug_unique") @db.VarChar(100)
-  type                      String                      @db.VarChar(50)
-  description               String?
-  is_required               Boolean?                    @default(false)
-  is_filterable             Boolean?                    @default(false)
-  is_searchable             Boolean?                    @default(false)
-  sort_order                Int?                        @default(0)
-  is_active                 Boolean?                    @default(true)
-  created_at                DateTime                    @default(now()) @db.Timestamptz(6)
-  updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
-  deleted_at                DateTime?                   @db.Timestamptz(6)
-  created_by                Int?
-  updated_by                Int?
-  deleted_by                Int?
-  product_attribute_options product_attribute_options[]
-  product_attribute_values  product_attribute_values[]
-  creator                   users?                      @relation("product_attributes_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter                   users?                      @relation("product_attributes_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  updater                   users?                      @relation("product_attributes_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-
-  @@index([is_active, deleted_at])
-  @@index([type, is_active])
-}
-
-model product_categories {
-  id                       Int                  @id @default(autoincrement())
-  name                     String               @db.VarChar(100)
-  slug                     String               @unique(map: "product_categories_slug_unique") @db.VarChar(100)
-  description              String?
-  parent_id                Int?
-  image_url                String?              @db.VarChar(255)
-  sort_order               Int?                 @default(0)
-  is_active                Boolean?             @default(true)
-  created_at               DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime             @default(now()) @db.Timestamptz(6)
-  deleted_at               DateTime?            @db.Timestamptz(6)
-  created_by               Int?
-  updated_by               Int?
-  deleted_by               Int?
-  creator                  users?               @relation("product_categories_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter                  users?               @relation("product_categories_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  product_categories       product_categories?  @relation("product_categoriesToproduct_categories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "product_categories_parent_id_foreign")
-  other_product_categories product_categories[] @relation("product_categoriesToproduct_categories")
-  updater                  users?               @relation("product_categories_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-  product_families         product_families[]
-  products                 products[]
-
-  @@index([is_active, deleted_at])
-  @@index([parent_id, is_active])
-}
-
-model product_families {
-  id                 Int                 @id @default(autoincrement())
-  name               String              @unique(map: "product_families_name_unique") @db.VarChar(100)
-  description        String?
-  category_id        Int?
-  is_active          Boolean?            @default(true)
-  created_at         DateTime            @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
-  deleted_at         DateTime?           @db.Timestamptz(6)
-  created_by         Int?
-  updated_by         Int?
-  deleted_by         Int?
-  product_categories product_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "product_families_category_id_foreign")
-  creator            users?              @relation("product_families_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter            users?              @relation("product_families_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  updater            users?              @relation("product_families_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-  products           products[]
-
-  @@index([is_active, deleted_at])
-  @@index([category_id, is_active])
-}
-
-model products {
-  id                       Int                        @id @default(autoincrement())
-  name                     String                     @db.VarChar(200)
-  sku                      String                     @unique(map: "products_sku_unique") @db.VarChar(100)
-  barcode                  String?                    @unique(map: "products_barcode_unique") @db.VarChar(100)
-  description              String?
-  short_description        String?
-  category_id              Int?
-  family_id                Int?
-  brand_id                 Int?
-  unit_id                  Int?
-  price                    Decimal?                   @default(0) @db.Decimal(12, 2)
-  cost                     Decimal?                   @default(0) @db.Decimal(12, 2)
-  stock_quantity           Int?                       @default(0)
-  min_stock_level          Int?                       @default(0)
-  weight                   Decimal?                   @db.Decimal(8, 3)
-  length                   Decimal?                   @db.Decimal(8, 2)
-  width                    Decimal?                   @db.Decimal(8, 2)
-  height                   Decimal?                   @db.Decimal(8, 2)
-  status                   String?                    @default("active") @db.VarChar(20)
-  is_digital               Boolean?                   @default(false)
-  track_stock              Boolean?                   @default(true)
-  image_url                String?                    @db.VarChar(255)
-  images                   Json?                      @db.Json
-  tags                     Json?                      @db.Json
-  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
-  deleted_at               DateTime?                  @db.Timestamptz(6)
-  created_by               Int?
-  updated_by               Int?
-  deleted_by               Int?
-  product_attribute_values product_attribute_values[]
-  brands                   brands?                    @relation(fields: [brand_id], references: [id], onUpdate: NoAction, map: "products_brand_id_foreign")
-  product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
-  creator                  users?                     @relation("products_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter                  users?                     @relation("products_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  product_families         product_families?          @relation(fields: [family_id], references: [id], onUpdate: NoAction, map: "products_family_id_foreign")
-  units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
-  updater                  users?                     @relation("products_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
-
-  @@index([brand_id, status], map: "products_brand_id_status_index")
-  @@index([category_id, status], map: "products_category_id_status_index")
-  @@index([sku, status], map: "products_sku_status_index")
-  @@index([status, deleted_at])
+  @@schema("public")
 }
 
 model role_permissions {
@@ -266,6 +106,7 @@ model role_permissions {
 
   @@unique([role_id, permission_id], map: "role_permissions_role_id_permission_id_unique")
   @@index([deleted_at])
+  @@schema("public")
 }
 
 model roles {
@@ -287,6 +128,7 @@ model roles {
   user_roles       user_roles[]
 
   @@index([is_active, deleted_at])
+  @@schema("public")
 }
 
 model system_logs {
@@ -313,6 +155,7 @@ model system_logs {
   @@index([level, created_at], map: "system_logs_level_created_at_index")
   @@index([user_id, created_at], map: "system_logs_user_id_created_at_index")
   @@index([deleted_at])
+  @@schema("public")
 }
 
 model system_settings {
@@ -336,6 +179,7 @@ model system_settings {
 
   @@index([group, is_public])
   @@index([deleted_at])
+  @@schema("public")
 }
 
 model units_of_measure {
@@ -356,6 +200,7 @@ model units_of_measure {
   updater     users?     @relation("units_of_measure_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@index([is_active, deleted_at])
+  @@schema("public")
 }
 
 model user_roles {
@@ -379,6 +224,7 @@ model user_roles {
 
   @@unique([user_id, role_id], map: "user_roles_user_id_role_id_unique")
   @@index([deleted_at])
+  @@schema("public")
 }
 
 model users {
@@ -426,6 +272,9 @@ model users {
   created_product_attributes               product_attributes[]        @relation("product_attributes_created_by")
   deleted_product_attributes               product_attributes[]        @relation("product_attributes_deleted_by")
   updated_product_attributes               product_attributes[]        @relation("product_attributes_updated_by")
+  created_product_brands                   product_brands[]            @relation("product_brands_created_by")
+  deleted_product_brands                   product_brands[]            @relation("product_brands_deleted_by")
+  updated_product_brands                   product_brands[]            @relation("product_brands_updated_by")
   created_product_categories               product_categories[]        @relation("product_categories_created_by")
   deleted_product_categories               product_categories[]        @relation("product_categories_deleted_by")
   updated_product_categories               product_categories[]        @relation("product_categories_updated_by")
@@ -461,64 +310,681 @@ model users {
   deleted_users                            users[]                     @relation("users_deleted_by")
   updater                                  users?                      @relation("users_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
   updated_users                            users[]                     @relation("users_updated_by")
-  created_warehouses                       warehouses[]                @relation("warehouses_created_by")
-  deleted_warehouses                       warehouses[]                @relation("warehouses_deleted_by")
-  warehouses                               warehouses[]
-  updated_warehouses                       warehouses[]                @relation("warehouses_updated_by")
-  created_brands                           brands[]                    @relation("brands_created_by")
-  deleted_brands                           brands[]                    @relation("brands_deleted_by")
-  updated_brands                           brands[]                    @relation("brands_updated_by")
 
   @@index([is_active, deleted_at])
   @@index([email_verified, is_active])
+  @@schema("public")
 }
 
-model warehouses {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  code        String    @unique(map: "warehouses_code_unique") @db.VarChar(20)
-  address     String?
-  city        String?   @db.VarChar(100)
-  state       String?   @db.VarChar(100)
-  country     String?   @db.VarChar(100)
-  postal_code String?   @db.VarChar(20)
-  phone       String?   @db.VarChar(20)
-  email       String?   @db.VarChar(255)
-  manager_id  Int?
-  is_active   Boolean?  @default(true)
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at  DateTime? @db.Timestamptz(6)
-  created_by  Int?
-  updated_by  Int?
-  deleted_by  Int?
-  creator     users?    @relation("warehouses_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter     users?    @relation("warehouses_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  users       users?    @relation(fields: [manager_id], references: [id], onUpdate: NoAction, map: "warehouses_manager_id_foreign")
-  updater     users?    @relation("warehouses_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+// ========================================
+// PRODUCT SCHEMA MODELS
+// ========================================
+
+model product_attribute_options {
+  id                       Int                        @id @default(autoincrement())
+  attribute_id             Int
+  value                    String                     @db.VarChar(200)
+  label                    String                     @db.VarChar(200)
+  sort_order               Int?                       @default(0)
+  is_active                Boolean?                   @default(true)
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  product_attributes       product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_options_attribute_id_foreign")
+  creator                  users?                     @relation("product_attribute_options_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("product_attribute_options_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                  users?                     @relation("product_attribute_options_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  product_attribute_values product_attribute_values[]
+
+  @@unique([attribute_id, value], map: "product_attribute_options_attribute_id_value_unique")
+  @@index([is_active, deleted_at])
+  @@map("product_attribute_options")
+  @@schema("product")
+}
+
+model product_attribute_values {
+  id                        Int                        @id @default(autoincrement())
+  product_id                Int
+  attribute_id              Int
+  value                     String?
+  option_id                 Int?
+  created_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                  @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
+  product_attributes        product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_attribute_id_foreign")
+  creator                   users?                     @relation("product_attribute_values_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                     @relation("product_attribute_values_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_attribute_options product_attribute_options? @relation(fields: [option_id], references: [id], onUpdate: NoAction, map: "product_attribute_values_option_id_foreign")
+  products                  products                   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_product_id_foreign")
+  updater                   users?                     @relation("product_attribute_values_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@unique([product_id, attribute_id], map: "product_attribute_values_product_id_attribute_id_unique")
+  @@index([deleted_at])
+  @@map("product_attribute_values")
+  @@schema("product")
+}
+
+model product_attributes {
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @db.VarChar(100)
+  slug                      String                      @unique(map: "product_attributes_slug_unique") @db.VarChar(100)
+  type                      String                      @db.VarChar(50)
+  description               String?
+  is_required               Boolean?                    @default(false)
+  is_filterable             Boolean?                    @default(false)
+  is_searchable             Boolean?                    @default(false)
+  sort_order                Int?                        @default(0)
+  is_active                 Boolean?                    @default(true)
+  created_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                   @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
+  product_attribute_options product_attribute_options[]
+  product_attribute_values  product_attribute_values[]
+  creator                   users?                      @relation("product_attributes_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                      @relation("product_attributes_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                   users?                      @relation("product_attributes_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@index([is_active, deleted_at])
-  @@index([manager_id, is_active])
+  @@index([type, is_active])
+  @@map("product_attributes")
+  @@schema("product")
 }
 
-model brands {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique(map: "brands_name_unique") @db.VarChar(100)
-  slug        String    @unique(map: "brands_slug_unique") @db.VarChar(100)
+model product_brands {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique(map: "product_brands_name_unique") @db.VarChar(100)
+  slug        String     @unique(map: "product_brands_slug_unique") @db.VarChar(100)
   description String?
-  website     String?   @db.VarChar(255)
-  logo_url    String?   @db.VarChar(255)
-  is_active   Boolean?  @default(true)
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at  DateTime? @db.Timestamptz(6)
+  website     String?    @db.VarChar(255)
+  logo_url    String?    @db.VarChar(255)
+  is_active   Boolean?   @default(true)
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime?  @db.Timestamptz(6)
   created_by  Int?
   updated_by  Int?
   deleted_by  Int?
   products    products[]
-  creator     users?    @relation("brands_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
-  deleter     users?    @relation("brands_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
-  updater     users?    @relation("brands_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  creator     users?     @relation("product_brands_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?     @relation("product_brands_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?     @relation("product_brands_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
 
   @@index([is_active, deleted_at])
+  @@map("product_brands")
+  @@schema("product")
+}
+
+model product_categories {
+  id                       Int                  @id @default(autoincrement())
+  name                     String               @db.VarChar(100)
+  slug                     String               @unique(map: "product_categories_slug_unique") @db.VarChar(100)
+  description              String?
+  parent_id                Int?
+  image_url                String?              @db.VarChar(255)
+  sort_order               Int?                 @default(0)
+  is_active                Boolean?             @default(true)
+  created_at               DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime             @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?            @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  creator                  users?               @relation("product_categories_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?               @relation("product_categories_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_categories       product_categories?  @relation("product_categoriesToproduct_categories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "product_categories_parent_id_foreign")
+  other_product_categories product_categories[] @relation("product_categoriesToproduct_categories")
+  updater                  users?               @relation("product_categories_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  product_families         product_families[]
+  products                 products[]
+
+  @@index([is_active, deleted_at])
+  @@index([parent_id, is_active])
+  @@map("product_categories")
+  @@schema("product")
+}
+
+model product_families {
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique(map: "product_families_name_unique") @db.VarChar(100)
+  description        String?
+  category_id        Int?
+  is_active          Boolean?            @default(true)
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  created_by         Int?
+  updated_by         Int?
+  deleted_by         Int?
+  product_categories product_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "product_families_category_id_foreign")
+  creator            users?              @relation("product_families_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter            users?              @relation("product_families_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater            users?              @relation("product_families_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  products           products[]
+
+  @@index([is_active, deleted_at])
+  @@index([category_id, is_active])
+  @@map("product_families")
+  @@schema("product")
+}
+
+model products {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(200)
+  sku                      String                     @unique(map: "products_sku_unique") @db.VarChar(100)
+  barcode                  String?                    @unique(map: "products_barcode_unique") @db.VarChar(100)
+  description              String?
+  short_description        String?
+  category_id              Int?
+  family_id                Int?
+  brand_id                 Int?
+  unit_id                  Int?
+  price                    Decimal?                   @default(0) @db.Decimal(12, 2)
+  cost                     Decimal?                   @default(0) @db.Decimal(12, 2)
+  stock_quantity           Int?                       @default(0)
+  min_stock_level          Int?                       @default(0)
+  weight                   Decimal?                   @db.Decimal(8, 3)
+  length                   Decimal?                   @db.Decimal(8, 2)
+  width                    Decimal?                   @db.Decimal(8, 2)
+  height                   Decimal?                   @db.Decimal(8, 2)
+  status                   String?                    @default("active") @db.VarChar(20)
+  is_digital               Boolean?                   @default(false)
+  track_stock              Boolean?                   @default(true)
+  image_url                String?                    @db.VarChar(255)
+  images                   Json?                      @db.Json
+  tags                     Json?                      @db.Json
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  product_attribute_values product_attribute_values[]
+  product_brands           product_brands?            @relation(fields: [brand_id], references: [id], onUpdate: NoAction, map: "products_brand_id_foreign")
+  product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
+  creator                  users?                     @relation("products_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("products_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_families         product_families?          @relation(fields: [family_id], references: [id], onUpdate: NoAction, map: "products_family_id_foreign")
+  units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
+  updater                  users?                     @relation("products_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([brand_id, status], map: "products_brand_id_status_index")
+  @@index([category_id, status], map: "products_category_id_status_index")
+  @@index([sku, status], map: "products_sku_status_index")
+  @@index([status, deleted_at])
+  @@map("products")
+  @@schema("product")
+}
+
+// ========================================
+// INVENTORY SCHEMA MODELS
+// ========================================
+
+model inventory {
+  inventory_id        String    @id @db.VarChar
+  product_id          String?   @db.VarChar
+  location_id         String?   @db.VarChar
+  quantity            Decimal?  @db.Decimal
+  uom_id              String?   @db.VarChar
+  min_stock_level     Decimal?  @db.Decimal
+  max_stock_level     Decimal?  @db.Decimal
+  reorder_point       Decimal?  @db.Decimal
+  lot_number          String?   @db.VarChar
+  serial_number       String?   @db.VarChar
+  production_date     DateTime? @db.Date
+  expiry_date         DateTime? @db.Date
+  last_movement_date  DateTime? @db.Timestamp
+  status              String?   @db.VarChar
+  is_active           Boolean?
+  quality_status      String?   @db.VarChar
+  temperature_zone    String?   @db.VarChar
+  weight              Decimal?  @db.Decimal
+  dimensions          String?   @db.VarChar
+  hazard_class        String?   @db.VarChar
+  owner_id            String?   @db.VarChar
+  supplier_id         String?   @db.VarChar
+  customs_info        String?
+  barcode             String?   @db.VarChar
+  rfid_tag            String?   @db.VarChar
+  last_audit_date     DateTime? @db.Date
+  audit_notes         String?
+  approval_date       DateTime? @db.Timestamp
+  approved_by         String?   @db.VarChar
+  created_at          DateTime? @db.Timestamp
+  updated_at          DateTime? @db.Timestamp
+  deleted_at          DateTime? @db.Timestamp
+  created_by          String?   @db.VarChar
+  updated_by          String?   @db.VarChar
+  deleted_by          String?   @db.VarChar
+
+  @@map("inventory")
+  @@schema("inventory")
+}
+
+model inventory_count_details {
+  count_detail_id        String    @id @db.VarChar
+  count_id               String?   @db.VarChar
+  inventory_id           String?   @db.VarChar
+  expected_quantity      Decimal?  @db.Decimal
+  counted_quantity       Decimal?  @db.Decimal
+  recount_quantity       Decimal?  @db.Decimal
+  uom_id                 String?   @db.VarChar
+  variance               Decimal?  @db.Decimal
+  variance_percentage    Decimal?  @db.Decimal
+  status                 String?   @db.VarChar
+  count_method           String?   @db.VarChar
+  device_id              String?   @db.VarChar
+  counted_by             String?   @db.VarChar
+  counted_at             DateTime? @db.Timestamp
+  recount_by             String?   @db.VarChar
+  recount_at             DateTime? @db.Timestamp
+  recount_status         String?   @db.VarChar
+  adjustment_id          String?   @db.VarChar
+  adjustment_by          String?   @db.VarChar
+  adjustment_date        DateTime? @db.Timestamp
+  location_verified      Boolean?
+  batch_verified         Boolean?
+  expiry_verified        Boolean?
+  item_condition         String?   @db.VarChar
+  notes                  String?
+  created_at             DateTime? @db.Timestamp
+  updated_at             DateTime? @db.Timestamp
+  deleted_at             DateTime? @db.Timestamp
+  created_by             String?   @db.VarChar
+  updated_by             String?   @db.VarChar
+  deleted_by             String?   @db.VarChar
+
+  @@map("inventory_count_details")
+  @@schema("inventory")
+}
+
+model inventory_counts {
+  count_id               String    @id @db.VarChar
+  warehouse_id           String?   @db.VarChar
+  count_name             String?   @db.VarChar
+  count_type             String?   @db.VarChar
+  status                 String?   @db.VarChar
+  start_date             DateTime? @db.Timestamp
+  end_date               DateTime? @db.Timestamp
+  expected_completion    DateTime? @db.Timestamp
+  team_leader            String?   @db.VarChar
+  count_team             String?
+  count_method           String?   @db.VarChar
+  count_frequency        String?   @db.VarChar
+  count_zone             String?   @db.VarChar
+  count_category         String?   @db.VarChar
+  variance_threshold     Decimal?  @db.Decimal
+  is_approved            Boolean?
+  approved_at            DateTime? @db.Timestamp
+  approved_by            String?   @db.VarChar
+  is_recount             Boolean?
+  original_count_id      String?   @db.VarChar
+  priority               String?   @db.VarChar
+  notes                  String?
+  created_at             DateTime? @db.Timestamp
+  updated_at             DateTime? @db.Timestamp
+  deleted_at             DateTime? @db.Timestamp
+  created_by             String?   @db.VarChar
+  updated_by             String?   @db.VarChar
+  deleted_by             String?   @db.VarChar
+
+  @@map("inventory_counts")
+  @@schema("inventory")
+}
+
+model inventory_movements {
+  movement_id              String    @id @db.VarChar
+  inventory_id             String?   @db.VarChar
+  source_location_id       String?   @db.VarChar
+  destination_location_id  String?   @db.VarChar
+  quantity                 Decimal?  @db.Decimal
+  uom_id                   String?   @db.VarChar
+  movement_type            String?   @db.VarChar
+  movement_reason          String?   @db.VarChar
+  reference_id             String?   @db.VarChar
+  reference_type           String?   @db.VarChar
+  batch_number             String?   @db.VarChar
+  movement_date            DateTime? @db.Timestamp
+  performed_by             String?   @db.VarChar
+  system_generated         Boolean?
+  approval_status          String?   @db.VarChar
+  approval_date            DateTime? @db.Timestamp
+  approved_by              String?   @db.VarChar
+  transaction_value        Decimal?  @db.Decimal
+  currency                 String?   @db.VarChar
+  movement_cost            Decimal?  @db.Decimal
+  transport_mode           String?   @db.VarChar
+  carrier_id               String?   @db.VarChar
+  tracking_number          String?   @db.VarChar
+  expected_arrival         DateTime? @db.Timestamp
+  actual_arrival           DateTime? @db.Timestamp
+  notes                    String?
+  created_at               DateTime? @db.Timestamp
+  deleted_at               DateTime? @db.Timestamp
+  created_by               String?   @db.VarChar
+  updated_by               String?   @db.VarChar
+  deleted_by               String?   @db.VarChar
+
+  @@map("inventory_movements")
+  @@schema("inventory")
+}
+
+model inventory_reservations {
+  reservation_id      String    @id @db.VarChar
+  reservation_number  String?   @db.VarChar
+  product_id          String?   @db.VarChar
+  inventory_id        String?   @db.VarChar
+  location_id         String?   @db.VarChar
+  quantity            Decimal?  @db.Decimal
+  uom_id              String?   @db.VarChar
+  reservation_type    String?   @db.VarChar
+  status              String?   @db.VarChar
+  reference_id        String?   @db.VarChar
+  reference_type      String?   @db.VarChar
+  reserved_at         DateTime? @db.Timestamp
+  expires_at          DateTime? @db.Timestamp
+  released_at         DateTime? @db.Timestamp
+  reserved_by         String?   @db.VarChar
+  released_by         String?   @db.VarChar
+  notes               String?
+  priority            Int?
+  created_at          DateTime? @db.Timestamp
+  updated_at          DateTime? @db.Timestamp
+  deleted_at          DateTime? @db.Timestamp
+  created_by          String?   @db.VarChar
+  updated_by          String?   @db.VarChar
+  deleted_by          String?   @db.VarChar
+
+  @@map("inventory_reservations")
+  @@schema("inventory")
+}
+
+// ========================================
+// WAREHOUSE SCHEMA MODELS
+// ========================================
+
+model aisles {
+  aisle_id         String    @id @db.VarChar
+  zone_id          String?   @db.VarChar
+  aisle_name       String?   @db.VarChar
+  aisle_code       String?   @db.VarChar
+  description      String?
+  length           Decimal?  @db.Decimal
+  width            Decimal?  @db.Decimal
+  height           Decimal?  @db.Decimal
+  dimension_unit   String?   @db.VarChar
+  capacity         Int?
+  aisle_direction  String?   @db.VarChar
+  is_active        Boolean?
+  status           String?   @db.VarChar
+  created_at       DateTime? @db.Timestamp
+  updated_at       DateTime? @db.Timestamp
+  deleted_at       DateTime? @db.Timestamp
+  created_by       String?   @db.VarChar
+  updated_by       String?   @db.VarChar
+  deleted_by       String?   @db.VarChar
+  start_x          Float?    @db.DoublePrecision
+  start_y          Float?    @db.DoublePrecision
+  end_x            Float?    @db.DoublePrecision
+  end_y            Float?    @db.DoublePrecision
+  center_x         Float?    @db.DoublePrecision
+  center_y         Float?    @db.DoublePrecision
+  coordinate_unit  String?   @db.VarChar
+  custom_attributes Json?    @db.JsonB
+  lc_warehouse_code String?  @db.Char(1)
+  lc_zone_code     String?   @db.Char(1)
+  lc_aisle_code    String?   @db.Char(1)
+  lc_full_code     String?   @db.VarChar
+
+  @@map("aisles")
+  @@schema("warehouse")
+}
+
+model bin_contents {
+  content_id            BigInt    @id @default(autoincrement())
+  bin_id                String?   @db.VarChar
+  product_id            String?   @db.VarChar
+  batch_number          String?   @db.VarChar
+  serial_number         String?   @db.VarChar
+  quantity              Decimal?  @db.Decimal
+  uom                   String?   @db.VarChar
+  min_quantity          Decimal?  @db.Decimal
+  max_quantity          Decimal?  @db.Decimal
+  storage_condition     String?   @db.VarChar
+  putaway_date          DateTime? @db.Timestamp
+  last_accessed         DateTime? @db.Timestamp
+  expiration_date       DateTime? @db.Date
+  quality_status        String?   @db.VarChar
+  inspection_required   Boolean?
+  last_inspection_date  DateTime? @db.Timestamp
+  inspection_due_date   DateTime? @db.Date
+  source_document       String?   @db.VarChar
+  source_reference      String?   @db.VarChar
+  is_locked             Boolean?
+  locked_by             String?   @db.VarChar
+  locked_at             DateTime? @db.Timestamp
+  lock_reason           String?   @db.VarChar
+  created_at            DateTime? @db.Timestamp
+  updated_at            DateTime? @db.Timestamp
+  deleted_at            DateTime? @db.Timestamp
+  created_by            String?   @db.VarChar
+  updated_by            String?   @db.VarChar
+  deleted_by            String?   @db.VarChar
+
+  @@map("bin_contents")
+  @@schema("warehouse")
+}
+
+model bin_movements {
+  movement_id           String    @id @db.VarChar
+  source_bin_id         String?   @db.VarChar
+  destination_bin_id    String?   @db.VarChar
+  product_id            String?   @db.VarChar
+  quantity              Decimal?  @db.Decimal
+  uom                   String?   @db.VarChar
+  movement_type         String?   @db.VarChar
+  reason                String?   @db.VarChar
+  reference_document    String?   @db.VarChar
+  reference_number      String?   @db.VarChar
+  movement_date         DateTime? @db.Timestamp
+  performed_by          String?   @db.VarChar
+  batch_number          String?   @db.VarChar
+  serial_number         String?   @db.VarChar
+  status                String?   @db.VarChar
+  priority              String?   @db.VarChar
+  equipment_used        String?   @db.VarChar
+  labor_hours           Decimal?  @db.Decimal
+  movement_cost         Decimal?  @db.Decimal
+  notes                 String?
+  created_at            DateTime? @db.Timestamp
+  updated_at            DateTime? @db.Timestamp
+  deleted_at            DateTime? @db.Timestamp
+  created_by            String?   @db.VarChar
+  updated_by            String?   @db.VarChar
+  deleted_by            String?   @db.VarChar
+
+  @@map("bin_movements")
+  @@schema("warehouse")
+}
+
+model bin_types {
+  bin_type_id       String    @id @db.VarChar
+  type_name         String?   @db.VarChar
+  type_code         String?   @db.VarChar
+  description       String?
+  default_capacity  Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_stackable      Boolean?
+  stackable_height  Int?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  material          String?   @db.VarChar
+  color             String?   @db.VarChar
+  is_active         Boolean?
+  hazmat_approved   Boolean?
+  temperature_controlled Boolean?
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+
+  @@map("bin_types")
+  @@schema("warehouse")
+}
+
+model bins {
+  bin_id            String    @id @db.VarChar
+  location_id       String?   @db.VarChar
+  bin_type_id       String?   @db.VarChar
+  bin_code          String?   @db.VarChar
+  bin_name          String?   @db.VarChar
+  description       String?
+  capacity          Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  bin_priority      Int?
+  accessibility     String?   @db.VarChar
+  temperature_zone  String?   @db.VarChar
+  hazmat_approved   Boolean?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  position_z        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  qr_code           String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_bin_code       String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("bins")
+  @@schema("warehouse")
+}
+
+model levels {
+  level_id          String    @id @db.VarChar
+  rack_id           String?   @db.VarChar
+  level_number      Int?
+  level_name        String?   @db.VarChar
+  level_code        String?   @db.VarChar
+  description       String?
+  height_from_floor Decimal?  @db.Decimal
+  level_height      Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  accessibility     String?   @db.VarChar
+  safety_rating     String?   @db.VarChar
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("levels")
+  @@schema("warehouse")
+}
+
+model locations {
+  location_id       String    @id @db.VarChar
+  warehouse_id      String?   @db.VarChar
+  location_code     String?   @db.VarChar
+  location_name     String?   @db.VarChar
+  location_type     String?   @db.VarChar
+  parent_location   String?   @db.VarChar
+  description       String?
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  capacity          Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  picking_zone      String?   @db.VarChar
+  replenishment_zone String?   @db.VarChar
+  temperature_zone  String?   @db.VarChar
+  hazmat_approved   Boolean?
+  abc_class         String?   @db.VarChar
+  velocity_class    String?   @db.VarChar
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  position_z        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  qr_code           String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_bin_code       String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("locations")
+  @@schema("warehouse")
+}
+
+model racks {
+  id Int @id @default(autoincrement())
+  // Add racks model fields here based on actual schema
+  @@map("racks")
+  @@schema("warehouse")
+}
+
+model warehouses {
+  id Int @id @default(autoincrement())
+  // Add warehouses model fields here based on actual schema
+  @@map("warehouses")
+  @@schema("warehouse")
+}
+
+model zones {
+  id Int @id @default(autoincrement())
+  // Add zones model fields here based on actual schema
+  @@map("zones")
+  @@schema("warehouse")
 }

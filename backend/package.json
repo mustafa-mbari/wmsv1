@@ -10,7 +10,9 @@
     "clean": "rm -rf dist",
     "seed": "npx tsx prisma/seeds/seed.ts",
     "docs:generate": "npm run build && node -e \"const app = require('./dist/app.js').default; const swaggerSpec = require('./dist/config/swagger.js').swaggerSpec; const fs = require('fs'); fs.writeFileSync('api-docs.json', JSON.stringify(swaggerSpec, null, 2)); console.log('OpenAPI spec generated: api-docs.json');\"",
-    "docs:validate": "swagger-codegen validate -i ./api-docs.json || echo 'Consider installing swagger-codegen for validation'"
+    "docs:validate": "swagger-codegen validate -i ./api-docs.json || echo 'Consider installing swagger-codegen for validation'",
+    "validate:schema": "npx tsx scripts/validate-schema.ts",
+    "test:db": "npm run validate:schema"
   },
   "dependencies": {
     "@my-app/shared": "file:../shared",

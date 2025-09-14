@@ -24,6 +24,7 @@ import permissionRoutes from './routes/permissionRoutes';
 import roleRoutes from './routes/roleRoutes';
 import rolePermissionRoutes from './routes/rolePermissionRoutes';
 import userRoleRoutes from './routes/userRoleRoutes';
+import warehouseRoutes from './routes/warehouseRoutes';
 
 dotenv.config();
 
@@ -100,6 +101,9 @@ app.use('/api/units', unitRoutes);
 app.use('/api/attributes', attributeRoutes);
 app.use('/api/attribute-options', attributeOptionRoutes);
 app.use('/api/attribute-values', attributeValueRoutes);
+
+// Warehouse-related routes
+app.use('/api/warehouse', warehouseRoutes);
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

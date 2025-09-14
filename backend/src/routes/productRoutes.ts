@@ -342,7 +342,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
             name: true
           }
         },
-        brands: {
+        product_brands: {
           select: {
             id: true,
             name: true,
@@ -374,8 +374,8 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       family_id: product.family_id?.toString() || null,
       family_name: product.product_families?.name || null,
       brand_id: product.brand_id?.toString() || null,
-      brand_name: product.brands?.name || null,
-      brand_slug: product.brands?.slug || null,
+      brand_name: product.product_brands?.name || null,
+      brand_slug: product.product_brands?.slug || null,
       unit_id: product.unit_id?.toString() || null,
       unit_name: product.units_of_measure?.name || null,
       unit_symbol: product.units_of_measure?.symbol || null,

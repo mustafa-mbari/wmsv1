@@ -209,7 +209,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       method: 'getBrands'
     });
 
-    const brands = await prisma.brands.findMany({
+    const brands = await prisma.product_brands.findMany({
       include: {
         products: {
           select: {
@@ -339,7 +339,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
     // Generate slug if not provided
     const brandSlug = slug || name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
 
-    const newBrand = await prisma.brands.create({
+    const newBrand = await prisma.product_brands.create({
       data: {
         name,
         slug: brandSlug,
@@ -471,7 +471,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
       brandId: id
     });
 
-    const updatedBrand = await prisma.brands.update({
+    const updatedBrand = await prisma.product_brands.update({
       where: { 
         id: parseInt(id)
       },
@@ -593,7 +593,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res:
       brandId: id
     });
 
-    await prisma.brands.delete({
+    await prisma.product_brands.delete({
       where: { id: parseInt(id) }
     });
 

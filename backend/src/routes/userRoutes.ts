@@ -326,14 +326,13 @@ router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Respo
       include: {
         user_roles_user_roles_user_idTousers: {
           where: {
-            deleted_at: null
+            deleted_at: null,
+            roles: {
+              deleted_at: null
+            }
           },
           include: {
-            roles: {
-              where: {
-                deleted_at: null
-              }
-            }
+            roles: true
           }
         }
       }
@@ -443,14 +442,13 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: Request, res: Re
       include: {
         user_roles_user_roles_user_idTousers: {
           where: {
-            deleted_at: null
+            deleted_at: null,
+            roles: {
+              deleted_at: null
+            }
           },
           include: {
-            roles: {
-              where: {
-                deleted_at: null
-              }
-            }
+            roles: true
           }
         }
       }

@@ -41,10 +41,12 @@ try {
   });
 
   server.on('error', (error: any) => {
+    console.error('Server error:', error);
     logger.error('Server error:', { source: 'server', error: error.message, stack: error.stack });
   });
 
 } catch (error) {
+  console.error('Failed to start server:', error);
   logger.error('Failed to start server:', { source: 'server', error: error instanceof Error ? error.message : error });
   process.exit(1);
 }
