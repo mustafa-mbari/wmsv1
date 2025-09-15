@@ -391,94 +391,98 @@ export class WarehouseLocationSeeder extends BaseSeed<LocationSeedData> {
   private async createLocationHierarchy(transformed: any, existingRack: any): Promise<void> {
     const { rack, levels } = transformed;
 
-    // Create or update rack
-    if (existingRack && this.options.force) {
-      await this.prisma.$queryRaw`
-        UPDATE warehouse.racks SET
-          aisle_id = ${rack.aisle_id},
-          rack_name = ${rack.rack_name},
-          rack_code = ${rack.rack_code},
-          rack_type = ${rack.rack_type},
-          description = ${rack.description},
-          length = ${rack.length},
-          width = ${rack.width},
-          height = ${rack.height},
-          dimension_unit = ${rack.dimension_unit},
-          max_weight = ${rack.max_weight},
-          weight_unit = ${rack.weight_unit},
-          capacity = ${rack.capacity},
-          rack_system = ${rack.rack_system},
-          total_levels = ${rack.total_levels},
-          center_x = ${rack.center_x},
-          center_y = ${rack.center_y},
-          coordinate_unit = ${rack.coordinate_unit},
-          is_active = ${rack.is_active},
-          status = ${rack.status},
-          custom_attributes = ${rack.custom_attributes}::jsonb,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE rack_id = ${rack.rack_id}
-      `;
-    } else if (!existingRack) {
+    // Only create or update rack if it doesn't exist in the database at all
+    // Check if rack exists in database (not just in our seeder data)
+    const dbRack = await this.prisma.$queryRaw`
+      SELECT rack_id FROM warehouse.racks WHERE rack_id = ${rack.rack_id}
+      LIMIT 1
+    ` as any[];
+
+    if (dbRack.length === 0) {
+      // Rack doesn't exist in database, create it
+      logger.info(`Creating new rack: ${rack.rack_id}`, {
+        source: 'WarehouseLocationSeeder',
+        method: 'createLocationHierarchy'
+      });
+
       await this.prisma.$queryRaw`
         INSERT INTO warehouse.racks (
           rack_id, aisle_id, rack_name, rack_code, rack_type, description,
-          length, width, height, dimension_unit, max_weight, weight_unit,
-          capacity, rack_system, total_levels, center_x, center_y, coordinate_unit,
+          length, width, height, dimension_unit, max_weight,
+          levels_count, position_x, position_y, coordinate_unit,
           is_active, status, custom_attributes, created_at, updated_at, created_by, updated_by
         ) VALUES (
           ${rack.rack_id}, ${rack.aisle_id}, ${rack.rack_name}, ${rack.rack_code},
           ${rack.rack_type}, ${rack.description}, ${rack.length}, ${rack.width},
-          ${rack.height}, ${rack.dimension_unit}, ${rack.max_weight}, ${rack.weight_unit},
-          ${rack.capacity}, ${rack.rack_system}, ${rack.total_levels}, ${rack.center_x},
-          ${rack.center_y}, ${rack.coordinate_unit}, ${rack.is_active}, ${rack.status},
+          ${rack.height}, ${rack.dimension_unit}, ${rack.max_weight},
+          ${rack.total_levels}, ${rack.center_x}, ${rack.center_y}, ${rack.coordinate_unit},
+          ${rack.is_active}, ${rack.status},
           ${rack.custom_attributes}::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null, null
         )
       `;
+    } else {
+      logger.info(`Rack already exists: ${rack.rack_id}, skipping rack creation`, {
+        source: 'WarehouseLocationSeeder',
+        method: 'createLocationHierarchy'
+      });
     }
 
     // Create levels and locations
     for (const level of levels) {
-      // Create level
-      await this.prisma.$queryRaw`
-        INSERT INTO warehouse.levels (
-          level_id, rack_id, level_name, level_code, level_number, height, height_unit,
-          max_weight, weight_unit, length, width, dimension_unit, capacity,
-          relative_x, relative_y, z_position, coordinate_unit, is_active, status,
-          custom_attributes, created_at, updated_at, created_by, updated_by
-        ) VALUES (
-          ${level.level_id}, ${level.rack_id}, ${level.level_name}, ${level.level_code},
-          ${level.level_number}, ${level.height}, ${level.height_unit}, ${level.max_weight},
-          ${level.weight_unit}, ${level.length}, ${level.width}, ${level.dimension_unit},
-          ${level.capacity}, ${level.relative_x}, ${level.relative_y}, ${level.z_position},
-          ${level.coordinate_unit}, ${level.is_active}, ${level.status},
-          ${level.custom_attributes}::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null, null
-        )
-        ON CONFLICT (level_id) DO UPDATE SET
-          level_name = EXCLUDED.level_name,
-          level_code = EXCLUDED.level_code,
-          updated_at = CURRENT_TIMESTAMP
-      `;
+      // Check if level exists first
+      const dbLevel = await this.prisma.$queryRaw`
+        SELECT level_id FROM warehouse.levels WHERE level_id = ${level.level_id}
+        LIMIT 1
+      ` as any[];
 
-      // Create locations
+      if (dbLevel.length === 0) {
+        // Level doesn't exist, create it
+        logger.info(`Creating new level: ${level.level_id}`, {
+          source: 'WarehouseLocationSeeder',
+          method: 'createLocationHierarchy'
+        });
+
+        await this.prisma.$queryRaw`
+          INSERT INTO warehouse.levels (
+            level_id, rack_id, level_name, level_code, level_number, level_height,
+            weight_capacity, is_active, status,
+            created_at, updated_at, created_by, updated_by
+          ) VALUES (
+            ${level.level_id}, ${level.rack_id}, ${level.level_name}, ${level.level_code},
+            ${level.level_number}, ${level.height}, ${level.max_weight},
+            ${level.is_active}, ${level.status},
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null, null
+          )
+        `;
+      } else {
+        logger.info(`Level already exists: ${level.level_id}, skipping level creation`, {
+          source: 'WarehouseLocationSeeder',
+          method: 'createLocationHierarchy'
+        });
+      }
+
+      // Create locations - always create these as they don't exist yet
       for (const location of level.locations) {
+        logger.info(`Creating location: ${location.location_id}`, {
+          source: 'WarehouseLocationSeeder',
+          method: 'createLocationHierarchy'
+        });
+
         await this.prisma.$queryRaw`
           INSERT INTO warehouse.locations (
-            location_id, level_id, location_name, location_code, location_type,
-            position, barcode, location_priority, bin_type, bin_volume, bin_max_weight,
-            length, width, height, dimension_unit, volume, volume_unit, max_weight,
-            weight_unit, relative_x, relative_y, z_position, coordinate_unit,
+            location_id, location_name, location_code, location_type,
+            barcode, capacity, weight_capacity,
+            length, width, height, dimension_unit,
+            position_x, position_y, position_z, coordinate_unit,
             is_active, status, custom_attributes, created_at, updated_at, created_by, updated_by
           ) VALUES (
-            ${location.location_id}, ${location.level_id}, ${location.location_name},
-            ${location.location_code}, ${location.location_type}, ${location.position},
-            ${location.barcode}, ${location.location_priority}, ${location.bin_type},
-            ${location.bin_volume}, ${location.bin_max_weight}, ${location.length},
-            ${location.width}, ${location.height}, ${location.dimension_unit},
-            ${location.volume}, ${location.volume_unit}, ${location.max_weight},
-            ${location.weight_unit}, ${location.relative_x}, ${location.relative_y},
-            ${location.z_position}, ${location.coordinate_unit}, ${location.is_active},
-            ${location.status}, ${location.custom_attributes}::jsonb, CURRENT_TIMESTAMP,
-            CURRENT_TIMESTAMP, null, null
+            ${location.location_id}, ${location.location_name},
+            ${location.location_code}, ${location.location_type},
+            ${location.barcode}, ${location.volume}, ${location.max_weight},
+            ${location.length}, ${location.width}, ${location.height}, ${location.dimension_unit},
+            ${location.relative_x}, ${location.relative_y}, ${location.z_position}, ${location.coordinate_unit},
+            ${location.is_active}, ${location.status}, ${location.custom_attributes}::jsonb,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null, null
           )
           ON CONFLICT (location_id) DO UPDATE SET
             location_name = EXCLUDED.location_name,
@@ -489,14 +493,18 @@ export class WarehouseLocationSeeder extends BaseSeed<LocationSeedData> {
     }
   }
 
-  // Override hasExistingData to check racks table
+  // Override hasExistingData to check locations table specifically
   protected async hasExistingData(): Promise<boolean> {
     try {
-      const result = await this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.racks`;
+      const result = await this.prisma.$queryRaw`SELECT COUNT(*) as count FROM warehouse.locations`;
       const count = Array.isArray(result) && result[0] ? Number((result[0] as any).count) : 0;
+      logger.info(`LocationSeeder: Found ${count} existing locations`, {
+        source: 'WarehouseLocationSeeder',
+        method: 'hasExistingData'
+      });
       return count > 0;
     } catch (error) {
-      logger.error(`Error checking existing data for racks`, {
+      logger.error(`Error checking existing data for locations`, {
         source: 'WarehouseLocationSeeder',
         method: 'hasExistingData',
         error: error instanceof Error ? error.message : error
