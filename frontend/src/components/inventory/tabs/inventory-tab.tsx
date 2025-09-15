@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, RefreshCw, Package, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface InventoryData {
   inventory_id: string;
@@ -42,13 +43,19 @@ export function InventoryTab() {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/inventory');
-      if (response.ok) {
-        const data = await response.json();
-        setInventory(data);
+      const response = await apiClient.get('/api/inventory');
+      console.log('Inventory API response:', response);
+
+      if (response.data.success && response.data.data) {
+        setInventory(response.data.data.inventory || []);
+        console.log('Inventory data loaded:', response.data.data.inventory?.length, 'items');
+      } else {
+        console.warn('Inventory API returned unsuccessful result:', response.data);
+        setInventory([]);
       }
     } catch (error) {
       console.error('Error fetching inventory:', error);
+      setInventory([]);
     } finally {
       setLoading(false);
     }

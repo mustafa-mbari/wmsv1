@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, RefreshCw, Calendar, Clock, CheckCircle, XCircle } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface InventoryReservationData {
   reservation_id: string;
@@ -43,13 +44,17 @@ export function InventoryReservationsTab() {
   const fetchReservations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/inventory-reservations');
-      if (response.ok) {
-        const data = await response.json();
-        setReservations(data);
+      const response = await apiClient.get('/api/inventory/reservations');
+      if (response.data.success && response.data.data) {
+        setReservations(response.data.data.reservations || []);
+        console.log('Inventory reservations data loaded:', response.data.data.reservations?.length, 'items');
+      } else {
+        console.warn('Inventory reservations API returned unsuccessful result:', response.data);
+        setReservations([]);
       }
     } catch (error) {
       console.error('Error fetching inventory reservations:', error);
+      setReservations([]);
     } finally {
       setLoading(false);
     }

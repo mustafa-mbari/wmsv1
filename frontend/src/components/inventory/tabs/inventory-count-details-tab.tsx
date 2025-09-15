@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, RefreshCw, FileText, AlertTriangle, CheckCircle } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface InventoryCountDetailData {
   detail_id: string;
@@ -47,13 +48,17 @@ export function InventoryCountDetailsTab() {
   const fetchCountDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/inventory-count-details');
-      if (response.ok) {
-        const data = await response.json();
-        setDetails(data);
+      const response = await apiClient.get('/api/inventory/count-details');
+      if (response.data.success && response.data.data) {
+        setDetails(response.data.data.details || []);
+        console.log('Inventory count details data loaded:', response.data.data.details?.length, 'items');
+      } else {
+        console.warn('Inventory count details API returned unsuccessful result:', response.data);
+        setDetails([]);
       }
     } catch (error) {
       console.error('Error fetching inventory count details:', error);
+      setDetails([]);
     } finally {
       setLoading(false);
     }

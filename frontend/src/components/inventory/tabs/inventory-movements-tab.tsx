@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
+import { apiClient } from "@/lib/api-client";
 
 export interface InventoryMovementData {
   movement_id: string;
@@ -45,13 +46,17 @@ export function InventoryMovementsTab() {
   const fetchMovements = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/inventory-movements');
-      if (response.ok) {
-        const data = await response.json();
-        setMovements(data);
+      const response = await apiClient.get('/api/inventory/movements');
+      if (response.data.success && response.data.data) {
+        setMovements(response.data.data.movements || []);
+        console.log('Inventory movements data loaded:', response.data.data.movements?.length, 'items');
+      } else {
+        console.warn('Inventory movements API returned unsuccessful result:', response.data);
+        setMovements([]);
       }
     } catch (error) {
       console.error('Error fetching inventory movements:', error);
+      setMovements([]);
     } finally {
       setLoading(false);
     }
