@@ -45,6 +45,8 @@ import rackRoutes from './routes/warehouse/rackRoutes';
 import levelRoutes from './routes/warehouse/levelRoutes';
 import binRoutes from './routes/warehouse/binRoutes';
 import binTypeRoutes from './routes/warehouse/binTypeRoutes';
+import binMovementRoutes from './routes/warehouse/binMovementRoutes';
+import binContentRoutes from './routes/warehouse/binContentRoutes';
 import locationRoutes from './routes/warehouse/locationRoutes';
 
 dotenv.config();
@@ -139,6 +141,8 @@ app.use('/api/racks', rackRoutes);
 app.use('/api/levels', levelRoutes);
 app.use('/api/bins', binRoutes);
 app.use('/api/bin-types', binTypeRoutes);
+app.use('/api/bin-movements', binMovementRoutes);
+app.use('/api/bin-contents', binContentRoutes);
 app.use('/api/locations', locationRoutes);
 
 // Health check
