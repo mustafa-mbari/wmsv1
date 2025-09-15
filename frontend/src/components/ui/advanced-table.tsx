@@ -114,6 +114,8 @@ interface AdvancedTableProps<T extends TableData = TableData> {
     variant?: "default" | "destructive"
   }>
   emptyMessage?: string
+  refreshButton?: React.ReactNode
+  addButton?: React.ReactNode
 }
 
 function useTableSettings(columns: ColumnConfig[]) {
@@ -167,7 +169,9 @@ export function AdvancedTable<T extends TableData = TableData>({
     { label: "Export", action: "export", icon: <Download className="h-4 w-4 mr-2" /> },
     { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" />, variant: "destructive" as const },
   ],
-  emptyMessage = "No data available"
+  emptyMessage = "No data available",
+  refreshButton,
+  addButton
 }: AdvancedTableProps<T>) {
   const { settings, updateSettings, resetSettings, isLoaded } = useTableSettings(columns)
 
@@ -696,6 +700,8 @@ export function AdvancedTable<T extends TableData = TableData>({
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
         <CardTitle className="text-2xl font-bold">{title}</CardTitle>
         <div className="flex flex-wrap items-center gap-2">
+          {refreshButton}
+          {addButton}
           <TableSettings
             columnVisibility={columnVisibility as ColumnVisibility}
             onVisibilityChange={(newVisibility) => {

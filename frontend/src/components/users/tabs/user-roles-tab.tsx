@@ -504,108 +504,6 @@ export function UserRolesTab() {
               }
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchData} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Assign Role
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Assign Role to User</DialogTitle>
-                    <DialogDescription>
-                      Select a user and role to create an assignment.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <FormField
-                        control={createForm.control}
-                        name="user_id"
-                        render={({ field }) => {
-                          const userOptions: SearchableSelectOption[] = users.map((user) => ({
-                            value: user.id.toString(),
-                            label: getUserDisplayName(user),
-                          }));
-
-                          return (
-                            <FormItem>
-                              <FormLabel>User*</FormLabel>
-                              <FormControl>
-                                <SearchableSelect
-                                  value={field.value}
-                                  onValueChange={(value) => {
-                                    console.log("User selected:", value, typeof value);
-                                    field.onChange(value);
-                                  }}
-                                  options={userOptions}
-                                  placeholder="Select a user"
-                                  searchPlaceholder="Search users..."
-                                  emptyMessage="No users found."
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="role_id"
-                        render={({ field }) => {
-                          const roleOptions: SearchableSelectOption[] = roles.map((role) => ({
-                            value: role.id.toString(),
-                            label: role.name,
-                          }));
-
-                          return (
-                            <FormItem>
-                              <FormLabel>Role*</FormLabel>
-                              <FormControl>
-                                <SearchableSelect
-                                  value={field.value}
-                                  onValueChange={(value) => {
-                                    console.log("Role selected:", value, typeof value);
-                                    field.onChange(value);
-                                  }}
-                                  options={roleOptions}
-                                  placeholder="Select a role"
-                                  searchPlaceholder="Search roles..."
-                                  emptyMessage="No roles found."
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={loading || users.length === 0 || roles.length === 0}
-                        >
-                          <Settings className="mr-2 h-4 w-4" />
-                          Assign Role
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -680,25 +578,116 @@ export function UserRolesTab() {
       </div>
 
       {/* Main User Roles Table */}
-      <Card className="shadow-lg border-0 bg-card">
-        <CardHeader className="border-b bg-muted/30 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">User Roles Directory</CardTitle>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <AdvancedTable
-              data={transformedUserRoles}
-              columns={columns}
-              loading={loading}
-              onRowDelete={canPerformAdminActions ? handleUserRoleDelete : undefined}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AdvancedTable
+        data={transformedUserRoles}
+        columns={columns}
+        loading={loading}
+        onRowDelete={canPerformAdminActions ? handleUserRoleDelete : undefined}
+        refreshButton={
+          <Button onClick={fetchData} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        }
+        addButton={
+          canPerformAdminActions ? (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Assign Role
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Assign Role to User</DialogTitle>
+                  <DialogDescription>
+                    Select a user and role to create an assignment.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...createForm}>
+                  <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                    <FormField
+                      control={createForm.control}
+                      name="user_id"
+                      render={({ field }) => {
+                        const userOptions: SearchableSelectOption[] = users.map((user) => ({
+                          value: user.id.toString(),
+                          label: getUserDisplayName(user),
+                        }));
+
+                        return (
+                          <FormItem>
+                            <FormLabel>User*</FormLabel>
+                            <FormControl>
+                              <SearchableSelect
+                                value={field.value}
+                                onValueChange={(value) => {
+                                  console.log("User selected:", value, typeof value);
+                                  field.onChange(value);
+                                }}
+                                options={userOptions}
+                                placeholder="Select a user"
+                                searchPlaceholder="Search users..."
+                                emptyMessage="No users found."
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <FormField
+                      control={createForm.control}
+                      name="role_id"
+                      render={({ field }) => {
+                        const roleOptions: SearchableSelectOption[] = roles.map((role) => ({
+                          value: role.id.toString(),
+                          label: role.name,
+                        }));
+
+                        return (
+                          <FormItem>
+                            <FormLabel>Role*</FormLabel>
+                            <FormControl>
+                              <SearchableSelect
+                                value={field.value}
+                                onValueChange={(value) => {
+                                  console.log("Role selected:", value, typeof value);
+                                  field.onChange(value);
+                                }}
+                                options={roleOptions}
+                                placeholder="Select a role"
+                                searchPlaceholder="Search roles..."
+                                emptyMessage="No roles found."
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={loading || users.length === 0 || roles.length === 0}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Assign Role
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          ) : undefined
+        }
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

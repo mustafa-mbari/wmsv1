@@ -300,93 +300,6 @@ export function RolePermissionsTab() {
               }
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchData} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Assign Permission
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Assign Permission to Role</DialogTitle>
-                    <DialogDescription>
-                      Select a role and permission to create an assignment.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <FormField
-                        control={createForm.control}
-                        name="role_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Role*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a role" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {roles.map((role) => (
-                                  <SelectItem key={role.id} value={role.id.toString()}>
-                                    {role.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="permission_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Permission*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a permission" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {permissions.map((permission) => (
-                                  <SelectItem key={permission.id} value={permission.id.toString()}>
-                                    {permission.name} {permission.module && `(${permission.module})`}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <Link className="mr-2 h-4 w-4" />
-                          Assign Permission
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -461,25 +374,101 @@ export function RolePermissionsTab() {
       </div>
 
       {/* Main Role Permissions Table */}
-      <Card className="shadow-lg border-0 bg-card">
-        <CardHeader className="border-b bg-muted/30 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">Role Permissions Directory</CardTitle>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <AdvancedTable
-              data={transformedRolePermissions}
-              columns={columns}
-              loading={loading}
-              onRowDelete={canPerformAdminActions ? handleRolePermissionDelete : undefined}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AdvancedTable
+        data={transformedRolePermissions}
+        columns={columns}
+        loading={loading}
+        onRowDelete={canPerformAdminActions ? handleRolePermissionDelete : undefined}
+        refreshButton={
+          <Button onClick={fetchData} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        }
+        addButton={
+          canPerformAdminActions ? (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Assign Permission
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Assign Permission to Role</DialogTitle>
+                  <DialogDescription>
+                    Select a role and permission to create an assignment.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...createForm}>
+                  <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                    <FormField
+                      control={createForm.control}
+                      name="role_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role*</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {roles.map((role) => (
+                                <SelectItem key={role.id} value={role.id.toString()}>
+                                  {role.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={createForm.control}
+                      name="permission_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Permission*</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a permission" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {permissions.map((permission) => (
+                                <SelectItem key={permission.id} value={permission.id.toString()}>
+                                  {permission.name} {permission.module && `(${permission.module})`}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        <Link className="mr-2 h-4 w-4" />
+                        Assign Permission
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          ) : undefined
+        }
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

@@ -590,182 +590,6 @@ export function UsersTab() {
               )}
             </h2>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchUsers} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Add User
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Create New User</DialogTitle>
-                    <DialogDescription>
-                      Fill in the details to create a new user account.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="firstName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>First Name*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="First name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="lastName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Last Name*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Last name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="username"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Username*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Username" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email*</FormLabel>
-                              <FormControl>
-                                <Input type="email" placeholder="Email address" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="password"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Password*</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="password"
-                                  placeholder="Enter password"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="confirmPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Confirm Password*</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="password"
-                                  placeholder="Confirm password"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="isActive"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                              <div className="space-y-0.5">
-                                <FormLabel>Active</FormLabel>
-                                <FormDescription>
-                                  User can log in and access the system
-                                </FormDescription>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value ?? false}
-                                  onCheckedChange={field.onChange}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={createForm.control}
-                          name="isAdmin"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                              <div className="space-y-0.5">
-                                <FormLabel>Administrator</FormLabel>
-                                <FormDescription>
-                                  User has full admin privileges
-                                </FormDescription>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <UserPlus className="mr-2 h-4 w-4" />
-                          Create User
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -840,40 +664,212 @@ export function UsersTab() {
       </div>
 
       {/* Main Users Table */}
-      <Card className="shadow-lg border-0 bg-card">
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <AdvancedTable
-              data={transformedUsers}
-              columns={columnConfig}
-              loading={loading}
-              title="Users Directory"
-              onRowSelect={handleUserSelection}
-              onBulkAction={handleBulkAction}
-              onRowEdit={canPerformAdminActions ? handleUserEdit : undefined}
-              onRowDelete={canPerformAdminActions ? handleUserDelete : undefined}
-              onRowView={handleUserView}
-              onRowToggleStatus={canPerformAdminActions ? handleUserToggleStatus : undefined}
-              onRowAction={(action, user) => {
-                if (action === 'manageRoles') {
-                  handleUserManageRoles(user);
-                }
-              }}
-              actions={{
-                view: { label: "View Details" },
-                edit: canPerformAdminActions ? { label: "Edit User" } : undefined,
-                delete: canPerformAdminActions ? { label: "Delete User" } : undefined,
-                manageRoles: canPerformAdminActions ? { label: "Manage Roles" } : undefined,
-              }}
-              bulkActions={canPerformAdminActions ? [
-                { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
-                { label: "Email", action: "email", icon: <Settings className="h-4 w-4 mr-2" /> },
-              ] : []}
-              emptyMessage="No users found"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AdvancedTable
+        data={transformedUsers}
+        columns={columnConfig}
+        loading={loading}
+        title="Users Directory"
+        onRowSelect={handleUserSelection}
+        onBulkAction={handleBulkAction}
+        onRowEdit={canPerformAdminActions ? handleUserEdit : undefined}
+        onRowDelete={canPerformAdminActions ? handleUserDelete : undefined}
+        onRowView={handleUserView}
+        onRowToggleStatus={canPerformAdminActions ? handleUserToggleStatus : undefined}
+        onRowAction={(action, user) => {
+          if (action === 'manageRoles') {
+            handleUserManageRoles(user);
+          }
+        }}
+        actions={{
+          view: { label: "View Details" },
+          edit: canPerformAdminActions ? { label: "Edit User" } : undefined,
+          delete: canPerformAdminActions ? { label: "Delete User" } : undefined,
+          manageRoles: canPerformAdminActions ? { label: "Manage Roles" } : undefined,
+        }}
+        bulkActions={canPerformAdminActions ? [
+          { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
+          { label: "Email", action: "email", icon: <Settings className="h-4 w-4 mr-2" /> },
+        ] : []}
+        emptyMessage="No users found"
+        refreshButton={
+          <Button onClick={fetchUsers} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        }
+        addButton={
+          canPerformAdminActions ? (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Add User
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Create New User</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details to create a new user account.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...createForm}>
+                  <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="First name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Last name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Username*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Username" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email*</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="Email address" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Password*</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Enter password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm Password*</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Confirm password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="isActive"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                              <FormLabel>Active</FormLabel>
+                              <FormDescription>
+                                User can log in and access the system
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value ?? false}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={createForm.control}
+                        name="isAdmin"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                              <FormLabel>Administrator</FormLabel>
+                              <FormDescription>
+                                User has full admin privileges
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Create User
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          ) : undefined
+        }
+      />
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
