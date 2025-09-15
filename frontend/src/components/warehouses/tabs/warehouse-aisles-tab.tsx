@@ -157,14 +157,8 @@ export function WarehouseAislesTab() {
 
   return (
     <div className="w-full space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Warehouse Aisles</h2>
-          <p className="text-muted-foreground">
-            Manage warehouse aisles and their configurations
-          </p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchAisles}>
             <RefreshCw className="mr-2 h-4 w-4" />

@@ -170,10 +170,7 @@ export function InventoryMovementsTab() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Inventory Movements</h2>
-          <p className="text-muted-foreground">Track all inventory movement transactions</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchMovements}>
             <RefreshCw className="mr-2 h-4 w-4" />

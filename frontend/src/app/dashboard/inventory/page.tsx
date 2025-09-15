@@ -22,19 +22,16 @@ export default function InventoryPage() {
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage inventory, movements, counts and reservations
-            </p>
-          </div>
-        </div>
-
-        <InventoryTabsNavigation />
+    <div className="w-full space-y-6">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-lg font-medium text-muted-foreground">
+          Inventory / Inventory Management
+        </h1>
       </div>
+
+      {/* Tab Navigation */}
+      <InventoryTabsNavigation />
     </div>
   );
 }

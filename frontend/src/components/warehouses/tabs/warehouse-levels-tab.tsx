@@ -153,10 +153,7 @@ export function WarehouseLevelsTab() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Warehouse Levels</h2>
-          <p className="text-muted-foreground">Manage warehouse rack levels and storage tiers</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchLevels}>
             <RefreshCw className="mr-2 h-4 w-4" />

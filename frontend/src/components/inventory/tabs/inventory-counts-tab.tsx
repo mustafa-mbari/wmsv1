@@ -181,10 +181,7 @@ export function InventoryCountsTab() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Inventory Counts</h2>
-          <p className="text-muted-foreground">Manage inventory counting sessions and cycles</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchCounts}>
             <RefreshCw className="mr-2 h-4 w-4" />

@@ -200,10 +200,7 @@ function LocationsContent() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Storage Locations</h3>
-          <p className="text-muted-foreground">Manage warehouse storage locations</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchLocations}>
             <RefreshCw className="mr-2 h-4 w-4" />
@@ -322,10 +319,7 @@ function BinTypesContent() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Bin Types</h3>
-          <p className="text-muted-foreground">Manage different types of storage bins</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchBinTypes}>
             <RefreshCw className="mr-2 h-4 w-4" />
@@ -456,10 +450,7 @@ function BinsContent() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Storage Bins</h3>
-          <p className="text-muted-foreground">Manage individual storage bins</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchBins}>
             <RefreshCw className="mr-2 h-4 w-4" />
@@ -613,10 +604,7 @@ function BinMovementsContent() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Bin Movements</h3>
-          <p className="text-muted-foreground">Track bin movement history and transfers</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchMovements}>
             <RefreshCw className="mr-2 h-4 w-4" />
@@ -778,10 +766,7 @@ function BinContentsContent() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Bin Contents</h3>
-          <p className="text-muted-foreground">Manage contents of storage bins and inventory</p>
-        </div>
+        <div></div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="outline" size="default" onClick={fetchContents}>
             <RefreshCw className="mr-2 h-4 w-4" />
@@ -815,15 +800,6 @@ function BinContentsContent() {
 export function WarehouseLocationsTab() {
   return (
     <div className="w-full space-y-6">
-      {/* Main Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Warehouse Locations & Bin Management</h2>
-        <p className="text-muted-foreground">
-          Manage warehouse locations, storage bins, and their configurations
-        </p>
-      </div>
-
-      {/* Nested Tab Navigation */}
       <Tabs defaultValue="locations" className="w-full">
         <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-lg">
           <TabsTrigger
