@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, RefreshCw, Layers } from "lucide-react";
+import { Loader2, Plus, RefreshCw, Layers } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { apiClient } from "@/lib/api-client";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 
 export interface WarehouseLevelData {
@@ -39,13 +40,16 @@ export function WarehouseLevelsTab() {
   const fetchLevels = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/levels');
-      if (response.ok) {
-        const data = await response.json();
-        setLevels(data);
+      const response = await apiClient.get('/api/levels');
+
+      if (response.data?.success) {
+        setLevels(response.data.data?.levels || []);
+      } else {
+        setLevels([]);
       }
     } catch (error) {
       console.error('Error fetching levels:', error);
+      setLevels([]);
     } finally {
       setLoading(false);
     }
@@ -125,10 +129,26 @@ export function WarehouseLevelsTab() {
     },
   ];
 
-  const transformedLevels: (WarehouseLevelData & TableData)[] = levels.map((level) => ({
-    ...level,
-    id: level.level_id,
-  }));
+  // Transform levels to TableData format for the table
+  const transformedLevels: (WarehouseLevelData & TableData)[] = useMemo(() => {
+    if (!levels) return [];
+
+    return levels.map((level: WarehouseLevelData) => ({
+      ...level,
+      id: level.level_id,
+    }));
+  }, [levels]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading levels...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">

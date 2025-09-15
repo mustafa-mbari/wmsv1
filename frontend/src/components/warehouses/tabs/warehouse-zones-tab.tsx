@@ -117,9 +117,9 @@ export function WarehouseZonesTab() {
 
   const fetchWarehouses = async () => {
     try {
-      const response = await apiClient.get('/api/warehouse/warehouses');
+      const response = await apiClient.get('/api/warehouses');
       if (response.data?.success) {
-        setWarehouses(response.data.data || []);
+        setWarehouses(response.data.data?.warehouses || []);
       }
     } catch (error) {
       console.error("Error fetching warehouses:", error);
@@ -129,10 +129,10 @@ export function WarehouseZonesTab() {
   const fetchZones = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/warehouse/zones');
+      const response = await apiClient.get('/api/zones');
 
       if (response.data?.success) {
-        setZones(response.data.data || []);
+        setZones(response.data.data?.zones || []);
       } else {
         setZones([]);
       }
@@ -173,7 +173,7 @@ export function WarehouseZonesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof zoneFormSchema>) => {
     try {
-      const response = await apiClient.post('/api/warehouse/zones', {
+      const response = await apiClient.post('/api/zones', {
         ...data,
         is_active: true,
       });
@@ -202,7 +202,7 @@ export function WarehouseZonesTab() {
     if (!currentZone) return;
 
     try {
-      const response = await apiClient.put(`/api/warehouse/zones/${currentZone.zone_id}`, data);
+      const response = await apiClient.put(`/api/zones/${currentZone.zone_id}`, data);
 
       if (response.data?.success) {
         setIsEditDialogOpen(false);
@@ -228,7 +228,7 @@ export function WarehouseZonesTab() {
     if (currentZone) {
       try {
         setIsDeleteLoading(true);
-        const response = await apiClient.delete(`/api/warehouse/zones/${currentZone.zone_id}`);
+        const response = await apiClient.delete(`/api/zones/${currentZone.zone_id}`);
 
         if (response.data?.success) {
           setIsDeleteDialogOpen(false);

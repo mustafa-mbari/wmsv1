@@ -75,7 +75,7 @@ export interface WarehouseData {
   max_temperature?: number;
   temperature_unit?: string;
   is_active: boolean;
-  operational_status: string;
+  status: string;
   timezone?: string;
   operating_hours?: any;
   custom_attributes?: any;
@@ -115,7 +115,7 @@ export function WarehousesTab() {
     min_temperature: z.coerce.number().optional(),
     max_temperature: z.coerce.number().optional(),
     temperature_unit: z.string().optional(),
-    operational_status: z.enum(["operational", "maintenance", "closed"]).default("operational"),
+    status: z.enum(["operational", "maintenance", "closed"]).default("operational"),
     timezone: z.string().optional(),
   });
 
@@ -126,10 +126,10 @@ export function WarehousesTab() {
   const fetchWarehouses = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/warehouse/warehouses');
+      const response = await apiClient.get('/api/warehouses');
 
       if (response.data?.success) {
-        setWarehouses(response.data.data || []);
+        setWarehouses(response.data.data?.warehouses || []);
       } else {
         setWarehouses([]);
       }
@@ -162,7 +162,7 @@ export function WarehousesTab() {
       min_temperature: 0,
       max_temperature: 0,
       temperature_unit: "CELSIUS",
-      operational_status: "operational",
+      status: "operational",
       timezone: "",
     },
   });
@@ -173,7 +173,7 @@ export function WarehousesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof warehouseFormSchema>) => {
     try {
-      const response = await apiClient.post('/api/warehouse/warehouses', {
+      const response = await apiClient.post('/api/warehouses', {
         ...data,
         is_active: true,
       });
@@ -202,7 +202,7 @@ export function WarehousesTab() {
     if (!currentWarehouse) return;
 
     try {
-      const response = await apiClient.put(`/api/warehouse/warehouses/${currentWarehouse.warehouse_id}`, data);
+      const response = await apiClient.put(`/api/warehouses/${currentWarehouse.warehouse_id}`, data);
 
       if (response.data?.success) {
         setIsEditDialogOpen(false);
@@ -228,7 +228,7 @@ export function WarehousesTab() {
     if (currentWarehouse) {
       try {
         setIsDeleteLoading(true);
-        const response = await apiClient.delete(`/api/warehouse/warehouses/${currentWarehouse.warehouse_id}`);
+        const response = await apiClient.delete(`/api/warehouses/${currentWarehouse.warehouse_id}`);
 
         if (response.data?.success) {
           setIsDeleteDialogOpen(false);
@@ -274,7 +274,7 @@ export function WarehousesTab() {
       min_temperature: warehouse.min_temperature || 0,
       max_temperature: warehouse.max_temperature || 0,
       temperature_unit: warehouse.temperature_unit || "CELSIUS",
-      operational_status: warehouse.operational_status as "operational" | "maintenance" | "closed",
+      status: warehouse.status as "operational" | "maintenance" | "closed",
       timezone: warehouse.timezone || "",
     });
     setIsEditDialogOpen(true);
@@ -385,16 +385,16 @@ export function WarehousesTab() {
       ),
     },
     {
-      key: "operational_status",
+      key: "status",
       label: "Status",
       width: 120,
       filterType: "select",
       render: (warehouse) => (
         <Badge variant={
-          warehouse.operational_status === "operational" ? "default" :
-          warehouse.operational_status === "maintenance" ? "secondary" : "destructive"
+          warehouse.status === "operational" ? "default" :
+          warehouse.status === "maintenance" ? "secondary" : "destructive"
         }>
-          {warehouse.operational_status.charAt(0).toUpperCase() + warehouse.operational_status.slice(1)}
+          {warehouse.status?.charAt(0).toUpperCase() + warehouse.status?.slice(1)}
         </Badge>
       ),
     },
@@ -651,7 +651,7 @@ export function WarehousesTab() {
 
                     <FormField
                       control={createForm.control}
-                      name="operational_status"
+                      name="status"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Operational Status</FormLabel>

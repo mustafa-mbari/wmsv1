@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, RefreshCw, Archive } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { apiClient } from "@/lib/api-client";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 
 export interface WarehouseRackData {
@@ -42,13 +43,16 @@ export function WarehouseRacksTab() {
   const fetchRacks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/racks');
-      if (response.ok) {
-        const data = await response.json();
-        setRacks(data);
+      const response = await apiClient.get('/api/racks');
+
+      if (response.data?.success) {
+        setRacks(response.data.data?.racks || []);
+      } else {
+        setRacks([]);
       }
     } catch (error) {
       console.error('Error fetching racks:', error);
+      setRacks([]);
     } finally {
       setLoading(false);
     }
@@ -118,10 +122,26 @@ export function WarehouseRacksTab() {
     },
   ];
 
-  const transformedRacks: (WarehouseRackData & TableData)[] = racks.map((rack) => ({
-    ...rack,
-    id: rack.rack_id,
-  }));
+  // Transform racks to TableData format for the table
+  const transformedRacks: (WarehouseRackData & TableData)[] = useMemo(() => {
+    if (!racks) return [];
+
+    return racks.map((rack: WarehouseRackData) => ({
+      ...rack,
+      id: rack.rack_id,
+    }));
+  }, [racks]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading racks...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">

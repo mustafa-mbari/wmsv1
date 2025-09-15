@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, RefreshCw, Navigation } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { apiClient } from "@/lib/api-client";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 
 export interface WarehouseAisleData {
@@ -43,13 +44,16 @@ export function WarehouseAislesTab() {
   const fetchAisles = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/warehouse/aisles');
-      if (response.ok) {
-        const data = await response.json();
-        setAisles(data);
+      const response = await apiClient.get('/api/aisles');
+
+      if (response.data?.success) {
+        setAisles(response.data.data?.aisles || []);
+      } else {
+        setAisles([]);
       }
     } catch (error) {
       console.error('Error fetching aisles:', error);
+      setAisles([]);
     } finally {
       setLoading(false);
     }
@@ -130,10 +134,26 @@ export function WarehouseAislesTab() {
     },
   ];
 
-  const transformedAisles: (WarehouseAisleData & TableData)[] = aisles.map((aisle) => ({
-    ...aisle,
-    id: aisle.aisle_id,
-  }));
+  // Transform aisles to TableData format for the table
+  const transformedAisles: (WarehouseAisleData & TableData)[] = useMemo(() => {
+    if (!aisles) return [];
+
+    return aisles.map((aisle: WarehouseAisleData) => ({
+      ...aisle,
+      id: aisle.aisle_id,
+    }));
+  }, [aisles]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading aisles...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">

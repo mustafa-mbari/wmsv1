@@ -1,80 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, RefreshCw, Target, Package, Move, Archive, Box } from "lucide-react";
+import { Loader2, Plus, RefreshCw, Target, Package, Move, Archive, Box } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { apiClient } from "@/lib/api-client";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 
 // Location Data Interface
 export interface WarehouseLocationData {
   location_id: string;
-  level_id: string;
-  location_name: string;
+  warehouse_id?: string;
+  location_name?: string;
   location_code?: string;
-  lc_location_code?: string;
-  lc_full_code?: string;
   location_type?: string;
   barcode?: string;
-  is_active: boolean;
-  status: string;
-  created_at: string;
-  level_name?: string;
+  is_active?: boolean;
+  status?: string;
+  created_at?: string;
+  lc_full_code?: string;
+  parent_location?: string;
+  description?: string;
 }
 
 // Bin Types Data Interface
 export interface BinTypeData {
   bin_type_id: string;
-  name: string;
-  code?: string;
+  type_name?: string;
+  type_code?: string;
   description?: string;
-  category?: string;
-  volume?: number;
-  max_weight?: number;
-  is_active: boolean;
-  created_at: string;
+  default_capacity?: number;
+  weight_capacity?: number;
+  is_stackable?: boolean;
+  material?: string;
+  color?: string;
+  is_active?: boolean;
+  created_at?: string;
 }
 
 // Bins Data Interface
 export interface BinData {
   bin_id: string;
-  bin_type_id: string;
+  bin_type_id?: string;
   location_id?: string;
   bin_code?: string;
+  bin_name?: string;
   barcode?: string;
-  current_quantity?: number;
-  max_quantity?: number;
-  status: string;
-  is_active: boolean;
-  created_at: string;
-  bin_type_name?: string;
+  capacity?: number;
+  weight_capacity?: number;
+  status?: string;
+  is_active?: boolean;
+  created_at?: string;
+  temperature_zone?: string;
+  lc_full_code?: string;
 }
 
 // Locations Tab Component
 function LocationsContent() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('warehouse-manager');
+  const [locations, setLocations] = useState<WarehouseLocationData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Placeholder data
-  const sampleLocations: WarehouseLocationData[] = [
-    {
-      location_id: "WH001-STG-L01-P01",
-      level_id: "WH001-STG-R01-L01",
-      location_name: "Position 01",
-      location_code: "P-001",
-      lc_location_code: "01",
-      lc_full_code: "LC-01-02-01-01-01-01",
-      location_type: "storage",
-      barcode: "LOC001",
-      is_active: true,
-      status: "operational",
-      created_at: new Date().toISOString(),
-      level_name: "Ground Level",
-    },
-  ];
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  const fetchLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/api/locations');
+
+      if (response.data?.success) {
+        setLocations(response.data.data?.locations || []);
+      } else {
+        setLocations([]);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+      setLocations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columnConfig: ColumnConfig<WarehouseLocationData & TableData>[] = [
     {
@@ -94,11 +105,11 @@ function LocationsContent() {
       render: (location) => <div className="font-medium">{location.location_name}</div>,
     },
     {
-      key: "level_name",
-      label: "Level",
+      key: "parent_location",
+      label: "Parent",
       width: 120,
       render: (location) => (
-        <Badge variant="outline">{location.level_name || location.level_id}</Badge>
+        <Badge variant="outline">{location.parent_location || "Root"}</Badge>
       ),
     },
     {
@@ -126,16 +137,27 @@ function LocationsContent() {
           location.status === "operational" ? "default" :
           location.status === "maintenance" ? "secondary" : "destructive"
         }>
-          {location.status.charAt(0).toUpperCase() + location.status.slice(1)}
+          {location.status?.charAt(0).toUpperCase() + location.status?.slice(1)}
         </Badge>
       ),
     },
   ];
 
-  const transformedLocations: (WarehouseLocationData & TableData)[] = sampleLocations.map((location) => ({
+  const transformedLocations: (WarehouseLocationData & TableData)[] = locations.map((location) => ({
     ...location,
     id: location.location_id,
   }));
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading locations...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -145,7 +167,7 @@ function LocationsContent() {
           <p className="text-muted-foreground">Manage warehouse storage locations</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default">
+          <Button variant="outline" size="default" onClick={fetchLocations}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -163,7 +185,7 @@ function LocationsContent() {
           <AdvancedTable
             data={transformedLocations}
             columns={columnConfig}
-            loading={false}
+            loading={loading}
             title="Storage Locations"
             emptyMessage="No locations found"
           />
@@ -177,66 +199,87 @@ function LocationsContent() {
 function BinTypesContent() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('warehouse-manager');
+  const [binTypes, setBinTypes] = useState<BinTypeData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const sampleBinTypes: BinTypeData[] = [
-    {
-      bin_type_id: "bt001",
-      name: "Small Plastic Bin",
-      code: "SPB-001",
-      description: "Standard small plastic storage bin",
-      category: "plastic",
-      volume: 0.05,
-      max_weight: 10.0,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    },
-  ];
+  useEffect(() => {
+    fetchBinTypes();
+  }, []);
+
+  const fetchBinTypes = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/api/bin-types');
+
+      if (response.data?.success) {
+        setBinTypes(response.data.data?.binTypes || []);
+      } else {
+        setBinTypes([]);
+      }
+    } catch (error) {
+      console.error('Error fetching bin types:', error);
+      setBinTypes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const binTypeColumns: ColumnConfig<BinTypeData & TableData>[] = [
     {
-      key: "code",
+      key: "type_code",
       label: "Code",
       width: 100,
       render: (binType) => (
-        <span className="font-mono text-sm">{binType.code || "N/A"}</span>
+        <span className="font-mono text-sm">{binType.type_code || "N/A"}</span>
       ),
     },
     {
-      key: "name",
+      key: "type_name",
       label: "Name",
       width: 150,
-      render: (binType) => <div className="font-medium">{binType.name}</div>,
+      render: (binType) => <div className="font-medium">{binType.type_name || "N/A"}</div>,
     },
     {
-      key: "category",
-      label: "Category",
+      key: "material",
+      label: "Material",
       width: 100,
       render: (binType) => (
-        <Badge variant="secondary">{binType.category || "N/A"}</Badge>
+        <Badge variant="secondary">{binType.material || "N/A"}</Badge>
       ),
     },
     {
-      key: "volume",
-      label: "Volume",
+      key: "default_capacity",
+      label: "Capacity",
       width: 100,
       render: (binType) => (
-        <span className="text-sm">{binType.volume ? `${binType.volume} m³` : "N/A"}</span>
+        <span className="text-sm">{binType.default_capacity ? `${binType.default_capacity} units` : "N/A"}</span>
       ),
     },
     {
-      key: "max_weight",
+      key: "weight_capacity",
       label: "Max Weight",
       width: 120,
       render: (binType) => (
-        <span className="text-sm">{binType.max_weight ? `${binType.max_weight} kg` : "N/A"}</span>
+        <span className="text-sm">{binType.weight_capacity ? `${binType.weight_capacity} kg` : "N/A"}</span>
       ),
     },
   ];
 
-  const transformedBinTypes: (BinTypeData & TableData)[] = sampleBinTypes.map((binType) => ({
+  const transformedBinTypes: (BinTypeData & TableData)[] = binTypes.map((binType) => ({
     ...binType,
     id: binType.bin_type_id,
   }));
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading bin types...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -246,7 +289,7 @@ function BinTypesContent() {
           <p className="text-muted-foreground">Manage different types of storage bins</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default">
+          <Button variant="outline" size="default" onClick={fetchBinTypes}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -264,7 +307,7 @@ function BinTypesContent() {
           <AdvancedTable
             data={transformedBinTypes}
             columns={binTypeColumns}
-            loading={false}
+            loading={loading}
             title="Bin Types"
             emptyMessage="No bin types found"
           />
@@ -278,22 +321,30 @@ function BinTypesContent() {
 function BinsContent() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('warehouse-manager');
+  const [bins, setBins] = useState<BinData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const sampleBins: BinData[] = [
-    {
-      bin_id: "bin001",
-      bin_type_id: "bt001",
-      location_id: "WH001-STG-L01-P01",
-      bin_code: "BIN-001",
-      barcode: "123456789",
-      current_quantity: 5.5,
-      max_quantity: 10.0,
-      status: "available",
-      is_active: true,
-      created_at: new Date().toISOString(),
-      bin_type_name: "Small Plastic Bin",
-    },
-  ];
+  useEffect(() => {
+    fetchBins();
+  }, []);
+
+  const fetchBins = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/api/bins');
+
+      if (response.data?.success) {
+        setBins(response.data.data?.bins || []);
+      } else {
+        setBins([]);
+      }
+    } catch (error) {
+      console.error('Error fetching bins:', error);
+      setBins([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const binColumns: ColumnConfig<BinData & TableData>[] = [
     {
@@ -305,11 +356,11 @@ function BinsContent() {
       ),
     },
     {
-      key: "bin_type_name",
-      label: "Type",
+      key: "bin_type_id",
+      label: "Type ID",
       width: 150,
       render: (bin) => (
-        <Badge variant="outline">{bin.bin_type_name || "N/A"}</Badge>
+        <Badge variant="outline">{bin.bin_type_id || "N/A"}</Badge>
       ),
     },
     {
@@ -321,28 +372,17 @@ function BinsContent() {
       ),
     },
     {
-      key: "current_quantity",
-      label: "Fill Level",
+      key: "capacity",
+      label: "Capacity",
       width: 120,
-      render: (bin) => {
-        const percentage = bin.current_quantity && bin.max_quantity
-          ? (bin.current_quantity / bin.max_quantity) * 100
-          : 0;
-        return (
-          <div className="space-y-1">
-            <span className="text-sm">{bin.current_quantity || 0} / {bin.max_quantity || 0}</span>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full ${
-                  percentage > 80 ? 'bg-red-500' :
-                  percentage > 60 ? 'bg-yellow-500' : 'bg-green-500'
-                }`}
-                style={{ width: `${Math.min(percentage, 100)}%` }}
-              />
-            </div>
-          </div>
-        );
-      },
+      render: (bin) => (
+        <div className="space-y-1">
+          <span className="text-sm">{bin.capacity ? `${bin.capacity} units` : "N/A"}</span>
+          {bin.weight_capacity && (
+            <span className="text-xs text-muted-foreground">{bin.weight_capacity} kg max</span>
+          )}
+        </div>
+      ),
     },
     {
       key: "status",
@@ -353,16 +393,27 @@ function BinsContent() {
           bin.status === "available" ? "default" :
           bin.status === "occupied" ? "secondary" : "destructive"
         }>
-          {bin.status.charAt(0).toUpperCase() + bin.status.slice(1)}
+          {bin.status?.charAt(0).toUpperCase() + bin.status?.slice(1)}
         </Badge>
       ),
     },
   ];
 
-  const transformedBins: (BinData & TableData)[] = sampleBins.map((bin) => ({
+  const transformedBins: (BinData & TableData)[] = bins.map((bin) => ({
     ...bin,
     id: bin.bin_id,
   }));
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading bins...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -372,7 +423,7 @@ function BinsContent() {
           <p className="text-muted-foreground">Manage individual storage bins</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default">
+          <Button variant="outline" size="default" onClick={fetchBins}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -390,7 +441,7 @@ function BinsContent() {
           <AdvancedTable
             data={transformedBins}
             columns={binColumns}
-            loading={false}
+            loading={loading}
             title="Storage Bins"
             emptyMessage="No bins found"
           />
