@@ -400,32 +400,31 @@ export default function ProfilePage() {
             <Button onClick={() => setEditMode(true)}>
               <Edit className="mr-2 h-4 w-4" />
               {intl.formatMessage({ id: 'profile.editProfile' })}
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => {
+                setEditMode(false);
+                setError(null);
+                form.reset();
+              }}>
+                {intl.formatMessage({ id: 'common.cancel' })}
               </Button>
-            ) : (
-              <>
-                <Button variant="outline" onClick={() => {
-                  setEditMode(false);
-                  setError(null);
-                  form.reset();
-                }}>
-                  {intl.formatMessage({ id: 'common.cancel' })}
-                </Button>
-                <Button 
-                  onClick={form.handleSubmit(onSubmit)}
-                  disabled={updating}
-                >
-                  {updating ? (
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  {intl.formatMessage({ id: 'common.update' })}
-                </Button>
-              </>
-            )}
-          </div>
-        }
-      />
+              <Button
+                onClick={form.handleSubmit(onSubmit)}
+                disabled={updating}
+              >
+                {updating ? (
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                {intl.formatMessage({ id: 'common.update' })}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
       
       {error && (
         <Alert variant="destructive">
