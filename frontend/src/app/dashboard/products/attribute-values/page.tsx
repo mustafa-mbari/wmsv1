@@ -484,11 +484,7 @@ export default function AttributeValuesPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button variant="outline" size="default" onClick={handleRefresh} disabled={loading}>
-              <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> 
-              Refresh
-            </Button>
+          <div>
             {canPerformAdminActions && (
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
@@ -677,6 +673,98 @@ export default function AttributeValuesPage() {
           delete: { label: "Delete", icon: <Trash2 className="h-4 w-4" /> }
         } : undefined}
         emptyMessage="No attribute values found. Start by creating attribute values for your products."
+        refreshButton={
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
+            Refresh
+          </Button>
+        }
+        addButton={
+          canPerformAdminActions && (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => { resetForm(); setIsCreateDialogOpen(true); }}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Value
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Create Attribute Value</DialogTitle>
+                  <DialogDescription>
+                    Add a new value for a product attribute.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="product">Product</Label>
+                    <Select
+                      value={formData.product_id}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, product_id: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {products.map((product) => (
+                          <SelectItem key={product.id} value={product.id.toString()}>
+                            {product.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="attribute">Attribute</Label>
+                    <Select
+                      value={formData.attribute_id}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, attribute_id: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an attribute" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {attributes.map((attribute) => (
+                          <SelectItem key={attribute.id} value={attribute.id.toString()}>
+                            {attribute.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="value">Value</Label>
+                    <Input
+                      id="value"
+                      value={formData.value}
+                      onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
+                      placeholder="Enter attribute value"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateDialogOpen(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreate} disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Value"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )
+        }
       />
 
       {/* Edit Dialog */}

@@ -636,267 +636,6 @@ export default function ProductsPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchProducts} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" /> 
-                    Add Product
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Create New Product</DialogTitle>
-                    <DialogDescription>
-                      Fill in the details to create a new product.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Product Name*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Product name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="sku"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>SKU*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="SKU" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={createForm.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Product description" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={createForm.control}
-                        name="categoryId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Category*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value || undefined}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select category" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {categories.filter(category => category.id && category.is_active !== false).map((category) => (
-                                  <SelectItem key={category.id} value={category.id.toString()}>
-                                    {category.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="grid grid-cols-3 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="familyId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Family</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value || undefined}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select family" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">No Family</SelectItem>
-                                  {families.filter(family => family.id && family.is_active !== false).map((family) => (
-                                    <SelectItem key={family.id} value={family.id.toString()}>
-                                      {family.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="brandId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Brand</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value || undefined}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select brand" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">No Brand</SelectItem>
-                                  {brands.filter(brand => brand.id && brand.is_active !== false).map((brand) => (
-                                    <SelectItem key={brand.id} value={brand.id.toString()}>
-                                      {brand.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="unitId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Unit*</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value || undefined}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select unit" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {units.filter(unit => unit.id && unit.is_active !== false).map((unit) => (
-                                    <SelectItem key={unit.id} value={unit.id.toString()}>
-                                      {unit.name} ({unit.symbol})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="price"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Price*</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  step="0.01"
-                                  placeholder="0.00" 
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="cost"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Cost*</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  step="0.01"
-                                  placeholder="0.00" 
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="quantity"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Quantity*</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  placeholder="0" 
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={createForm.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Status</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value || undefined}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
-                                <SelectItem value="discontinued">Discontinued</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <Package className="mr-2 h-4 w-4" />
-                          Create Product
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -982,33 +721,291 @@ export default function ProductsPage() {
         </Card>
       </div>
 
+
       {/* Main Products Table */}
-      <Card className="shadow-lg border-0 bg-card">
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <AdvancedTable
-              data={transformedProducts}
-              columns={columnConfig}
-              loading={loading}
-              title="Product Inventory"
-              onRowSelect={handleProductSelection}
-              onBulkAction={handleBulkAction}
-              onRowEdit={canPerformAdminActions ? handleProductEdit : undefined}
-              onRowDelete={canPerformAdminActions ? handleProductDelete : undefined}
-              onRowView={handleProductView}
-              actions={{
-                view: { label: "View Details" },
-                edit: canPerformAdminActions ? { label: "Edit Product" } : undefined,
-                delete: canPerformAdminActions ? { label: "Delete Product" } : undefined,
-              }}
-              bulkActions={canPerformAdminActions ? [
-                { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
-              ] : []}
-              emptyMessage="No products found"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AdvancedTable
+        data={transformedProducts}
+        columns={columnConfig}
+        loading={loading}
+        title="Product Inventory"
+        onRowSelect={handleProductSelection}
+        onBulkAction={handleBulkAction}
+        onRowEdit={canPerformAdminActions ? handleProductEdit : undefined}
+        onRowDelete={canPerformAdminActions ? handleProductDelete : undefined}
+        onRowView={handleProductView}
+        actions={{
+          view: { label: "View Details" },
+          edit: canPerformAdminActions ? { label: "Edit Product" } : undefined,
+          delete: canPerformAdminActions ? { label: "Delete Product" } : undefined,
+        }}
+        bulkActions={canPerformAdminActions ? [
+          { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
+        ] : []}
+        emptyMessage="No products found"
+        refreshButton={
+          <Button onClick={fetchProducts} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        }
+        addButton={
+          canPerformAdminActions ? (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Product
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Create New Product</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details to create a new product.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...createForm}>
+                  <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product Name*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Product name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="sku"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>SKU*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="SKU" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={createForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Product description" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={createForm.control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category*</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || undefined}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {categories.filter(category => category.id && category.is_active !== false).map((category) => (
+                                <SelectItem key={category.id} value={category.id.toString()}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="familyId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Family</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select family" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">No Family</SelectItem>
+                                {families.filter(family => family.id && family.is_active !== false).map((family) => (
+                                  <SelectItem key={family.id} value={family.id.toString()}>
+                                    {family.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="brandId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Brand</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select brand" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">No Brand</SelectItem>
+                                {brands.filter(brand => brand.id && brand.is_active !== false).map((brand) => (
+                                  <SelectItem key={brand.id} value={brand.id.toString()}>
+                                    {brand.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="unitId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Unit*</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select unit" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {units.filter(unit => unit.id && unit.is_active !== false).map((unit) => (
+                                  <SelectItem key={unit.id} value={unit.id.toString()}>
+                                    {unit.name} ({unit.symbol})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price*</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="cost"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Cost*</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="quantity"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantity*</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={createForm.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Status</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || undefined}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="inactive">Inactive</SelectItem>
+                              <SelectItem value="discontinued">Discontinued</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        <Package className="mr-2 h-4 w-4" />
+                        Create Product
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          ) : undefined
+        }
+      />
 
       {/* Edit Product Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

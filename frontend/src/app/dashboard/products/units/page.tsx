@@ -279,11 +279,11 @@ export default function UnitsPage() {
   // Transform units to TableData format for the table
   const transformedUnits: (Unit & TableData)[] = useMemo(() => {
     if (!units) return [];
-    
+
     return units.map((unit: Unit) => ({
       ...unit,
       id: String(unit.id),
-    }));
+    } as Unit & TableData));
   }, [units]);
 
   // Define column configuration for the table
@@ -466,11 +466,7 @@ export default function UnitsPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchUnits} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
-              Refresh
-            </Button>
+          <div>
             {canPerformAdminActions && (
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
@@ -736,6 +732,136 @@ export default function UnitsPage() {
                 delete: canPerformAdminActions ? { label: "Delete Unit" } : undefined,
               }}
               emptyMessage="No units found"
+              refreshButton={
+                <Button onClick={fetchUnits} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions && (
+                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Unit
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Unit</DialogTitle>
+                        <DialogDescription>
+                          Add a new unit of measure for products.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...createForm}>
+                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Unit Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Unit name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="symbol"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Symbol*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="kg, pcs, L" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={createForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Unit description" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="unitType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Unit Type*</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select unit type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {UNIT_TYPES.map((type) => (
+                                        <SelectItem key={type.value} value={type.value}>
+                                          {type.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={createForm.control}
+                              name="isActive"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                  <div className="space-y-0.5">
+                                    <FormLabel>Active</FormLabel>
+                                    <FormDescription>
+                                      Unit is available for product assignment
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit">
+                              <Ruler className="mr-2 h-4 w-4" />
+                              Create Unit
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )
+              }
             />
           </div>
         </CardContent>
@@ -860,7 +986,7 @@ export default function UnitsPage() {
               {!canPerformAdminActions ? "Permission Denied" : "Delete Multiple Units"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {!canPerformAdminActions 
+              {!canPerformAdminActions
                 ? "You don't have permission to delete units. Only authorized personnel can perform this action."
                 : `Are you sure you want to permanently delete ${bulkDeleteUnitIds.length} unit${bulkDeleteUnitIds.length === 1 ? '' : 's'}? This action cannot be undone and may affect products using these units.`
               }
@@ -869,7 +995,7 @@ export default function UnitsPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             {canPerformAdminActions && (
-              <AlertDialogAction 
+              <AlertDialogAction
                 onClick={handleBulkDeleteConfirm}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
@@ -879,6 +1005,8 @@ export default function UnitsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* General Alert Dialog */}
       <AlertComponent />
     </div>
   );

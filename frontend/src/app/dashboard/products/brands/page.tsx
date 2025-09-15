@@ -452,141 +452,6 @@ export default function BrandsPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchBrands} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" /> 
-                    Add Brand
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle>Create New Brand</DialogTitle>
-                    <DialogDescription>
-                      Add a new brand for product organization.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Brand Name*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Brand name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="slug"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Brand Slug*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="brand-slug" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={createForm.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Brand description" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="website"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Website</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://www.example.com" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Brand's official website URL
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="logoUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Logo URL</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://example.com/logo.png" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              URL to the brand's logo image
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="isActive"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                            <div className="space-y-0.5">
-                              <FormLabel>Active</FormLabel>
-                              <FormDescription>
-                                Brand is available for product assignment
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <Award className="mr-2 h-4 w-4" />
-                          Create Brand
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -680,16 +545,146 @@ export default function BrandsPage() {
               loading={loading}
               onRowSelect={handleBrandSelection}
               onBulkAction={handleBulkAction}
-              onRowAction={handleRowAction}
-              searchPlaceholder="Search brands..."
-              enableBulkActions={canPerformAdminActions}
-              bulkActions={[
-                { id: 'delete', label: 'Delete Selected', variant: 'destructive' }
-              ]}
-              rowActions={[
-                { id: 'edit', label: 'Edit', icon: Edit },
-                { id: 'delete', label: 'Delete', icon: Trash2, variant: 'destructive' }
-              ]}
+              onRowEdit={canPerformAdminActions ? (brand) => handleEdit(brand as unknown as Brand) : undefined}
+              onRowDelete={canPerformAdminActions ? (brand) => handleDelete(brand as unknown as Brand) : undefined}
+              onRowView={(brand) => console.log("View brand:", brand.name)}
+              refreshButton={
+                <Button onClick={fetchBrands} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions && (
+                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Brand
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Brand</DialogTitle>
+                        <DialogDescription>
+                          Add a new brand for product organization.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...createForm}>
+                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Brand Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Brand name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="slug"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Brand Slug*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="brand-slug" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={createForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Brand description" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="website"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Website</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="https://www.example.com" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  Brand's official website URL
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="logoUrl"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Logo URL</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="https://example.com/logo.png" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  URL to the brand's logo image
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="isActive"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                  <FormLabel>Active</FormLabel>
+                                  <FormDescription>
+                                    Brand is available for product assignment
+                                  </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+
+                          <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit">
+                              <Award className="mr-2 h-4 w-4" />
+                              Create Brand
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )
+              }
             />
           </div>
         </CardContent>

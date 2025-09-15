@@ -3,3572 +3,7 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {
-    "/api/attribute-options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all attribute options
-         * @description Retrieve all attribute options with associated attribute information and usage counts
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Attribute options retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create a new attribute option
-         * @description Create a new option for a specific product attribute
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateAttributeOptionRequest"];
-                };
-            };
-            responses: {
-                /** @description Attribute option created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attribute-options/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update an attribute option
-         * @description Update an existing attribute option by ID
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute option unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateAttributeOptionRequest"];
-                };
-            };
-            responses: {
-                /** @description Attribute option updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete an attribute option
-         * @description Permanently delete an attribute option by ID
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute option unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Attribute option deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attributes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all product attributes
-         * @description Retrieve all active product attributes with option and value counts
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product attributes retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create a new product attribute
-         * @description Create a new product attribute with filtering and search capabilities
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateAttributeRequest"];
-                };
-            };
-            responses: {
-                /** @description Product attribute created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attributes/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update a product attribute
-         * @description Update an existing product attribute by ID
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateAttributeRequest"];
-                };
-            };
-            responses: {
-                /** @description Product attribute updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete a product attribute
-         * @description Soft delete a product attribute by setting deleted_at timestamp
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product attribute deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attributes/{id}/options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get attribute options
-         * @description Retrieve all available options for a specific product attribute
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Attribute options retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attribute-values": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all attribute values
-         * @description Retrieve all attribute values with associated product and attribute information
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Attribute values retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create a new attribute value
-         * @description Assign an attribute value to a product (either custom value or selected option)
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateAttributeValueRequest"];
-                };
-            };
-            responses: {
-                /** @description Attribute value created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attribute-values/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update an attribute value
-         * @description Update an existing attribute value by ID
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute value unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateAttributeValueRequest"];
-                };
-            };
-            responses: {
-                /** @description Attribute value updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete an attribute value
-         * @description Permanently delete an attribute value by ID
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Attribute value unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Attribute value deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/attribute-values/product/{productId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get attribute values for a product
-         * @description Retrieve all attribute values assigned to a specific product
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Product unique identifier
-                     * @example 5
-                     */
-                    productId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product attribute values retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * User login
-         * @description Authenticate user with email and password
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LoginRequest"];
-                };
-            };
-            responses: {
-                /** @description Login successful */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LoginResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get current user profile
-         * @description Retrieve the profile information of the currently authenticated user
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User profile retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: components["schemas"]["User"];
-                            };
-                            /** @example User retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Register a new user
-         * @description Create a new user account with the provided information
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RegisterRequest"];
-                };
-            };
-            responses: {
-                /** @description User registered successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: components["schemas"]["User"];
-                                /** @description JWT authentication token */
-                                token?: string;
-                            };
-                            /** @example User registered successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                /** @description Conflict - User already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "User with this email or username already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/brands": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all brands
-         * @description Retrieve all brands with optional filtering, pagination, and product counts
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /**
-                     * @description Page number for pagination
-                     * @example 1
-                     */
-                    page?: number;
-                    /**
-                     * @description Number of items per page
-                     * @example 10
-                     */
-                    limit?: number;
-                    /**
-                     * @description Search in brand name and description
-                     * @example apple
-                     */
-                    search?: string;
-                    /**
-                     * @description Filter by brand status
-                     * @example active
-                     */
-                    status?: "active" | "inactive" | "all";
-                    /**
-                     * @description Field to sort by
-                     * @example name
-                     */
-                    sortBy?: "name" | "createdAt" | "updatedAt" | "productCount";
-                    /**
-                     * @description Sort order
-                     * @example asc
-                     */
-                    sortOrder?: "asc" | "desc";
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Brands retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                brands?: components["schemas"]["Brand"][];
-                                pagination?: {
-                                    /** @example 1 */
-                                    page?: number;
-                                    /** @example 10 */
-                                    limit?: number;
-                                    /** @example 15 */
-                                    total?: number;
-                                    /** @example 2 */
-                                    totalPages?: number;
-                                    /** @example true */
-                                    hasNextPage?: boolean;
-                                    /** @example false */
-                                    hasPrevPage?: boolean;
-                                };
-                            };
-                            /** @example Brands retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create new brand
-         * @description Create a new brand. Requires admin privileges.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateBrandRequest"];
-                };
-            };
-            responses: {
-                /** @description Brand created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                brand?: components["schemas"]["Brand"];
-                            };
-                            /** @example Brand created successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Brand name is required"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - Brand with same name already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Brand with name 'Apple' already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/brands/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update brand
-         * @description Update an existing brand with new information. Requires admin privileges.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Brand unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateBrandRequest"];
-                };
-            };
-            responses: {
-                /** @description Brand updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                brand?: components["schemas"]["Brand"];
-                            };
-                            /** @example Brand updated successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid brand data"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Brand with same name already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Brand with this name already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete brand
-         * @description Soft delete a brand by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Brand unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Brand deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: Record<string, never> | null;
-                            /** @example Brand deleted successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid brand ID */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid brand ID"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Brand not found or already deleted */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Brand not found"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Conflict - Brand has associated products */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Cannot delete brand with associated products"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all categories
-         * @description Retrieve all product categories with optional filtering, pagination, and product counts
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /**
-                     * @description Page number for pagination
-                     * @example 1
-                     */
-                    page?: number;
-                    /**
-                     * @description Number of items per page
-                     * @example 10
-                     */
-                    limit?: number;
-                    /**
-                     * @description Search in category name and description
-                     * @example electronics
-                     */
-                    search?: string;
-                    /**
-                     * @description Filter by category status
-                     * @example active
-                     */
-                    status?: "active" | "inactive" | "all";
-                    /**
-                     * @description Field to sort by
-                     * @example name
-                     */
-                    sortBy?: "name" | "createdAt" | "updatedAt" | "productCount";
-                    /**
-                     * @description Sort order
-                     * @example asc
-                     */
-                    sortOrder?: "asc" | "desc";
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Categories retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                categories?: components["schemas"]["Category"][];
-                                pagination?: {
-                                    /** @example 1 */
-                                    page?: number;
-                                    /** @example 10 */
-                                    limit?: number;
-                                    /** @example 25 */
-                                    total?: number;
-                                    /** @example 3 */
-                                    totalPages?: number;
-                                    /** @example true */
-                                    hasNextPage?: boolean;
-                                    /** @example false */
-                                    hasPrevPage?: boolean;
-                                };
-                            };
-                            /** @example Categories retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create new category
-         * @description Create a new product category. Requires admin privileges.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateCategoryRequest"];
-                };
-            };
-            responses: {
-                /** @description Category created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                category?: components["schemas"]["Category"];
-                            };
-                            /** @example Category created successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Category name is required"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - Category with same name already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Category with name 'Electronics' already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/categories/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update category
-         * @description Update an existing category with new information. Requires admin privileges.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Category unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateCategoryRequest"];
-                };
-            };
-            responses: {
-                /** @description Category updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                category?: components["schemas"]["Category"];
-                            };
-                            /** @example Category updated successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid category data"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Category with same name already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Category with this name already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete category
-         * @description Soft delete a category by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Category unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Category deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: Record<string, never> | null;
-                            /** @example Category deleted successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid category ID */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid category ID"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Category not found or already deleted */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Category not found"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Conflict - Category has associated products */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Cannot delete category with associated products"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/families": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all product families
-         * @description Retrieve all active product families with associated categories and product counts
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product families retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create a new product family
-         * @description Create a new product family with category association
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateFamilyRequest"];
-                };
-            };
-            responses: {
-                /** @description Product family created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/families/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update a product family
-         * @description Update an existing product family by ID
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Family unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateFamilyRequest"];
-                };
-            };
-            responses: {
-                /** @description Product family updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete a product family
-         * @description Soft delete a product family by setting deleted_at timestamp
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Family unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product family deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/permissions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all permissions */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of permissions */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Permission"][];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /** Create new permission */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name: string;
-                        slug: string;
-                        description?: string;
-                        module?: string;
-                        is_active?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description Permission created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Permission"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - Permission slug already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/permissions/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get permission by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Permission details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Permission"];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        /** Update permission */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                        slug?: string;
-                        description?: string;
-                        module?: string;
-                        is_active?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description Permission updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Permission"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Permission slug already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /** Delete permission */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Permission deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all products
-         * @description Retrieve all products with optional filtering, pagination, and related data (categories, brands, families, units)
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /**
-                     * @description Page number for pagination
-                     * @example 1
-                     */
-                    page?: number;
-                    /**
-                     * @description Number of items per page
-                     * @example 10
-                     */
-                    limit?: number;
-                    /**
-                     * @description Search in product name, SKU, or description
-                     * @example coffee
-                     */
-                    search?: string;
-                    /**
-                     * @description Filter by category ID
-                     * @example 5
-                     */
-                    categoryId?: string;
-                    /**
-                     * @description Filter by brand ID
-                     * @example 2
-                     */
-                    brandId?: string;
-                    /**
-                     * @description Filter by product status
-                     * @example active
-                     */
-                    status?: "active" | "inactive" | "all";
-                    /**
-                     * @description Field to sort by
-                     * @example name
-                     */
-                    sortBy?: "name" | "sku" | "price" | "createdAt" | "updatedAt";
-                    /**
-                     * @description Sort order
-                     * @example asc
-                     */
-                    sortOrder?: "asc" | "desc";
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Products retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                products?: components["schemas"]["Product"][];
-                                pagination?: {
-                                    /** @example 1 */
-                                    page?: number;
-                                    /** @example 10 */
-                                    limit?: number;
-                                    /** @example 50 */
-                                    total?: number;
-                                    /** @example 5 */
-                                    totalPages?: number;
-                                    /** @example true */
-                                    hasNextPage?: boolean;
-                                    /** @example false */
-                                    hasPrevPage?: boolean;
-                                };
-                            };
-                            /** @example Products retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create new product
-         * @description Create a new product with the provided information. Requires admin privileges.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateProductRequest"];
-                };
-            };
-            responses: {
-                /** @description Product created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                product?: components["schemas"]["Product"];
-                            };
-                            /** @example Product created successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Product name is required"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - Product with same SKU already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Product with SKU 'COFFEE-001' already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/products/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update product
-         * @description Update an existing product with new information. Requires admin privileges.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Product unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateProductRequest"];
-                };
-            };
-            responses: {
-                /** @description Product updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                product?: components["schemas"]["Product"];
-                            };
-                            /** @example Product updated successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid input data or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid product data"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Product with same SKU already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Product with this SKU already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete product
-         * @description Soft delete a product by setting deleted_at timestamp. This action can be reversed. Requires admin privileges.
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Product unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: Record<string, never> | null;
-                            /** @example Product deleted successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Invalid product ID */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Invalid product ID"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Product not found or already deleted */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Product not found"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get current user profile
-         * @description Retrieve the complete profile information of the currently authenticated user
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Profile retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["Profile"];
-                            /** @example Profile retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update current user profile
-         * @description Update profile information for the currently authenticated user
-         */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateProfileRequest"];
-                };
-            };
-            responses: {
-                /** @description Profile updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["Profile"];
-                            /** @example Profile updated successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Email or username already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "User with this email or username already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        trace?: never;
-    };
-    "/api/profile/password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Change user password
-         * @description Change the password for the currently authenticated user
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ChangePasswordRequest"];
-                };
-            };
-            responses: {
-                /** @description Password changed successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                /** @description Bad request - Invalid current password or weak new password */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/profile/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upload profile picture
-         * @description Upload a new profile picture for the currently authenticated user (JPEG/PNG, max 5MB)
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /**
-                         * Format: binary
-                         * @description Profile picture file (JPEG/PNG, max 5MB)
-                         */
-                        avatar: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Avatar uploaded successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["AvatarUploadResponse"];
-                            /** @example Avatar uploaded successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - No file uploaded or invalid file type */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                /** @description Payload too large - File size exceeds 5MB limit */
-                413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        /**
-         * Remove profile picture
-         * @description Remove the current profile picture for the authenticated user
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Avatar removed successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: {
-                                    /** @example 1 */
-                                    id?: number;
-                                    /** @example johndoe */
-                                    username?: string;
-                                    /** @example john.doe@example.com */
-                                    email?: string;
-                                    /** @example John Doe */
-                                    name?: string;
-                                    /** @example null */
-                                    profilePicture?: Record<string, never>;
-                                };
-                            };
-                            /** @example Avatar removed successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/role-permissions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all role-permission assignments */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of role-permission assignments */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["RolePermission"][];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /** Create new role-permission assignment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        role_id: number;
-                        permission_id: number;
-                    };
-                };
-            };
-            responses: {
-                /** @description Role-permission assignment created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["RolePermission"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Role or Permission not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Conflict - Assignment already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/role-permissions/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get role-permission assignment by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Role-permission assignment details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["RolePermission"];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete role-permission assignment */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Role-permission assignment deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/roles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all roles */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of roles */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Role"][];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /** Create new role */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name: string;
-                        slug: string;
-                        description?: string;
-                        is_active?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description Role created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Role"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - Role slug already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/roles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get role by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Role details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Role"];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        /** Update role */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                        slug?: string;
-                        description?: string;
-                        is_active?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description Role updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Role"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Role slug already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /** Delete role */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Role deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/units": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all units of measure
-         * @description Retrieve all active units of measure with product counts
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Units of measure retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create a new unit of measure
-         * @description Create a new unit of measure with symbol and description
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateUnitRequest"];
-                };
-            };
-            responses: {
-                /** @description Unit of measure created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/units/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update a unit of measure
-         * @description Update an existing unit of measure by ID
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Unit unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateUnitRequest"];
-                };
-            };
-            responses: {
-                /** @description Unit of measure updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete a unit of measure
-         * @description Soft delete a unit of measure by setting deleted_at timestamp
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description Unit unique identifier
-                     * @example 1
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Unit of measure deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ApiResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/user-roles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all user-role assignments */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of user-role assignments */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["UserRole"][];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /** Create new user-role assignment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        user_id: number;
-                        role_id: number;
-                    };
-                };
-            };
-            responses: {
-                /** @description User-role assignment created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["UserRole"];
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description User or Role not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Conflict - Assignment already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/user-roles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user-role assignment by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User-role assignment details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["UserRole"];
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete user-role assignment */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User-role assignment deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            message?: string;
-                        };
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all users
-         * @description Retrieve a paginated list of users with optional filtering and sorting
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Page number for pagination */
-                    page?: number;
-                    /** @description Number of items per page */
-                    limit?: number;
-                    /**
-                     * @description Search in username, email, firstName, lastName
-                     * @example john
-                     */
-                    search?: string;
-                    /**
-                     * @description Filter by user role
-                     * @example admin
-                     */
-                    role?: string;
-                    /** @description Filter by user status */
-                    status?: "active" | "inactive" | "all";
-                    /** @description Field to sort by */
-                    sortBy?: "firstName" | "lastName" | "email" | "createdAt" | "updatedAt";
-                    /** @description Sort order */
-                    sortOrder?: "asc" | "desc";
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Users retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                users?: components["schemas"]["User"][];
-                                pagination?: {
-                                    /** @example 1 */
-                                    page?: number;
-                                    /** @example 10 */
-                                    limit?: number;
-                                    /** @example 100 */
-                                    total?: number;
-                                    /** @example 10 */
-                                    totalPages?: number;
-                                    /** @example true */
-                                    hasNextPage?: boolean;
-                                    /** @example false */
-                                    hasPrevPage?: boolean;
-                                };
-                            };
-                            /** @example Users retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        put?: never;
-        /**
-         * Create new user
-         * @description Create a new user account with the provided information. Requires admin privileges.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateUserRequest"];
-                };
-            };
-            responses: {
-                /** @description User created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: components["schemas"]["User"];
-                            };
-                            /** @example User created successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                /** @description Conflict - User already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "User with this email or username already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get user by ID
-         * @description Retrieve a specific user by their unique identifier
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description User unique identifier
-                     * @example 123
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: components["schemas"]["User"];
-                            };
-                            /** @example User retrieved successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        /**
-         * Update user
-         * @description Update an existing user with new information. Requires admin privileges.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description User unique identifier
-                     * @example 123
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateUserRequest"];
-                };
-            };
-            responses: {
-                /** @description User updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                user?: components["schemas"]["User"];
-                            };
-                            /** @example User updated successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description Conflict - Username or email already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Username or email already exists"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        /**
-         * Delete user
-         * @description Permanently delete a user from the system. This action cannot be undone. Requires super admin privileges.
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description User unique identifier
-                     * @example 123
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: Record<string, never>;
-                            /** @example User deleted successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users/{id}/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upload user avatar
-         * @description Upload an avatar image for a specific user. Accepts JPEG and PNG files up to 5MB. Requires admin privileges.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description User unique identifier
-                     * @example 123
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /**
-                         * Format: binary
-                         * @description Avatar image file (JPEG/PNG, max 5MB)
-                         */
-                        avatar: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Avatar uploaded successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                /**
-                                 * @description URL of the uploaded avatar
-                                 * @example /uploads/avatars/avatar-123-1640995200000-123456789.jpg
-                                 */
-                                avatarUrl?: string;
-                                user?: components["schemas"]["User"];
-                            };
-                            /** @example Avatar uploaded successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                401: components["responses"]["Unauthorized"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                /** @description File too large */
-                413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "File size exceeds maximum limit of 5MB"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unsupported media type */
-                415: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Only JPEG and PNG files are allowed"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users/{id}/password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Change user password
-         * @description Change a user's password with current password verification. Requires admin privileges.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /**
-                     * @description User unique identifier
-                     * @example 123
-                     */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: password
-                         * @description Current user password for verification
-                         * @example currentPass123
-                         */
-                        currentPassword: string;
-                        /**
-                         * Format: password
-                         * @description New password (minimum 6 characters)
-                         * @example newPassword123
-                         */
-                        password: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Password changed successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                /** @example Password changed successfully */
-                                message?: string;
-                            };
-                            /** @example Password changed successfully */
-                            message?: string;
-                        };
-                    };
-                };
-                /** @description Bad request - Missing required fields or validation errors */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Current password and new password are required"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Invalid current password */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        /** @example {
-                         *       "success": false,
-                         *       "data": null,
-                         *       "message": "Current password is incorrect"
-                         *     } */
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-}
+export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
@@ -3583,26 +18,19 @@ export interface components {
             error?: string | null;
         };
         User: {
-            /**
-             * @description User unique identifier
-             * @example 123
-             */
-            id: string;
-            /**
-             * @description Unique username
-             * @example johndoe
-             */
+            /** @description User unique identifier */
+            id: number;
+            /** @description User username */
             username: string;
             /**
              * Format: email
              * @description User email address
-             * @example john.doe@example.com
              */
             email: string;
             /** @description User first name */
-            first_name?: string;
+            first_name: string;
             /** @description User last name */
-            last_name?: string;
+            last_name: string;
             /** @description User account status */
             is_active?: boolean;
             /** @description Super admin status */
@@ -3622,56 +50,6 @@ export interface components {
              * @description Last update date
              */
             updated_at?: string;
-            /**
-             * @description User first name
-             * @example John
-             */
-            firstName: string;
-            /**
-             * @description User last name
-             * @example Doe
-             */
-            lastName: string;
-            /**
-             * @description User phone number
-             * @example +1234567890
-             */
-            phone?: string | null;
-            /**
-             * @description User address
-             * @example 123 Main St, City, State
-             */
-            address?: string | null;
-            /**
-             * @description User avatar image URL
-             * @example /uploads/avatars/avatar-123.jpg
-             */
-            avatarUrl?: string | null;
-            /**
-             * @description User account status
-             * @example true
-             */
-            isActive?: boolean;
-            /**
-             * @description User roles
-             * @example [
-             *       "admin",
-             *       "manager"
-             *     ]
-             */
-            roleNames?: string[];
-            /**
-             * Format: date-time
-             * @description Account creation date
-             * @example 2023-01-01T00:00:00Z
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Last update date
-             * @example 2023-01-01T12:00:00Z
-             */
-            updatedAt?: string;
         };
         Role: {
             /** @description Role ID */
@@ -3746,158 +124,569 @@ export interface components {
             role?: components["schemas"]["Role"];
         };
         Product: {
-            /**
-             * @description Product unique identifier
-             * @example 1
-             */
+            /** @description Product unique identifier */
             id: string;
-            /**
-             * @description Product name
-             * @example Premium Coffee Beans
-             */
+            /** @description Product name */
             name: string;
-            /**
-             * @description Product description
-             * @example High-quality arabica coffee beans from Colombia
-             */
+            /** @description Product description */
             description?: string | null;
-            /**
-             * @description Stock Keeping Unit - unique product identifier
-             * @example COFFEE-001
-             */
+            /** @description Product SKU */
             sku: string;
             /**
              * Format: decimal
-             * @description Product price in decimal format
-             * @example 24.99
+             * @description Product price
              */
             price: number;
-            /**
-             * @description Associated category ID
-             * @example 5
-             */
+            /** @description Category ID */
             categoryId?: string | null;
-            /**
-             * @description Associated family ID
-             * @example 3
-             */
+            /** @description Family ID */
             familyId?: string | null;
-            /**
-             * @description Associated brand ID
-             * @example 2
-             */
+            /** @description Brand ID */
             brandId?: string | null;
-            /**
-             * @description Associated unit ID
-             * @example 1
-             */
+            /** @description Unit ID */
             unitId?: string | null;
-            /**
-             * @description Product active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
+            /** @description Product status */
+            isActive?: boolean;
             /**
              * Format: date-time
-             * @description Product creation timestamp
-             * @example 2023-01-01T00:00:00Z
+             * @description Product creation date
              */
             createdAt?: string;
             /**
              * Format: date-time
-             * @description Last update timestamp
-             * @example 2023-01-01T12:00:00Z
+             * @description Last update date
              */
             updatedAt?: string;
-            /** @description Associated category details */
-            category?: components["schemas"]["Category"];
-            /** @description Associated family details */
-            family?: Record<string, never> | null;
-            /** @description Associated brand details */
-            brand?: components["schemas"]["Brand"];
-            /** @description Associated unit details */
-            unit?: Record<string, never> | null;
         };
         Category: {
-            /**
-             * @description Category unique identifier
-             * @example 1
-             */
+            /** @description Category unique identifier */
             id: string;
-            /**
-             * @description Category name
-             * @example Electronics
-             */
+            /** @description Category name */
             name: string;
-            /**
-             * @description Category description
-             * @example Electronic devices and accessories
-             */
+            /** @description Category description */
             description?: string | null;
-            /**
-             * @description Category active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
+            /** @description Category status */
+            isActive?: boolean;
             /**
              * Format: date-time
-             * @description Category creation timestamp
-             * @example 2023-01-01T00:00:00Z
+             * @description Category creation date
              */
             createdAt?: string;
             /**
              * Format: date-time
-             * @description Last update timestamp
-             * @example 2023-01-01T12:00:00Z
+             * @description Last update date
              */
             updatedAt?: string;
-            /**
-             * @description Number of products in this category
-             * @example 25
-             */
-            productCount?: number;
         };
         Brand: {
-            /**
-             * @description Brand unique identifier
-             * @example 1
-             */
+            /** @description Brand unique identifier */
             id: string;
-            /**
-             * @description Brand name
-             * @example Apple
-             */
+            /** @description Brand name */
             name: string;
-            /**
-             * @description Brand description
-             * @example Premium technology and electronics brand
-             */
+            /** @description Brand description */
             description?: string | null;
-            /**
-             * @description Brand active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
+            /** @description Brand status */
+            isActive?: boolean;
             /**
              * Format: date-time
-             * @description Brand creation timestamp
-             * @example 2023-01-01T00:00:00Z
+             * @description Brand creation date
              */
             createdAt?: string;
             /**
              * Format: date-time
-             * @description Last update timestamp
-             * @example 2023-01-01T12:00:00Z
+             * @description Last update date
              */
             updatedAt?: string;
+        };
+        Warehouse: {
+            /** @description Warehouse unique identifier */
+            warehouse_id: string;
+            /** @description Warehouse name */
+            warehouse_name: string;
+            /** @description Unique warehouse code */
+            warehouse_code?: string;
+            /** @description Warehouse address */
+            address?: string | null;
+            /** @description City */
+            city?: string | null;
+            /** @description State/Province */
+            state?: string | null;
+            /** @description Country */
+            country?: string | null;
+            /** @description Postal code */
+            postal_code?: string | null;
+            /** @description Contact person name */
+            contact_person?: string | null;
             /**
-             * @description Number of products from this brand
-             * @example 15
+             * Format: email
+             * @description Contact email
              */
-            productCount?: number;
+            contact_email?: string | null;
+            /** @description Contact phone */
+            contact_phone?: string | null;
+            /**
+             * Format: decimal
+             * @description Total warehouse area
+             */
+            total_area?: number | null;
+            /** @description Unit of area measurement */
+            area_unit?: string | null;
+            /** @description Storage capacity */
+            storage_capacity?: number | null;
+            /** @description Type of warehouse */
+            warehouse_type?: string | null;
+            /**
+             * @description Temperature controlled facility
+             * @default false
+             */
+            temperature_controlled: boolean;
+            /**
+             * @description Current operational status
+             * @default operational
+             * @enum {string}
+             */
+            operational_status: "operational" | "maintenance" | "closed";
+            /**
+             * @description Warehouse active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        WarehouseZone: {
+            /** @description Zone unique identifier */
+            zone_id: string;
+            /** @description Warehouse ID */
+            warehouse_id: string;
+            /** @description Zone name */
+            zone_name: string;
+            /** @description Unique zone code */
+            zone_code: string;
+            /**
+             * @description Type of zone
+             * @enum {string}
+             */
+            zone_type: "receiving" | "shipping" | "storage" | "picking" | "packing" | "staging";
+            /** @description Zone description */
+            description?: string | null;
+            /**
+             * Format: decimal
+             * @description Zone area
+             */
+            area?: number | null;
+            /** @description Zone capacity */
+            capacity?: number | null;
+            /**
+             * Format: double
+             * @description X coordinate of zone center
+             */
+            center_x: number;
+            /**
+             * Format: double
+             * @description Y coordinate of zone center
+             */
+            center_y: number;
+            /**
+             * @description Temperature controlled zone
+             * @default false
+             */
+            temperature_controlled: boolean;
+            /**
+             * @description Zone status
+             * @default operational
+             * @enum {string}
+             */
+            status: "operational" | "maintenance" | "blocked";
+            /**
+             * @description Zone active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        WarehouseAisle: {
+            /** @description Aisle unique identifier */
+            aisle_id: string;
+            /** @description Zone ID */
+            zone_id: string;
+            /** @description Aisle name */
+            aisle_name: string;
+            /** @description Unique aisle code */
+            aisle_code: string;
+            /** @description Aisle description */
+            description?: string | null;
+            /**
+             * Format: decimal
+             * @description Aisle length
+             */
+            length?: number | null;
+            /**
+             * Format: decimal
+             * @description Aisle width
+             */
+            width?: number | null;
+            /**
+             * Format: decimal
+             * @description Aisle height
+             */
+            height?: number | null;
+            /** @description Aisle capacity */
+            capacity?: number | null;
+            /**
+             * Format: double
+             * @description X coordinate of aisle start
+             */
+            start_x: number;
+            /**
+             * Format: double
+             * @description Y coordinate of aisle start
+             */
+            start_y: number;
+            /**
+             * Format: double
+             * @description X coordinate of aisle end
+             */
+            end_x: number;
+            /**
+             * Format: double
+             * @description Y coordinate of aisle end
+             */
+            end_y: number;
+            /**
+             * @description Aisle status
+             * @default operational
+             * @enum {string}
+             */
+            status: "operational" | "blocked";
+            /**
+             * @description Aisle active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        WarehouseRack: {
+            /** @description Rack unique identifier */
+            rack_id: string;
+            /** @description Aisle ID */
+            aisle_id: string;
+            /** @description Rack name */
+            rack_name: string;
+            /** @description Unique rack code */
+            rack_code: string;
+            /**
+             * @description Type of rack
+             * @enum {string|null}
+             */
+            rack_type?: "pallet" | "shelving" | "cantilever" | "drive-in" | null;
+            /** @description Rack description */
+            description?: string | null;
+            /** @description Total number of levels in rack */
+            total_levels: number;
+            /**
+             * Format: double
+             * @description X coordinate of rack center
+             */
+            center_x: number;
+            /**
+             * Format: double
+             * @description Y coordinate of rack center
+             */
+            center_y: number;
+            /**
+             * @description Rack status
+             * @default operational
+             * @enum {string}
+             */
+            status: "operational" | "maintenance";
+            /**
+             * @description Rack active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        WarehouseLevel: {
+            /** @description Level unique identifier */
+            level_id: string;
+            /** @description Rack ID */
+            rack_id: string;
+            /** @description Level name */
+            level_name: string;
+            /** @description Unique level code */
+            level_code: string;
+            /** @description Level number within rack */
+            level_number: number;
+            /** @description Level capacity */
+            capacity?: number | null;
+            /**
+             * @description Level status
+             * @default operational
+             * @enum {string}
+             */
+            status: "operational" | "blocked";
+            /**
+             * @description Level active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        WarehouseLocation: {
+            /** @description Location unique identifier */
+            location_id: string;
+            /** @description Level ID */
+            level_id: string;
+            /** @description Location name */
+            location_name: string;
+            /** @description Unique location code */
+            location_code: string;
+            /**
+             * @description Type of location
+             * @enum {string|null}
+             */
+            location_type?: "picking" | "storage" | "bulk" | "returns" | null;
+            /** @description Location barcode */
+            barcode?: string | null;
+            /**
+             * @description Location priority for picking
+             * @enum {string|null}
+             */
+            location_priority?: "HIGH" | "MEDIUM" | "LOW" | null;
+            /**
+             * @description Location status
+             * @default available
+             * @enum {string}
+             */
+            status: "available" | "occupied" | "reserved" | "blocked";
+            /**
+             * @description Location active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        Inventory: {
+            /** @description Inventory unique identifier */
+            inventory_id: string;
+            /** @description Product ID */
+            product_id: string;
+            /** @description Location ID */
+            location_id: string;
+            /**
+             * Format: decimal
+             * @description Current quantity
+             */
+            quantity: number;
+            /** @description Unit of measure ID */
+            uom_id: string;
+            /** @description Lot number for batch tracking */
+            lot_number?: string | null;
+            /** @description Serial number for individual tracking */
+            serial_number?: string | null;
+            /**
+             * Format: date
+             * @description Expiry date
+             */
+            expiry_date?: string | null;
+            /**
+             * @description Inventory status
+             * @default available
+             * @enum {string}
+             */
+            status: "available" | "reserved" | "damaged" | "expired" | "quarantine";
+            /**
+             * @description Inventory active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        InventoryMovement: {
+            /** @description Movement unique identifier */
+            movement_id: string;
+            /** @description Inventory ID */
+            inventory_id: string;
+            /** @description Source location ID */
+            source_location_id?: string | null;
+            /** @description Destination location ID */
+            destination_location_id?: string | null;
+            /**
+             * Format: decimal
+             * @description Moved quantity
+             */
+            quantity: number;
+            /**
+             * @description Type of movement
+             * @enum {string}
+             */
+            movement_type: "inbound" | "outbound" | "transfer" | "adjustment" | "cycle_count";
+            /** @description Reason for movement */
+            movement_reason?: string | null;
+            /**
+             * @description Approval status
+             * @default pending
+             * @enum {string}
+             */
+            approval_status: "pending" | "approved" | "rejected";
+            /**
+             * Format: date-time
+             * @description Movement date
+             */
+            movement_date?: string;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+        };
+        BinType: {
+            /** @description Bin type unique identifier */
+            type_id: string;
+            /** @description Bin type code */
+            type_code: string;
+            /** @description Bin type name */
+            type_name: string;
+            /** @description Bin type description */
+            description?: string | null;
+            /**
+             * Format: decimal
+             * @description Standard length in cm
+             */
+            standard_length: number;
+            /**
+             * Format: decimal
+             * @description Standard width in cm
+             */
+            standard_width: number;
+            /**
+             * Format: decimal
+             * @description Standard height in cm
+             */
+            standard_height: number;
+            /**
+             * Format: decimal
+             * @description Maximum payload in kg
+             */
+            max_payload: number;
+            /** @description Material type */
+            material: string;
+            /**
+             * @description Can be stacked
+             * @default true
+             */
+            is_stackable: boolean;
+            /**
+             * @description Bin type active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
+        };
+        Bin: {
+            /** @description Bin unique identifier */
+            bin_id: string;
+            /** @description Bin barcode */
+            bin_barcode?: string | null;
+            /** @description Bin name */
+            bin_name?: string | null;
+            /** @description Current location ID */
+            current_location_id?: string | null;
+            /** @description Bin type ID */
+            bin_type?: string | null;
+            /**
+             * @description Bin status
+             * @default available
+             * @enum {string}
+             */
+            bin_status: "available" | "occupied" | "disabled" | "maintenance" | "missing";
+            /**
+             * @description Bin active status
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updated_at?: string;
         };
         Error: {
             /** @example false */
@@ -3907,1106 +696,6 @@ export interface components {
             message: string;
             /** @description Detailed error information */
             error?: string | null;
-        };
-        AttributeOption: {
-            /**
-             * @description Unique identifier for the attribute option
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description ID of the associated attribute
-             * @example 2
-             */
-            attribute_id?: string;
-            /**
-             * @description Name of the associated attribute
-             * @example Color
-             */
-            attribute_name?: string;
-            /**
-             * @description Type of the associated attribute
-             * @example select
-             */
-            attribute_type?: string;
-            /**
-             * @description Value of the attribute option
-             * @example red
-             */
-            value: string;
-            /**
-             * @description Display label for the option
-             * @example Red
-             */
-            label: string;
-            /**
-             * @description Display order of the option
-             * @example 1
-             */
-            sort_order: number;
-            /**
-             * @description Number of times this option is used
-             * @example 8
-             */
-            usage_count?: number;
-            /**
-             * @description Whether the option is active
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * Format: date-time
-             * @description Option creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Option last update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-        };
-        CreateAttributeOptionRequest: {
-            /**
-             * @description ID of the associated attribute
-             * @example 2
-             */
-            attribute_id: string;
-            /**
-             * @description Value of the attribute option
-             * @example red
-             */
-            value: string;
-            /**
-             * @description Display label for the option
-             * @example Red
-             */
-            label: string;
-            /**
-             * @description Display order of the option
-             * @default 0
-             * @example 1
-             */
-            sort_order: number;
-            /**
-             * @description Whether the option should be active
-             * @default true
-             * @example true
-             */
-            is_active: boolean;
-        };
-        UpdateAttributeOptionRequest: {
-            /**
-             * @description ID of the associated attribute
-             * @example 3
-             */
-            attribute_id?: string;
-            /**
-             * @description Value of the attribute option
-             * @example blue
-             */
-            value?: string;
-            /**
-             * @description Display label for the option
-             * @example Blue
-             */
-            label?: string;
-            /**
-             * @description Display order of the option
-             * @example 2
-             */
-            sort_order?: number;
-            /**
-             * @description Whether the option should be active
-             * @example false
-             */
-            is_active?: boolean;
-        };
-        Attribute: {
-            /**
-             * @description Unique identifier for the attribute
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description Name of the product attribute
-             * @example Color
-             */
-            name: string;
-            /**
-             * @description URL-friendly identifier for the attribute
-             * @example color
-             */
-            slug: string;
-            /**
-             * @description Type of the attribute (text, select, multiselect, etc.)
-             * @example select
-             */
-            type: string;
-            /**
-             * @description Description of the attribute
-             * @example Product color options
-             */
-            description?: string | null;
-            /**
-             * @description Whether the attribute is required for products
-             * @example false
-             */
-            is_required: boolean;
-            /**
-             * @description Whether the attribute can be used for filtering
-             * @example true
-             */
-            is_filterable: boolean;
-            /**
-             * @description Whether the attribute is searchable
-             * @example false
-             */
-            is_searchable: boolean;
-            /**
-             * @description Display order of the attribute
-             * @example 1
-             */
-            sort_order: number;
-            /**
-             * @description Number of available options for this attribute
-             * @example 5
-             */
-            option_count?: number;
-            /**
-             * @description Number of values assigned to products
-             * @example 12
-             */
-            value_count?: number;
-            /**
-             * @description Whether the attribute is active
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * Format: date-time
-             * @description Attribute creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Attribute last update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-        };
-        CreateAttributeRequest: {
-            /**
-             * @description Name of the product attribute
-             * @example Color
-             */
-            name: string;
-            /**
-             * @description URL-friendly identifier for the attribute
-             * @example color
-             */
-            slug: string;
-            /**
-             * @description Type of the attribute
-             * @example select
-             */
-            type: string;
-            /**
-             * @description Description of the attribute
-             * @example Product color options
-             */
-            description?: string | null;
-            /**
-             * @description Whether the attribute is required
-             * @default false
-             * @example false
-             */
-            is_required: boolean;
-            /**
-             * @description Whether the attribute can be used for filtering
-             * @default false
-             * @example true
-             */
-            is_filterable: boolean;
-            /**
-             * @description Whether the attribute is searchable
-             * @default false
-             * @example false
-             */
-            is_searchable: boolean;
-            /**
-             * @description Display order of the attribute
-             * @default 0
-             * @example 1
-             */
-            sort_order: number;
-            /**
-             * @description Whether the attribute should be active
-             * @default true
-             * @example true
-             */
-            is_active: boolean;
-        };
-        UpdateAttributeRequest: {
-            /**
-             * @description Name of the product attribute
-             * @example Updated Color
-             */
-            name?: string;
-            /**
-             * @description URL-friendly identifier for the attribute
-             * @example updated-color
-             */
-            slug?: string;
-            /**
-             * @description Type of the attribute
-             * @example multiselect
-             */
-            type?: string;
-            /**
-             * @description Description of the attribute
-             * @example Updated product color options
-             */
-            description?: string | null;
-            /**
-             * @description Whether the attribute is required
-             * @example true
-             */
-            is_required?: boolean;
-            /**
-             * @description Whether the attribute can be used for filtering
-             * @example false
-             */
-            is_filterable?: boolean;
-            /**
-             * @description Whether the attribute is searchable
-             * @example true
-             */
-            is_searchable?: boolean;
-            /**
-             * @description Display order of the attribute
-             * @example 2
-             */
-            sort_order?: number;
-            /**
-             * @description Whether the attribute should be active
-             * @example false
-             */
-            is_active?: boolean;
-        };
-        AttributeValue: {
-            /**
-             * @description Unique identifier for the attribute value
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description ID of the associated product
-             * @example 5
-             */
-            product_id: string;
-            /**
-             * @description Name of the associated product
-             * @example Premium Coffee Beans
-             */
-            product_name?: string;
-            /**
-             * @description SKU of the associated product
-             * @example COFFEE-001
-             */
-            product_sku?: string;
-            /**
-             * @description ID of the associated attribute
-             * @example 2
-             */
-            attribute_id: string;
-            /**
-             * @description Name of the associated attribute
-             * @example Color
-             */
-            attribute_name?: string;
-            /**
-             * @description Type of the associated attribute
-             * @example select
-             */
-            attribute_type?: string;
-            /**
-             * @description Custom value for text-type attributes
-             * @example Dark Red
-             */
-            value?: string | null;
-            /**
-             * @description ID of the selected option for select-type attributes
-             * @example 3
-             */
-            option_id?: string | null;
-            /**
-             * @description Label of the selected option
-             * @example Red
-             */
-            option_label?: string | null;
-            /**
-             * @description Value of the selected option
-             * @example red
-             */
-            option_value?: string | null;
-            /**
-             * Format: date-time
-             * @description Value creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Value last update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-        };
-        CreateAttributeValueRequest: {
-            /**
-             * @description ID of the associated product
-             * @example 5
-             */
-            product_id: string;
-            /**
-             * @description ID of the associated attribute
-             * @example 2
-             */
-            attribute_id: string;
-            /**
-             * @description Custom value for text-type attributes
-             * @example Dark Red
-             */
-            value?: string | null;
-            /**
-             * @description ID of the selected option for select-type attributes
-             * @example 3
-             */
-            option_id?: string | null;
-        };
-        UpdateAttributeValueRequest: {
-            /**
-             * @description ID of the associated product
-             * @example 6
-             */
-            product_id?: string;
-            /**
-             * @description ID of the associated attribute
-             * @example 3
-             */
-            attribute_id?: string;
-            /**
-             * @description Custom value for text-type attributes
-             * @example Light Blue
-             */
-            value?: string | null;
-            /**
-             * @description ID of the selected option for select-type attributes
-             * @example 4
-             */
-            option_id?: string | null;
-        };
-        LoginRequest: {
-            /**
-             * Format: email
-             * @description User email address
-             * @example admin@wms.com
-             */
-            email: string;
-            /**
-             * Format: password
-             * @description User password (minimum 6 characters)
-             * @example admin123
-             */
-            password: string;
-        };
-        LoginResponse: {
-            /** @example true */
-            success?: boolean;
-            data?: {
-                user?: {
-                    /** @description User unique identifier */
-                    id?: string;
-                    /**
-                     * Format: email
-                     * @description User email address
-                     */
-                    email?: string;
-                    /** @description Username */
-                    username?: string;
-                    /** @description Full name */
-                    name?: string;
-                    /** @description First name */
-                    first_name?: string;
-                    /** @description Last name */
-                    last_name?: string;
-                    /** @description Profile picture URL */
-                    profilePicture?: string | null;
-                    /** @description Account status */
-                    is_active?: boolean;
-                    /** @description User roles */
-                    role_names?: string[];
-                    /** Format: date-time */
-                    created_at?: string;
-                    /** Format: date-time */
-                    updated_at?: string;
-                };
-                /** @description JWT authentication token */
-                token?: string;
-            };
-            /** @example Login successful */
-            message?: string;
-        };
-        RegisterRequest: {
-            /**
-             * @description Unique username
-             * @example johndoe
-             */
-            username: string;
-            /**
-             * Format: email
-             * @description User email address
-             * @example john@example.com
-             */
-            email: string;
-            /**
-             * @description First name
-             * @example John
-             */
-            firstName: string;
-            /**
-             * @description Last name
-             * @example Doe
-             */
-            lastName: string;
-            /**
-             * @description Phone number
-             * @example +1234567890
-             */
-            phone?: string | null;
-            /**
-             * @description Address
-             * @example 123 Main St, City, State
-             */
-            address?: string | null;
-            /**
-             * Format: password
-             * @description Password (minimum 6 characters)
-             * @example password123
-             */
-            password: string;
-            /**
-             * @description Account status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * @description Admin privileges
-             * @default false
-             * @example false
-             */
-            isAdmin: boolean;
-        };
-        CreateBrandRequest: {
-            /**
-             * @description Brand name
-             * @example Apple
-             */
-            name: string;
-            /**
-             * @description Brand description
-             * @example Premium technology and electronics brand
-             */
-            description?: string | null;
-            /**
-             * @description Brand active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
-        };
-        UpdateBrandRequest: {
-            /**
-             * @description Brand name
-             * @example Apple
-             */
-            name?: string;
-            /**
-             * @description Brand description
-             * @example Premium technology and electronics brand
-             */
-            description?: string | null;
-            /**
-             * @description Brand active status
-             * @example true
-             */
-            isActive?: boolean;
-        };
-        CreateCategoryRequest: {
-            /**
-             * @description Category name
-             * @example Electronics
-             */
-            name: string;
-            /**
-             * @description Category description
-             * @example Electronic devices and accessories
-             */
-            description?: string | null;
-            /**
-             * @description Category active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
-        };
-        UpdateCategoryRequest: {
-            /**
-             * @description Category name
-             * @example Electronics
-             */
-            name?: string;
-            /**
-             * @description Category description
-             * @example Electronic devices and accessories
-             */
-            description?: string | null;
-            /**
-             * @description Category active status
-             * @example true
-             */
-            isActive?: boolean;
-        };
-        Family: {
-            /**
-             * @description Unique identifier for the family
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description Name of the product family
-             * @example Electronics
-             */
-            name: string;
-            /**
-             * @description Description of the product family
-             * @example Consumer electronics and devices
-             */
-            description?: string | null;
-            /**
-             * @description ID of the associated category
-             * @example 1
-             */
-            category_id?: string | null;
-            /**
-             * @description Name of the associated category
-             * @example Technology
-             */
-            category_name?: string | null;
-            /**
-             * @description Number of products in this family
-             * @example 25
-             */
-            product_count?: number;
-            /**
-             * @description Whether the family is active
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * Format: date-time
-             * @description Family creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Family last update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-        };
-        CreateFamilyRequest: {
-            /**
-             * @description Name of the product family
-             * @example Electronics
-             */
-            name: string;
-            /**
-             * @description Description of the product family
-             * @example Consumer electronics and devices
-             */
-            description?: string | null;
-            /**
-             * @description ID of the associated category
-             * @example 1
-             */
-            category_id?: string | null;
-            /**
-             * @description Whether the family should be active
-             * @default true
-             * @example true
-             */
-            is_active: boolean;
-        };
-        UpdateFamilyRequest: {
-            /**
-             * @description Name of the product family
-             * @example Updated Electronics
-             */
-            name?: string;
-            /**
-             * @description Description of the product family
-             * @example Updated consumer electronics and devices
-             */
-            description?: string | null;
-            /**
-             * @description ID of the associated category
-             * @example 2
-             */
-            category_id?: string | null;
-            /**
-             * @description Whether the family should be active
-             * @example false
-             */
-            is_active?: boolean;
-        };
-        CreateProductRequest: {
-            /**
-             * @description Product name
-             * @example Premium Coffee Beans
-             */
-            name: string;
-            /**
-             * @description Product description
-             * @example High-quality arabica coffee beans from Colombia
-             */
-            description?: string | null;
-            /**
-             * @description Stock Keeping Unit - unique product identifier
-             * @example COFFEE-001
-             */
-            sku: string;
-            /**
-             * Format: decimal
-             * @description Product price in decimal format
-             * @example 24.99
-             */
-            price: number;
-            /**
-             * @description Associated category ID
-             * @example 5
-             */
-            categoryId?: string | null;
-            /**
-             * @description Associated family ID
-             * @example 3
-             */
-            familyId?: string | null;
-            /**
-             * @description Associated brand ID
-             * @example 2
-             */
-            brandId?: string | null;
-            /**
-             * @description Associated unit ID
-             * @example 1
-             */
-            unitId?: string | null;
-            /**
-             * @description Product active status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
-        };
-        UpdateProductRequest: {
-            /**
-             * @description Product name
-             * @example Premium Coffee Beans
-             */
-            name?: string;
-            /**
-             * @description Product description
-             * @example High-quality arabica coffee beans from Colombia
-             */
-            description?: string | null;
-            /**
-             * Format: decimal
-             * @description Product price in decimal format
-             * @example 24.99
-             */
-            price?: number;
-            /**
-             * @description Associated category ID
-             * @example 5
-             */
-            categoryId?: string | null;
-            /**
-             * @description Associated family ID
-             * @example 3
-             */
-            familyId?: string | null;
-            /**
-             * @description Associated brand ID
-             * @example 2
-             */
-            brandId?: string | null;
-            /**
-             * @description Associated unit ID
-             * @example 1
-             */
-            unitId?: string | null;
-            /**
-             * @description Product active status
-             * @example true
-             */
-            isActive?: boolean;
-        };
-        Profile: {
-            /**
-             * @description User unique identifier
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description Unique username
-             * @example johndoe
-             */
-            username: string;
-            /**
-             * Format: email
-             * @description User email address
-             * @example john.doe@example.com
-             */
-            email: string;
-            /**
-             * @description Full name (first + last)
-             * @example John Doe
-             */
-            name: string;
-            /**
-             * @description User first name
-             * @example John
-             */
-            first_name: string;
-            /**
-             * @description User last name
-             * @example Doe
-             */
-            last_name: string;
-            /**
-             * @description User phone number
-             * @example +1234567890
-             */
-            phone?: string | null;
-            /**
-             * @description Profile picture URL
-             * @example /uploads/profile-pictures/avatar-1-123456789.jpg
-             */
-            profilePicture?: string | null;
-            /**
-             * @description User preferred language
-             * @example en
-             */
-            language?: string;
-            /**
-             * @description User timezone
-             * @example UTC
-             */
-            timeZone?: string;
-            /**
-             * @description Account status
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * @description Email verification status
-             * @example true
-             */
-            email_verified?: boolean;
-            /**
-             * Format: date-time
-             * @description Email verification timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            email_verified_at?: string | null;
-            /**
-             * Format: date-time
-             * @description Last login timestamp
-             * @example 2024-01-15T14:20:00Z
-             */
-            last_login_at?: string | null;
-            /**
-             * Format: date-time
-             * @description Last password change timestamp
-             * @example 2024-01-10T09:15:00Z
-             */
-            last_password_change?: string | null;
-            /**
-             * Format: date-time
-             * @description Account creation timestamp
-             * @example 2024-01-01T00:00:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Last profile update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-            /**
-             * @description User role names
-             * @example [
-             *       "admin",
-             *       "manager"
-             *     ]
-             */
-            role_names?: string[];
-            /**
-             * @description User role slugs
-             * @example [
-             *       "admin",
-             *       "manager"
-             *     ]
-             */
-            role_slugs?: string[];
-        };
-        UpdateProfileRequest: {
-            /**
-             * @description Full name (will be split into first and last name)
-             * @example John Smith
-             */
-            name?: string;
-            /**
-             * @description Unique username
-             * @example johnsmith
-             */
-            username?: string;
-            /**
-             * Format: email
-             * @description User email address
-             * @example john.smith@example.com
-             */
-            email?: string;
-            /**
-             * @description User phone number
-             * @example +1987654321
-             */
-            phone?: string | null;
-            /**
-             * @description Profile picture URL
-             * @example /uploads/profile-pictures/avatar-1-987654321.jpg
-             */
-            profilePicture?: string | null;
-            /**
-             * @description User preferred language
-             * @example es
-             */
-            language?: string;
-            /**
-             * @description User timezone
-             * @example America/New_York
-             */
-            timeZone?: string;
-        };
-        ChangePasswordRequest: {
-            /**
-             * Format: password
-             * @description Current password for verification
-             * @example currentpass123
-             */
-            currentPassword: string;
-            /**
-             * Format: password
-             * @description New password (minimum 8 characters)
-             * @example newpassword123
-             */
-            newPassword: string;
-        };
-        AvatarUploadResponse: {
-            /**
-             * @description URL of the uploaded avatar
-             * @example /uploads/profile-pictures/avatar-1-123456789.jpg
-             */
-            avatarUrl?: string;
-            user?: {
-                /** @example 1 */
-                id?: number;
-                /** @example johndoe */
-                username?: string;
-                /** @example john.doe@example.com */
-                email?: string;
-                /** @example John Doe */
-                name?: string;
-                /** @example /uploads/profile-pictures/avatar-1-123456789.jpg */
-                profilePicture?: string | null;
-            };
-        };
-        Unit: {
-            /**
-             * @description Unique identifier for the unit of measure
-             * @example 1
-             */
-            id: string;
-            /**
-             * @description Name of the unit of measure
-             * @example Kilogram
-             */
-            name: string;
-            /**
-             * @description Symbol or abbreviation for the unit
-             * @example kg
-             */
-            symbol: string;
-            /**
-             * @description Description of the unit of measure
-             * @example Unit of mass in metric system
-             */
-            description?: string | null;
-            /**
-             * @description Number of products using this unit
-             * @example 15
-             */
-            product_count?: number;
-            /**
-             * @description Whether the unit is active
-             * @example true
-             */
-            is_active: boolean;
-            /**
-             * Format: date-time
-             * @description Unit creation timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Unit last update timestamp
-             * @example 2024-01-15T10:30:00Z
-             */
-            updated_at: string;
-        };
-        CreateUnitRequest: {
-            /**
-             * @description Name of the unit of measure
-             * @example Kilogram
-             */
-            name: string;
-            /**
-             * @description Symbol or abbreviation for the unit
-             * @example kg
-             */
-            symbol: string;
-            /**
-             * @description Description of the unit of measure
-             * @example Unit of mass in metric system
-             */
-            description?: string | null;
-            /**
-             * @description Whether the unit should be active
-             * @default true
-             * @example true
-             */
-            is_active: boolean;
-        };
-        UpdateUnitRequest: {
-            /**
-             * @description Name of the unit of measure
-             * @example Updated Kilogram
-             */
-            name?: string;
-            /**
-             * @description Symbol or abbreviation for the unit
-             * @example kg
-             */
-            symbol?: string;
-            /**
-             * @description Description of the unit of measure
-             * @example Updated unit of mass in metric system
-             */
-            description?: string | null;
-            /**
-             * @description Whether the unit should be active
-             * @example false
-             */
-            is_active?: boolean;
-        };
-        CreateUserRequest: {
-            /**
-             * Format: email
-             * @description User email address
-             * @example john.doe@example.com
-             */
-            email: string;
-            /**
-             * @description Unique username
-             * @example johndoe
-             */
-            username: string;
-            /**
-             * @description User first name
-             * @example John
-             */
-            firstName: string;
-            /**
-             * @description User last name
-             * @example Doe
-             */
-            lastName: string;
-            /**
-             * @description User phone number
-             * @example +1234567890
-             */
-            phone?: string | null;
-            /**
-             * @description User address
-             * @example 123 Main St, City, State
-             */
-            address?: string | null;
-            /**
-             * Format: password
-             * @description User password (minimum 6 characters)
-             * @example securepassword123
-             */
-            password: string;
-            /**
-             * @description User account status
-             * @default true
-             * @example true
-             */
-            isActive: boolean;
-        };
-        UpdateUserRequest: {
-            /**
-             * @description User first name
-             * @example John
-             */
-            firstName?: string;
-            /**
-             * @description User last name
-             * @example Doe
-             */
-            lastName?: string;
-            /**
-             * @description User phone number
-             * @example +1234567890
-             */
-            phone?: string | null;
-            /**
-             * @description User address
-             * @example 123 Main St, City, State
-             */
-            address?: string | null;
-            /**
-             * @description User account status
-             * @example true
-             */
-            isActive?: boolean;
         };
     };
     responses: {

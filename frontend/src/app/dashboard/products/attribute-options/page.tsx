@@ -469,6 +469,9 @@ export default function AttributeOptionsPage() {
     }
   };
 
+  // Available attributes for selection
+  const availableAttributes = attributes.filter(attr => attr.id);
+
   // Calculate stats
   const totalOptions = transformedOptions.length;
   const activeOptions = transformedOptions.filter(o => o.is_active).length;
@@ -523,134 +526,6 @@ export default function AttributeOptionsPage() {
                 <span className="ml-2 text-sm">(Read Only)</span>
               )}
             </h1>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={handleRefresh} variant="outline" size="default" disabled={loading}>
-              <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> 
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" /> 
-                    Add Option
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle>Create New Attribute Option</DialogTitle>
-                    <DialogDescription>
-                      Add a new option for an attribute like "Red" for color or "Large" for size.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <FormField
-                        control={createForm.control}
-                        name="attribute_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Attribute*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value || undefined}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select attribute" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {attributes.filter(attr => attr.id).map((attribute) => (
-                                  <SelectItem key={attribute.id} value={attribute.id}>
-                                    {attribute.name} ({attribute.type})
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="value"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Value*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="red" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="label"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Label*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Red" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="sort_order"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Sort Order</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  placeholder="0" 
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="is_active"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                              <div className="space-y-0.5">
-                                <FormLabel>Status</FormLabel>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <Save className="mr-2 h-4 w-4" />
-                          Create Option
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
           </div>
         </div>
       </div>
@@ -744,6 +619,136 @@ export default function AttributeOptionsPage() {
                 { label: "Delete", action: "delete", icon: <Trash2 className="h-4 w-4 mr-2" /> },
               ] : []}
               emptyMessage="No attribute options found"
+              refreshButton={
+                <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
+                  <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions && (
+                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Option
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Attribute Option</DialogTitle>
+                        <DialogDescription>
+                          Add a new option for an attribute like "Red" for color or "Large" for size.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...createForm}>
+                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                          <FormField
+                            control={createForm.control}
+                            name="attribute_id"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Attribute*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select attribute" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {availableAttributes.map((attribute) => (
+                                      <SelectItem key={attribute.id} value={attribute.id}>
+                                        {attribute.name} ({attribute.type})
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="value"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Value*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="red" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="label"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Label*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Red" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="sort_order"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Sort Order</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="0"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="is_active"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                  <div className="space-y-0.5">
+                                    <FormLabel>Status</FormLabel>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit">
+                              <Save className="mr-2 h-4 w-4" />
+                              Create Option
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )
+              }
             />
           </div>
         </CardContent>
@@ -822,9 +827,9 @@ export default function AttributeOptionsPage() {
                     <FormItem>
                       <FormLabel>Sort Order</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="0" 
+                        <Input
+                          type="number"
+                          placeholder="0"
                           {...field}
                         />
                       </FormControl>

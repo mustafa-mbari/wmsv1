@@ -278,7 +278,7 @@ export default function AttributesPage() {
     return attributes.map((attribute: Attribute) => ({
       ...attribute,
       id: String(attribute.id),
-    }));
+    } as Attribute & TableData));
   }, [attributes]);
 
   // Define column configuration for the table
@@ -464,11 +464,6 @@ export default function AttributesPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchAttributes} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
-              Refresh
-            </Button>
             {canPerformAdminActions && (
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
@@ -535,7 +530,7 @@ export default function AttributesPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Data Type*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select data type" />
@@ -549,9 +544,6 @@ export default function AttributesPage() {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormDescription>
-                              Determines how this attribute data is stored and validated
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -566,7 +558,7 @@ export default function AttributesPage() {
                               <div className="space-y-0.5">
                                 <FormLabel>Required</FormLabel>
                                 <FormDescription>
-                                  Must be filled for all products
+                                  Must be provided when creating products
                                 </FormDescription>
                               </div>
                               <FormControl>
@@ -600,7 +592,7 @@ export default function AttributesPage() {
                           )}
                         />
                       </div>
-                      
+
                       <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                           Cancel
@@ -615,7 +607,6 @@ export default function AttributesPage() {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
         </div>
       </div>
 
@@ -703,7 +694,7 @@ export default function AttributesPage() {
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <div className="overflow-hidden">
-            <AdvancedTable
+            <AdvancedTable<Attribute & TableData>
               data={transformedAttributes}
               columns={columnConfig}
               loading={loading}
@@ -717,15 +708,33 @@ export default function AttributesPage() {
                 view: { label: "View Details" },
                 edit: canPerformAdminActions ? { label: "Edit Attribute" } : undefined,
                 delete: canPerformAdminActions ? { label: "Delete Attribute" } : undefined,
-                custom: canPerformAdminActions && [
+                custom: canPerformAdminActions ? [
                   {
                     label: "Manage Options",
                     icon: <Sliders className="mr-2 h-4 w-4" />,
                     onClick: (attribute) => console.log("Manage options for:", attribute.name)
                   }
-                ]
+                ] : undefined
               }}
               emptyMessage="No attributes found"
+              refreshButton={
+                <Button onClick={fetchAttributes} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsCreateDialogOpen(true)}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Attribute
+                  </Button>
+                )
+              }
             />
           </div>
         </CardContent>
@@ -771,6 +780,20 @@ export default function AttributesPage() {
                   )}
                 />
               </div>
+
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Attribute description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={editForm.control}

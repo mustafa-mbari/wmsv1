@@ -475,136 +475,6 @@ export default function CategoriesPage() {
               )}
             </h1>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={fetchCategories} variant="outline" size="default">
-              <RefreshCw className="mr-2 h-4 w-4" /> 
-              Refresh
-            </Button>
-            {canPerformAdminActions && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="default">
-                    <Plus className="mr-2 h-4 w-4" /> 
-                    Add Category
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle>Create New Category</DialogTitle>
-                    <DialogDescription>
-                      Add a new product category to organize your inventory.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={createForm.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category Name*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Category name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={createForm.control}
-                          name="slug"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category Slug*</FormLabel>
-                              <FormControl>
-                                <Input placeholder="category-slug" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={createForm.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Category description" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="parentId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Parent Category</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value || undefined}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select parent category (optional)" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="none">None (Root Category)</SelectItem>
-                                {parentCategories.map((category) => (
-                                  <SelectItem key={category.id} value={category.id.toString()}>
-                                    {category.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormDescription>
-                              Leave empty to create a root category
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={createForm.control}
-                        name="isActive"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                            <div className="space-y-0.5">
-                              <FormLabel>Active</FormLabel>
-                              <FormDescription>
-                                Category is available for product assignment
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <FolderOpen className="mr-2 h-4 w-4" />
-                          Create Category
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
       </div>
 
@@ -688,6 +558,7 @@ export default function CategoriesPage() {
         </Card>
       </div>
 
+
       {/* Main Categories Table */}
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
@@ -712,6 +583,138 @@ export default function CategoriesPage() {
                 { label: "Export", action: "export", icon: <Download className="h-4 w-4 mr-2" /> },
               ]}
               emptyMessage="No categories found"
+              refreshButton={
+                <Button onClick={fetchCategories} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions && (
+                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Category
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Category</DialogTitle>
+                        <DialogDescription>
+                          Add a new product category to organize your inventory.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...createForm}>
+                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Category Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Category name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="slug"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Category Slug*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="category-slug" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={createForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Category description" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="parentId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Parent Category</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select parent category (optional)" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="none">None (Root Category)</SelectItem>
+                                    {parentCategories.map((category) => (
+                                      <SelectItem key={category.id} value={category.id.toString()}>
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormDescription>
+                                  Leave empty to create a root category
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="isActive"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                  <FormLabel>Active</FormLabel>
+                                  <FormDescription>
+                                    Category is available for product assignment
+                                  </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+
+                          <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit">
+                              <FolderOpen className="mr-2 h-4 w-4" />
+                              Create Category
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )
+              }
             />
           </div>
         </CardContent>
