@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, ArrowUpDown, ClipboardList, FileText, Calendar } from "lucide-react";
 import { InventoryTab } from "./tabs/inventory-tab";
@@ -9,48 +10,50 @@ import { InventoryCountDetailsTab } from "./tabs/inventory-count-details-tab";
 import { InventoryReservationsTab } from "./tabs/inventory-reservations-tab";
 
 export function InventoryTabsNavigation() {
-  const defaultTab = "inventory";
+  const [activeTab, setActiveTab] = useState("inventory");
 
   return (
     <div className="w-full space-y-6">
-      <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-lg">
-          <TabsTrigger
-            value="inventory"
-            className="flex items-center gap-2 data-[state=active]:bg-primary/[0.02] data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-sm data-[state=inactive]:bg-background data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-2 data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 font-medium"
-          >
-            <Package className="h-4 w-4" />
-            Inventory
-          </TabsTrigger>
-          <TabsTrigger
-            value="movements"
-            className="flex items-center gap-2 data-[state=active]:bg-primary/[0.02] data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-sm data-[state=inactive]:bg-background data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-2 data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 font-medium"
-          >
-            <ArrowUpDown className="h-4 w-4" />
-            Movements
-          </TabsTrigger>
-          <TabsTrigger
-            value="counts"
-            className="flex items-center gap-2 data-[state=active]:bg-primary/[0.02] data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-sm data-[state=inactive]:bg-background data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-2 data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 font-medium"
-          >
-            <ClipboardList className="h-4 w-4" />
-            Counts
-          </TabsTrigger>
-          <TabsTrigger
-            value="count-details"
-            className="flex items-center gap-2 data-[state=active]:bg-primary/[0.02] data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-sm data-[state=inactive]:bg-background data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-2 data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 font-medium"
-          >
-            <FileText className="h-4 w-4" />
-            Details
-          </TabsTrigger>
-          <TabsTrigger
-            value="reservations"
-            className="flex items-center gap-2 data-[state=active]:bg-primary/[0.02] data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-sm data-[state=inactive]:bg-background data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-2 data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 font-medium"
-          >
-            <Calendar className="h-4 w-4" />
-            Reservations
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="border-b border-border/40 bg-background/50 backdrop-blur-sm rounded-lg p-2">
+          <TabsList className="grid grid-cols-5 w-full h-auto p-1 bg-muted/30">
+            <TabsTrigger
+              value="inventory"
+              className="flex items-center gap-2 px-4 py-3 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">Inventory</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="movements"
+              className="flex items-center gap-2 px-4 py-3 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <ArrowUpDown className="h-4 w-4" />
+              <span className="hidden sm:inline">Movements</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="counts"
+              className="flex items-center gap-2 px-4 py-3 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <ClipboardList className="h-4 w-4" />
+              <span className="hidden sm:inline">Counts</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="count-details"
+              className="flex items-center gap-2 px-4 py-3 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Details</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="reservations"
+              className="flex items-center gap-2 px-4 py-3 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Reservations</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="inventory" className="space-y-4">
           <InventoryTab />
