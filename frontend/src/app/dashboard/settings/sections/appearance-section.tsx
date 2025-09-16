@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/components/providers/settings-provider';
 import { useTheme } from '@/components/ui/theme-provider';
-import { Sun, Moon, Monitor, Palette } from 'lucide-react';
+import { Sun, Moon, Monitor, Palette, Check } from 'lucide-react';
 
 export function AppearanceSection() {
   const intl = useIntl();
@@ -35,22 +35,37 @@ export function AppearanceSection() {
     },
   ];
 
-  const accentColors = [
-    { value: 'default' as const, color: 'hsl(221.2, 83.2%, 53.3%)', labelKey: 'settings.appearance.accentColors.default' },
-    { value: 'blue' as const, color: 'hsl(217.2, 91.2%, 59.8%)', labelKey: 'settings.appearance.accentColors.blue' },
-    { value: 'darkBlue' as const, color: 'hsl(220, 90%, 35%)', labelKey: 'settings.appearance.accentColors.darkBlue' },
-    { value: 'navyBlue' as const, color: 'hsl(218, 81%, 25%)', labelKey: 'settings.appearance.accentColors.navyBlue' },
-    { value: 'custom' as const, color: '#283991', labelKey: 'settings.appearance.accentColors.custom' },
-    { value: 'green' as const, color: 'hsl(142.1, 76.2%, 36.3%)', labelKey: 'settings.appearance.accentColors.green' },
-    { value: 'purple' as const, color: 'hsl(262.1, 83.3%, 57.8%)', labelKey: 'settings.appearance.accentColors.purple' },
-    { value: 'darkPurple' as const, color: 'hsl(258, 75%, 35%)', labelKey: 'settings.appearance.accentColors.darkPurple' },
-    { value: 'deepPurple' as const, color: 'hsl(265, 85%, 25%)', labelKey: 'settings.appearance.accentColors.deepPurple' },
-    { value: 'red' as const, color: 'hsl(0, 72.2%, 50.6%)', labelKey: 'settings.appearance.accentColors.red' },
-    { value: 'orange' as const, color: 'hsl(24.6, 95%, 53.1%)', labelKey: 'settings.appearance.accentColors.orange' },
-    { value: 'pink' as const, color: 'hsl(330.4, 81.2%, 60.4%)', labelKey: 'settings.appearance.accentColors.pink' },
-    { value: 'black' as const, color: 'hsl(0, 0%, 15%)', labelKey: 'settings.appearance.accentColors.black' },
-    { value: 'slate' as const, color: 'hsl(215, 16%, 35%)', labelKey: 'settings.appearance.accentColors.slate' },
-    { value: 'teal' as const, color: 'hsl(173, 80%, 40%)', labelKey: 'settings.appearance.accentColors.teal' },
+  const accentColorGroups = [
+    {
+      name: 'Blues',
+      colors: [
+        { value: 'default' as const, color: 'hsl(221.2, 83.2%, 53.3%)', name: 'Default Blue', labelKey: 'settings.appearance.accentColors.default' },
+        { value: 'blue' as const, color: 'hsl(217.2, 91.2%, 59.8%)', name: 'Sky Blue', labelKey: 'settings.appearance.accentColors.blue' },
+        { value: 'darkBlue' as const, color: 'hsl(220, 90%, 35%)', name: 'Dark Blue', labelKey: 'settings.appearance.accentColors.darkBlue' },
+        { value: 'navyBlue' as const, color: 'hsl(218, 81%, 25%)', name: 'Navy Blue', labelKey: 'settings.appearance.accentColors.navyBlue' },
+        { value: 'custom' as const, color: '#283991', name: 'Corporate Blue', labelKey: 'settings.appearance.accentColors.custom' },
+        { value: 'teal' as const, color: 'hsl(173, 80%, 40%)', name: 'Teal', labelKey: 'settings.appearance.accentColors.teal' },
+      ]
+    },
+    {
+      name: 'Vibrant',
+      colors: [
+        { value: 'green' as const, color: 'hsl(142.1, 76.2%, 36.3%)', name: 'Emerald', labelKey: 'settings.appearance.accentColors.green' },
+        { value: 'purple' as const, color: 'hsl(262.1, 83.3%, 57.8%)', name: 'Purple', labelKey: 'settings.appearance.accentColors.purple' },
+        { value: 'red' as const, color: 'hsl(0, 72.2%, 50.6%)', name: 'Ruby Red', labelKey: 'settings.appearance.accentColors.red' },
+        { value: 'orange' as const, color: 'hsl(24.6, 95%, 53.1%)', name: 'Orange', labelKey: 'settings.appearance.accentColors.orange' },
+        { value: 'pink' as const, color: 'hsl(330.4, 81.2%, 60.4%)', name: 'Pink', labelKey: 'settings.appearance.accentColors.pink' },
+      ]
+    },
+    {
+      name: 'Deep Tones',
+      colors: [
+        { value: 'darkPurple' as const, color: 'hsl(258, 75%, 35%)', name: 'Dark Purple', labelKey: 'settings.appearance.accentColors.darkPurple' },
+        { value: 'deepPurple' as const, color: 'hsl(265, 85%, 25%)', name: 'Deep Purple', labelKey: 'settings.appearance.accentColors.deepPurple' },
+        { value: 'slate' as const, color: 'hsl(215, 16%, 35%)', name: 'Slate', labelKey: 'settings.appearance.accentColors.slate' },
+        { value: 'black' as const, color: 'hsl(0, 0%, 15%)', name: 'Charcoal', labelKey: 'settings.appearance.accentColors.black' },
+      ]
+    }
   ];
 
   const fontSizeOptions = [
@@ -101,7 +116,7 @@ export function AppearanceSection() {
       </div>
 
       {/* Accent Color */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
           <Label className="text-base font-medium">
             {intl.formatMessage({ id: 'settings.appearance.accentColor' })}
@@ -110,31 +125,80 @@ export function AppearanceSection() {
             Choose your preferred accent color for highlights and interactive elements
           </p>
         </div>
-        <div className="grid grid-cols-10 gap-0">
-          {accentColors.map((color) => (
-            <button
-              key={color.value}
-              onClick={() => updateSetting('accentColor', color.value)}
-              className={`
-                relative w-12 h-12 rounded-md border-2 transition-all hover:scale-105
-                ${settings.accentColor === color.value
-                  ? 'border-foreground shadow-lg'
-                  : 'border-muted-foreground/20 hover:border-muted-foreground/40'
-                }
-              `}
-              style={{ backgroundColor: color.color }}
-              title={intl.formatMessage({ id: color.labelKey })}
-            >
-              {settings.accentColor === color.value && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-white/90 flex items-center justify-center">
-                    <Palette className="h-1.5 w-1.5 text-black" />
-                  </div>
-                </div>
-              )}
-            </button>
+
+        <div className="space-y-6">
+          {accentColorGroups.map((group) => (
+            <div key={group.name} className="space-y-3">
+              <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                {group.name}
+              </h4>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                {group.colors.map((color) => {
+                  const isSelected = settings.accentColor === color.value;
+                  return (
+                    <button
+                      key={color.value}
+                      onClick={() => updateSetting('accentColor', color.value)}
+                      className={`
+                        group relative flex flex-col items-center space-y-2 p-3 rounded-xl border-2
+                        transition-all duration-200 hover:scale-105 hover:shadow-lg
+                        ${isSelected
+                          ? 'border-primary bg-primary/5 shadow-md'
+                          : 'border-border bg-card hover:border-primary/30 hover:bg-accent/20'
+                        }
+                      `}
+                      title={color.name}
+                    >
+                      <div
+                        className={`
+                          relative w-8 h-8 rounded-full border-2 transition-all
+                          ${isSelected
+                            ? 'border-background shadow-lg ring-2 ring-primary/20'
+                            : 'border-background/20 group-hover:border-background/40'
+                          }
+                        `}
+                        style={{ backgroundColor: color.color }}
+                      >
+                        {isSelected && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Check className="h-4 w-4 text-white drop-shadow-sm" strokeWidth={3} />
+                          </div>
+                        )}
+                      </div>
+                      <span className={`
+                        text-xs font-medium transition-colors text-center leading-tight
+                        ${isSelected ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}
+                      `}>
+                        {color.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
+
+        {/* Preview Section */}
+        <Card className="p-4 bg-gradient-to-r from-background to-accent/10 border-2 border-dashed border-primary/20">
+          <div className="flex items-center space-x-3">
+            <div
+              className="w-4 h-4 rounded-full border-2 border-background shadow-sm"
+              style={{
+                backgroundColor: accentColorGroups
+                  .flatMap(group => group.colors)
+                  .find(color => color.value === settings.accentColor)?.color || 'hsl(221.2, 83.2%, 53.3%)'
+              }}
+            />
+            <div className="flex-1">
+              <p className="text-sm font-medium">Color Preview</p>
+              <p className="text-xs text-muted-foreground">
+                This color will be used for buttons, links, and highlights throughout the interface
+              </p>
+            </div>
+            <Palette className="h-5 w-5 text-primary/60" />
+          </div>
+        </Card>
       </div>
 
       {/* Font Size */}
