@@ -399,5 +399,235 @@
       "confirmDeleteAccount": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
       "requiresRestart": "Diese Änderung wird nach einem Neustart der Anwendung wirksam."
     }
+  },
+  "products": {
+    "title": "Produkte",
+    "description": "Verwalten Sie Ihren Produktkatalog und Ihre Lagerbestände",
+    "management": "Produktverwaltung",
+    "readOnly": "Nur Lesen",
+    "accessDenied": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, auf die Produktseite zuzugreifen.",
+      "message": "Nur autorisiertes Personal kann Produktinformationen einsehen.",
+      "goBack": "Zurück"
+    },
+    "readOnlyNotice": {
+      "title": "Nur-Lese-Zugriff",
+      "description": "Sie haben nur Ansichtsrechte für Produktinformationen. Um Produkte zu erstellen, zu bearbeiten oder zu löschen, wenden Sie sich an Ihren Systemadministrator."
+    },
+    "stats": {
+      "totalProducts": "Gesamtprodukte",
+      "activeProducts": "Aktive Produkte",
+      "lowStock": "Niedriger Bestand",
+      "totalValue": "Gesamtwert"
+    },
+    "table": {
+      "title": "Produktbestand",
+      "columns": {
+        "name": "Produktname",
+        "sku": "SKU",
+        "category": "Kategorie",
+        "family": "Familie",
+        "brand": "Marke",
+        "unit": "Einheit",
+        "price": "Preis",
+        "cost": "Kosten",
+        "stock": "Lager",
+        "status": "Status",
+        "created": "Erstellt"
+      },
+      "actions": {
+        "view": "Details anzeigen",
+        "edit": "Produkt bearbeiten",
+        "delete": "Produkt löschen",
+        "add": "Produkt hinzufügen",
+        "refresh": "Aktualisieren"
+      },
+      "emptyMessage": "Keine Produkte gefunden"
+    },
+    "form": {
+      "create": {
+        "title": "Neues Produkt erstellen",
+        "description": "Füllen Sie die Details aus, um ein neues Produkt zu erstellen."
+      },
+      "edit": {
+        "title": "Produkt bearbeiten",
+        "description": "Produktdetails und Bestandsinformationen aktualisieren."
+      },
+      "fields": {
+        "name": "Produktname",
+        "sku": "SKU",
+        "description": "Beschreibung",
+        "category": "Kategorie",
+        "family": "Familie",
+        "brand": "Marke",
+        "unit": "Einheit",
+        "price": "Preis",
+        "cost": "Kosten",
+        "quantity": "Menge",
+        "minQuantity": "Mindestmenge",
+        "maxQuantity": "Höchstmenge",
+        "status": "Status",
+        "barcode": "Barcode",
+        "weight": "Gewicht",
+        "dimensions": "Abmessungen"
+      },
+      "placeholders": {
+        "selectCategory": "Kategorie auswählen",
+        "selectFamily": "Familie auswählen",
+        "selectBrand": "Marke auswählen",
+        "selectUnit": "Einheit auswählen",
+        "selectStatus": "Status auswählen",
+        "noFamily": "Keine Familie",
+        "noBrand": "Keine Marke"
+      },
+      "status": {
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "discontinued": "Eingestellt"
+      },
+      "validation": {
+        "nameRequired": "Produktname ist erforderlich",
+        "skuRequired": "SKU ist erforderlich",
+        "categoryRequired": "Kategorie ist erforderlich",
+        "unitRequired": "Einheit ist erforderlich",
+        "pricePositive": "Preis muss positiv sein",
+        "costPositive": "Kosten müssen positiv sein",
+        "quantityPositive": "Menge muss positiv sein",
+        "selectValidCategory": "Bitte wählen Sie eine gültige Kategorie",
+        "selectValidUnit": "Bitte wählen Sie eine gültige Einheit"
+      },
+      "actions": {
+        "cancel": "Abbrechen",
+        "create": "Produkt erstellen",
+        "update": "Produkt aktualisieren"
+      }
+    },
+    "delete": {
+      "title": "Produkt dauerhaft löschen",
+      "description": "Sind Sie sicher, dass Sie \"{name}\" ({sku}) dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und entfernt alle zugehörigen Daten aus der Datenbank.",
+      "bulkTitle": "Mehrere Produkte löschen",
+      "bulkDescription": "Sind Sie sicher, dass Sie {count} Produkt(e) dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und entfernt alle zugehörigen Daten aus der Datenbank.",
+      "permissionDenied": "Sie haben keine Berechtigung, Produkte zu löschen. Nur autorisiertes Personal kann diese Aktion durchführen.",
+      "action": "{count} Produkt(e) löschen"
+    },
+    "messages": {
+      "createSuccess": "Produkt erfolgreich erstellt",
+      "updateSuccess": "Produkt erfolgreich aktualisiert",
+      "deleteSuccess": "Produkt erfolgreich gelöscht",
+      "createError": "Fehler beim Erstellen des Produkts",
+      "updateError": "Fehler beim Aktualisieren des Produkts",
+      "deleteError": "Fehler beim Löschen des Produkts"
+    }
+  },
+  "inventory": {
+    "title": "Lagerbestand",
+    "description": "Lagerbestände und Bewegungen verfolgen",
+    "management": "Lagerverwaltung",
+    "readOnly": "Nur Lesen",
+    "accessDenied": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, auf die Lagerseite zuzugreifen.",
+      "message": "Nur autorisiertes Personal kann Lagerinformationen einsehen.",
+      "goBack": "Zurück"
+    },
+    "tabs": {
+      "current": "Aktueller Bestand",
+      "movements": "Bewegungen",
+      "counts": "Bestandszählungen",
+      "countDetails": "Zählungsdetails",
+      "reservations": "Reservierungen"
+    },
+    "currentStock": {
+      "title": "Aktuelle Lagerbestände",
+      "columns": {
+        "product": "Produkt",
+        "sku": "SKU",
+        "warehouse": "Lager",
+        "location": "Standort",
+        "quantity": "Menge",
+        "reserved": "Reserviert",
+        "available": "Verfügbar",
+        "lastUpdated": "Zuletzt aktualisiert"
+      }
+    },
+    "movements": {
+      "title": "Lagerbewegungen",
+      "columns": {
+        "date": "Datum",
+        "product": "Produkt",
+        "type": "Bewegungstyp",
+        "quantity": "Menge",
+        "warehouse": "Lager",
+        "reference": "Referenz",
+        "user": "Benutzer"
+      },
+      "types": {
+        "in": "Wareneingang",
+        "out": "Warenausgang",
+        "transfer": "Transfer",
+        "adjustment": "Anpassung",
+        "return": "Rückgabe"
+      }
+    }
+  },
+  "warehouses": {
+    "title": "Lagerhäuser",
+    "description": "Lagerstandorte und -struktur verwalten",
+    "management": "Lagerhausverwaltung",
+    "accessDenied": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, auf die Lagerhausseite zuzugreifen.",
+      "message": "Nur Super-Admins, Admins und Lagerverwalter können Lagerhausinformationen einsehen.",
+      "goBack": "Zurück"
+    },
+    "tabs": {
+      "warehouses": "Lagerhäuser",
+      "zones": "Zonen",
+      "aisles": "Gänge",
+      "racks": "Regale",
+      "levels": "Ebenen",
+      "locations": "Standorte"
+    },
+    "table": {
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "address": "Adresse",
+        "status": "Status",
+        "capacity": "Kapazität",
+        "type": "Typ",
+        "manager": "Verwalter",
+        "created": "Erstellt"
+      }
+    },
+    "form": {
+      "fields": {
+        "name": "Lagerhausname",
+        "code": "Lagerhauscode",
+        "address": "Adresse",
+        "city": "Stadt",
+        "state": "Bundesland",
+        "country": "Land",
+        "zipCode": "Postleitzahl",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "manager": "Verwalter",
+        "status": "Status",
+        "type": "Typ",
+        "capacity": "Kapazität"
+      },
+      "status": {
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "maintenance": "In Wartung"
+      },
+      "types": {
+        "distribution": "Verteilzentrum",
+        "fulfillment": "Fulfillment-Center",
+        "storage": "Lagereinrichtung",
+        "crossDock": "Cross-Dock"
+      }
+    }
   }
 }

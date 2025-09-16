@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useIntl } from "react-intl";
 
 export default function ProductsPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const intl = useIntl();
 
   // Check if user can access this page
   const canAccessProductsPage = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('inventory-manager');
@@ -21,17 +23,19 @@ export default function ProductsPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
               <XCircle className="h-6 w-6 text-destructive" />
             </div>
-            <CardTitle className="mt-4 text-xl">Access Denied</CardTitle>
+            <CardTitle className="mt-4 text-xl">
+              {intl.formatMessage({ id: 'products.accessDenied.title' })}
+            </CardTitle>
             <CardDescription className="mt-2">
-              You don't have permission to access the Products page.
+              {intl.formatMessage({ id: 'products.accessDenied.description' })}
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <p className="text-sm text-muted-foreground mb-6">
-              Only authorized personnel can view product information.
+              {intl.formatMessage({ id: 'products.accessDenied.message' })}
             </p>
             <Button variant="outline" onClick={() => window.history.back()}>
-              Go Back
+              {intl.formatMessage({ id: 'products.accessDenied.goBack' })}
             </Button>
           </CardContent>
         </Card>
@@ -44,9 +48,9 @@ export default function ProductsPage() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-lg font-medium text-muted-foreground">
-          Products / Product Management
+          {intl.formatMessage({ id: 'products.title' })} / {intl.formatMessage({ id: 'products.management' })}
           {!isSuperAdmin() && !isAdmin() && !hasRole('manager') && (
-            <span className="ml-2 text-sm">(Read Only)</span>
+            <span className="ml-2 text-sm">({intl.formatMessage({ id: 'products.readOnly' })})</span>
           )}
         </h1>
       </div>

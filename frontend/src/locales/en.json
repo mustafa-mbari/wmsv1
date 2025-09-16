@@ -399,5 +399,235 @@
       "confirmDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
       "requiresRestart": "This change will take effect after restarting the application."
     }
+  },
+  "products": {
+    "title": "Products",
+    "description": "Manage your product catalog and inventory",
+    "management": "Product Management",
+    "readOnly": "Read Only",
+    "accessDenied": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access the Products page.",
+      "message": "Only authorized personnel can view product information.",
+      "goBack": "Go Back"
+    },
+    "readOnlyNotice": {
+      "title": "Read-Only Access",
+      "description": "You have view-only access to product information. To create, edit, or delete products, contact your system administrator."
+    },
+    "stats": {
+      "totalProducts": "Total Products",
+      "activeProducts": "Active Products",
+      "lowStock": "Low Stock",
+      "totalValue": "Total Value"
+    },
+    "table": {
+      "title": "Product Inventory",
+      "columns": {
+        "name": "Product Name",
+        "sku": "SKU",
+        "category": "Category",
+        "family": "Family",
+        "brand": "Brand",
+        "unit": "Unit",
+        "price": "Price",
+        "cost": "Cost",
+        "stock": "Stock",
+        "status": "Status",
+        "created": "Created"
+      },
+      "actions": {
+        "view": "View Details",
+        "edit": "Edit Product",
+        "delete": "Delete Product",
+        "add": "Add Product",
+        "refresh": "Refresh"
+      },
+      "emptyMessage": "No products found"
+    },
+    "form": {
+      "create": {
+        "title": "Create New Product",
+        "description": "Fill in the details to create a new product."
+      },
+      "edit": {
+        "title": "Edit Product",
+        "description": "Update product details and inventory information."
+      },
+      "fields": {
+        "name": "Product Name",
+        "sku": "SKU",
+        "description": "Description",
+        "category": "Category",
+        "family": "Family",
+        "brand": "Brand",
+        "unit": "Unit",
+        "price": "Price",
+        "cost": "Cost",
+        "quantity": "Quantity",
+        "minQuantity": "Min Quantity",
+        "maxQuantity": "Max Quantity",
+        "status": "Status",
+        "barcode": "Barcode",
+        "weight": "Weight",
+        "dimensions": "Dimensions"
+      },
+      "placeholders": {
+        "selectCategory": "Select category",
+        "selectFamily": "Select family",
+        "selectBrand": "Select brand",
+        "selectUnit": "Select unit",
+        "selectStatus": "Select status",
+        "noFamily": "No Family",
+        "noBrand": "No Brand"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "discontinued": "Discontinued"
+      },
+      "validation": {
+        "nameRequired": "Product name is required",
+        "skuRequired": "SKU is required",
+        "categoryRequired": "Category is required",
+        "unitRequired": "Unit is required",
+        "pricePositive": "Price must be positive",
+        "costPositive": "Cost must be positive",
+        "quantityPositive": "Quantity must be positive",
+        "selectValidCategory": "Please select a valid category",
+        "selectValidUnit": "Please select a valid unit"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create Product",
+        "update": "Update Product"
+      }
+    },
+    "delete": {
+      "title": "Delete Product Permanently",
+      "description": "Are you sure you want to permanently delete \"{name}\" ({sku})? This action cannot be undone and will remove all associated data from the database.",
+      "bulkTitle": "Delete Multiple Products",
+      "bulkDescription": "Are you sure you want to permanently delete {count} product(s)? This action cannot be undone and will remove all associated data from the database.",
+      "permissionDenied": "You don't have permission to delete products. Only authorized personnel can perform this action.",
+      "action": "Delete {count} Product(s)"
+    },
+    "messages": {
+      "createSuccess": "Product created successfully",
+      "updateSuccess": "Product updated successfully",
+      "deleteSuccess": "Product deleted successfully",
+      "createError": "Failed to create product",
+      "updateError": "Failed to update product",
+      "deleteError": "Failed to delete product"
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "description": "Track stock levels and movements",
+    "management": "Inventory Management",
+    "readOnly": "Read Only",
+    "accessDenied": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access the Inventory page.",
+      "message": "Only authorized personnel can view inventory information.",
+      "goBack": "Go Back"
+    },
+    "tabs": {
+      "current": "Current Stock",
+      "movements": "Movements",
+      "counts": "Stock Counts",
+      "countDetails": "Count Details",
+      "reservations": "Reservations"
+    },
+    "currentStock": {
+      "title": "Current Stock Levels",
+      "columns": {
+        "product": "Product",
+        "sku": "SKU",
+        "warehouse": "Warehouse",
+        "location": "Location",
+        "quantity": "Quantity",
+        "reserved": "Reserved",
+        "available": "Available",
+        "lastUpdated": "Last Updated"
+      }
+    },
+    "movements": {
+      "title": "Inventory Movements",
+      "columns": {
+        "date": "Date",
+        "product": "Product",
+        "type": "Movement Type",
+        "quantity": "Quantity",
+        "warehouse": "Warehouse",
+        "reference": "Reference",
+        "user": "User"
+      },
+      "types": {
+        "in": "Stock In",
+        "out": "Stock Out",
+        "transfer": "Transfer",
+        "adjustment": "Adjustment",
+        "return": "Return"
+      }
+    }
+  },
+  "warehouses": {
+    "title": "Warehouses",
+    "description": "Manage warehouse locations and structure",
+    "management": "Warehouse Management",
+    "accessDenied": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access the Warehouse page.",
+      "message": "Only Super Admins, Admins, and Warehouse Managers can view warehouse information.",
+      "goBack": "Go Back"
+    },
+    "tabs": {
+      "warehouses": "Warehouses",
+      "zones": "Zones",
+      "aisles": "Aisles",
+      "racks": "Racks",
+      "levels": "Levels",
+      "locations": "Locations"
+    },
+    "table": {
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "address": "Address",
+        "status": "Status",
+        "capacity": "Capacity",
+        "type": "Type",
+        "manager": "Manager",
+        "created": "Created"
+      }
+    },
+    "form": {
+      "fields": {
+        "name": "Warehouse Name",
+        "code": "Warehouse Code",
+        "address": "Address",
+        "city": "City",
+        "state": "State",
+        "country": "Country",
+        "zipCode": "ZIP Code",
+        "phone": "Phone",
+        "email": "Email",
+        "manager": "Manager",
+        "status": "Status",
+        "type": "Type",
+        "capacity": "Capacity"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "maintenance": "Under Maintenance"
+      },
+      "types": {
+        "distribution": "Distribution Center",
+        "fulfillment": "Fulfillment Center",
+        "storage": "Storage Facility",
+        "crossDock": "Cross-Dock"
+      }
+    }
   }
 }

@@ -399,5 +399,235 @@
       "confirmDeleteAccount": "هل أنت متأكد من أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
       "requiresRestart": "سيصبح هذا التغيير ساري المفعول بعد إعادة تشغيل التطبيق."
     }
+  },
+  "products": {
+    "title": "المنتجات",
+    "description": "إدارة كتالوج المنتجات والمخزون",
+    "management": "إدارة المنتجات",
+    "readOnly": "للقراءة فقط",
+    "accessDenied": {
+      "title": "تم رفض الوصول",
+      "description": "ليس لديك إذن للوصول إلى صفحة المنتجات.",
+      "message": "الموظفون المخولون فقط يمكنهم عرض معلومات المنتج.",
+      "goBack": "العودة"
+    },
+    "readOnlyNotice": {
+      "title": "وصول للقراءة فقط",
+      "description": "لديك حق عرض معلومات المنتج فقط. لإنشاء أو تعديل أو حذف المنتجات، اتصل بمسؤول النظام."
+    },
+    "stats": {
+      "totalProducts": "إجمالي المنتجات",
+      "activeProducts": "المنتجات النشطة",
+      "lowStock": "مخزون منخفض",
+      "totalValue": "القيمة الإجمالية"
+    },
+    "table": {
+      "title": "مخزون المنتجات",
+      "columns": {
+        "name": "اسم المنتج",
+        "sku": "رمز المنتج",
+        "category": "الفئة",
+        "family": "العائلة",
+        "brand": "العلامة التجارية",
+        "unit": "الوحدة",
+        "price": "السعر",
+        "cost": "التكلفة",
+        "stock": "المخزون",
+        "status": "الحالة",
+        "created": "تاريخ الإنشاء"
+      },
+      "actions": {
+        "view": "عرض التفاصيل",
+        "edit": "تعديل المنتج",
+        "delete": "حذف المنتج",
+        "add": "إضافة منتج",
+        "refresh": "تحديث"
+      },
+      "emptyMessage": "لم يتم العثور على منتجات"
+    },
+    "form": {
+      "create": {
+        "title": "إنشاء منتج جديد",
+        "description": "املأ التفاصيل لإنشاء منتج جديد."
+      },
+      "edit": {
+        "title": "تعديل المنتج",
+        "description": "تحديث تفاصيل المنتج ومعلومات المخزون."
+      },
+      "fields": {
+        "name": "اسم المنتج",
+        "sku": "رمز المنتج",
+        "description": "الوصف",
+        "category": "الفئة",
+        "family": "العائلة",
+        "brand": "العلامة التجارية",
+        "unit": "الوحدة",
+        "price": "السعر",
+        "cost": "التكلفة",
+        "quantity": "الكمية",
+        "minQuantity": "الحد الأدنى للكمية",
+        "maxQuantity": "الحد الأقصى للكمية",
+        "status": "الحالة",
+        "barcode": "الرمز الشريطي",
+        "weight": "الوزن",
+        "dimensions": "الأبعاد"
+      },
+      "placeholders": {
+        "selectCategory": "اختر الفئة",
+        "selectFamily": "اختر العائلة",
+        "selectBrand": "اختر العلامة التجارية",
+        "selectUnit": "اختر الوحدة",
+        "selectStatus": "اختر الحالة",
+        "noFamily": "بدون عائلة",
+        "noBrand": "بدون علامة تجارية"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "discontinued": "متوقف"
+      },
+      "validation": {
+        "nameRequired": "اسم المنتج مطلوب",
+        "skuRequired": "رمز المنتج مطلوب",
+        "categoryRequired": "الفئة مطلوبة",
+        "unitRequired": "الوحدة مطلوبة",
+        "pricePositive": "السعر يجب أن يكون موجباً",
+        "costPositive": "التكلفة يجب أن تكون موجبة",
+        "quantityPositive": "الكمية يجب أن تكون موجبة",
+        "selectValidCategory": "يرجى اختيار فئة صحيحة",
+        "selectValidUnit": "يرجى اختيار وحدة صحيحة"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "create": "إنشاء منتج",
+        "update": "تحديث المنتج"
+      }
+    },
+    "delete": {
+      "title": "حذف المنتج نهائياً",
+      "description": "هل أنت متأكد من أنك تريد حذف \"{name}\" ({sku}) نهائياً؟ هذا الإجراء لا يمكن التراجع عنه وسيؤدي إلى إزالة جميع البيانات المرتبطة من قاعدة البيانات.",
+      "bulkTitle": "حذف منتجات متعددة",
+      "bulkDescription": "هل أنت متأكد من أنك تريد حذف {count} منتج(ات) نهائياً؟ هذا الإجراء لا يمكن التراجع عنه وسيؤدي إلى إزالة جميع البيانات المرتبطة من قاعدة البيانات.",
+      "permissionDenied": "ليس لديك إذن لحذف المنتجات. الموظفون المخولون فقط يمكنهم تنفيذ هذا الإجراء.",
+      "action": "حذف {count} منتج(ات)"
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء المنتج بنجاح",
+      "updateSuccess": "تم تحديث المنتج بنجاح",
+      "deleteSuccess": "تم حذف المنتج بنجاح",
+      "createError": "فشل في إنشاء المنتج",
+      "updateError": "فشل في تحديث المنتج",
+      "deleteError": "فشل في حذف المنتج"
+    }
+  },
+  "inventory": {
+    "title": "المخزون",
+    "description": "تتبع مستويات المخزون والحركات",
+    "management": "إدارة المخزون",
+    "readOnly": "للقراءة فقط",
+    "accessDenied": {
+      "title": "تم رفض الوصول",
+      "description": "ليس لديك إذن للوصول إلى صفحة المخزون.",
+      "message": "الموظفون المخولون فقط يمكنهم عرض معلومات المخزون.",
+      "goBack": "العودة"
+    },
+    "tabs": {
+      "current": "المخزون الحالي",
+      "movements": "الحركات",
+      "counts": "عد المخزون",
+      "countDetails": "تفاصيل العد",
+      "reservations": "الحجوزات"
+    },
+    "currentStock": {
+      "title": "مستويات المخزون الحالية",
+      "columns": {
+        "product": "المنتج",
+        "sku": "رمز المنتج",
+        "warehouse": "المستودع",
+        "location": "الموقع",
+        "quantity": "الكمية",
+        "reserved": "محجوز",
+        "available": "متاح",
+        "lastUpdated": "آخر تحديث"
+      }
+    },
+    "movements": {
+      "title": "حركات المخزون",
+      "columns": {
+        "date": "التاريخ",
+        "product": "المنتج",
+        "type": "نوع الحركة",
+        "quantity": "الكمية",
+        "warehouse": "المستودع",
+        "reference": "المرجع",
+        "user": "المستخدم"
+      },
+      "types": {
+        "in": "دخول مخزون",
+        "out": "خروج مخزون",
+        "transfer": "نقل",
+        "adjustment": "تعديل",
+        "return": "إرجاع"
+      }
+    }
+  },
+  "warehouses": {
+    "title": "المستودعات",
+    "description": "إدارة مواقع وهيكل المستودعات",
+    "management": "إدارة المستودعات",
+    "accessDenied": {
+      "title": "تم رفض الوصول",
+      "description": "ليس لديك إذن للوصول إلى صفحة المستودع.",
+      "message": "المشرفون العامون والمشرفون ومدراء المستودعات فقط يمكنهم عرض معلومات المستودع.",
+      "goBack": "العودة"
+    },
+    "tabs": {
+      "warehouses": "المستودعات",
+      "zones": "المناطق",
+      "aisles": "الممرات",
+      "racks": "الرفوف",
+      "levels": "المستويات",
+      "locations": "المواقع"
+    },
+    "table": {
+      "columns": {
+        "name": "الاسم",
+        "code": "الرمز",
+        "address": "العنوان",
+        "status": "الحالة",
+        "capacity": "السعة",
+        "type": "النوع",
+        "manager": "المدير",
+        "created": "تاريخ الإنشاء"
+      }
+    },
+    "form": {
+      "fields": {
+        "name": "اسم المستودع",
+        "code": "رمز المستودع",
+        "address": "العنوان",
+        "city": "المدينة",
+        "state": "المنطقة",
+        "country": "البلد",
+        "zipCode": "الرمز البريدي",
+        "phone": "الهاتف",
+        "email": "البريد الإلكتروني",
+        "manager": "المدير",
+        "status": "الحالة",
+        "type": "النوع",
+        "capacity": "السعة"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "maintenance": "تحت الصيانة"
+      },
+      "types": {
+        "distribution": "مركز توزيع",
+        "fulfillment": "مركز تنفيذ",
+        "storage": "منشأة تخزين",
+        "crossDock": "رصيف عبور"
+      }
+    }
   }
 }

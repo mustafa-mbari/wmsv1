@@ -66,6 +66,7 @@ import { useForm } from "react-hook-form";
 import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
 import { useAlert } from "@/hooks/useAlert";
 import { getErrorMessage } from "@/lib/error-utils";
+import { useIntl } from "react-intl";
 
 export interface Product {
   id: number;
@@ -96,6 +97,7 @@ export interface Product {
 export function ProductsTab() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
   const { showAlert, AlertComponent } = useAlert();
+  const intl = useIntl();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -116,21 +118,21 @@ export function ProductsTab() {
   const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager');
 
   const productFormSchema = z.object({
-    name: z.string().min(1, "Product name is required"),
-    sku: z.string().min(1, "SKU is required"),
+    name: z.string().min(1, intl.formatMessage({ id: 'products.form.validation.nameRequired' })),
+    sku: z.string().min(1, intl.formatMessage({ id: 'products.form.validation.skuRequired' })),
     description: z.string().optional(),
-    categoryId: z.string().min(1, "Category is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid category"),
+    categoryId: z.string().min(1, intl.formatMessage({ id: 'products.form.validation.categoryRequired' })).refine((val) => val !== "" && val !== "undefined", intl.formatMessage({ id: 'products.form.validation.selectValidCategory' })),
     familyId: z.string().optional(),
     brandId: z.string().optional(),
-    unitId: z.string().min(1, "Unit is required").refine((val) => val !== "" && val !== "undefined", "Please select a valid unit"),
-    price: z.coerce.number().min(0, "Price must be positive"),
-    cost: z.coerce.number().min(0, "Cost must be positive"),
-    quantity: z.coerce.number().min(0, "Quantity must be positive"),
-    minQuantity: z.coerce.number().min(0, "Min quantity must be positive").optional(),
-    maxQuantity: z.coerce.number().min(0, "Max quantity must be positive").optional(),
+    unitId: z.string().min(1, intl.formatMessage({ id: 'products.form.validation.unitRequired' })).refine((val) => val !== "" && val !== "undefined", intl.formatMessage({ id: 'products.form.validation.selectValidUnit' })),
+    price: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.pricePositive' })),
+    cost: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.costPositive' })),
+    quantity: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.quantityPositive' })),
+    minQuantity: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.quantityPositive' })).optional(),
+    maxQuantity: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.quantityPositive' })).optional(),
     status: z.enum(["active", "inactive", "discontinued"]).default("active"),
     barcode: z.string().optional(),
-    weight: z.coerce.number().min(0, "Weight must be positive").optional(),
+    weight: z.coerce.number().min(0, intl.formatMessage({ id: 'products.form.validation.quantityPositive' })).optional(),
     dimensions: z.string().optional(),
   });
 
@@ -258,10 +260,10 @@ export function ProductsTab() {
     try {
       // Validate required fields before sending
       if (!data.categoryId || data.categoryId === "undefined" || data.categoryId === "") {
-        throw new Error("Please select a valid category");
+        throw new Error(intl.formatMessage({ id: 'products.form.validation.selectValidCategory' }));
       }
       if (!data.unitId || data.unitId === "undefined" || data.unitId === "") {
-        throw new Error("Please select a valid unit");
+        throw new Error(intl.formatMessage({ id: 'products.form.validation.selectValidUnit' }));
       }
 
       const productData = {
@@ -290,13 +292,13 @@ export function ProductsTab() {
         createForm.reset();
         fetchProducts();
       } else {
-        throw new Error(response.data?.message || "Failed to create product");
+        throw new Error(response.data?.message || intl.formatMessage({ id: 'products.messages.createError' }));
       }
     } catch (error: any) {
       console.error("Error creating product:", error);
       showAlert({
-        title: "Error Creating Product",
-        description: getErrorMessage(error, "Failed to create product")
+        title: intl.formatMessage({ id: 'products.messages.createError' }),
+        description: getErrorMessage(error, intl.formatMessage({ id: 'products.messages.createError' }))
       });
     }
   };
@@ -329,13 +331,13 @@ export function ProductsTab() {
         setCurrentProduct(null);
         fetchProducts();
       } else {
-        throw new Error(response.data?.message || "Failed to update product");
+        throw new Error(response.data?.message || intl.formatMessage({ id: 'products.messages.updateError' }));
       }
     } catch (error: any) {
       console.error("Error updating product:", error);
       showAlert({
-        title: "Error Updating Product",
-        description: getErrorMessage(error, "Failed to update product")
+        title: intl.formatMessage({ id: 'products.messages.updateError' }),
+        description: getErrorMessage(error, intl.formatMessage({ id: 'products.messages.updateError' }))
       });
     }
   };
@@ -351,13 +353,13 @@ export function ProductsTab() {
           setCurrentProduct(null);
           fetchProducts();
         } else {
-          throw new Error(response.data?.message || "Failed to delete product");
+          throw new Error(response.data?.message || intl.formatMessage({ id: 'products.messages.deleteError' }));
         }
       } catch (error: any) {
         console.error("Error deleting product:", error);
         showAlert({
-          title: "Error Deleting Product",
-          description: getErrorMessage(error, "Failed to delete product")
+          title: intl.formatMessage({ id: 'products.messages.deleteError' }),
+          description: getErrorMessage(error, intl.formatMessage({ id: 'products.messages.deleteError' }))
         });
       } finally {
         setIsDeleteLoading(false);
@@ -383,8 +385,8 @@ export function ProductsTab() {
     } catch (error: any) {
       console.error("Error deleting products:", error);
       showAlert({
-        title: "Error Deleting Products",
-        description: getErrorMessage(error, "Failed to delete some products. Please try again.")
+        title: intl.formatMessage({ id: 'products.messages.deleteError' }),
+        description: getErrorMessage(error, intl.formatMessage({ id: 'products.messages.deleteError' }))
       });
     }
   };
@@ -431,7 +433,7 @@ export function ProductsTab() {
   const columnConfig: ColumnConfig<Product & TableData>[] = [
     {
       key: "name",
-      label: "Product Name",
+      label: intl.formatMessage({ id: 'products.table.columns.name' }),
       width: 200,
       render: (product) => (
         <div className="font-medium">{product.name}</div>
@@ -439,7 +441,7 @@ export function ProductsTab() {
     },
     {
       key: "sku",
-      label: "SKU",
+      label: intl.formatMessage({ id: 'products.table.columns.sku' }),
       width: 150,
       render: (product) => (
         <span className="font-mono text-sm">{product.sku}</span>
@@ -447,7 +449,7 @@ export function ProductsTab() {
     },
     {
       key: "category_name",
-      label: "Category",
+      label: intl.formatMessage({ id: 'products.table.columns.category' }),
       width: 150,
       filterType: "select",
       render: (product) => (
@@ -456,7 +458,7 @@ export function ProductsTab() {
     },
     {
       key: "family_name",
-      label: "Family",
+      label: intl.formatMessage({ id: 'products.table.columns.family' }),
       width: 130,
       filterType: "select",
       render: (product) => (
@@ -465,7 +467,7 @@ export function ProductsTab() {
     },
     {
       key: "brand_name",
-      label: "Brand",
+      label: intl.formatMessage({ id: 'products.table.columns.brand' }),
       width: 120,
       filterType: "select",
       render: (product) => (
@@ -474,7 +476,7 @@ export function ProductsTab() {
     },
     {
       key: "unit_name",
-      label: "Unit",
+      label: intl.formatMessage({ id: 'products.table.columns.unit' }),
       width: 100,
       filterType: "select",
       render: (product) => (
@@ -483,7 +485,7 @@ export function ProductsTab() {
     },
     {
       key: "price",
-      label: "Price",
+      label: intl.formatMessage({ id: 'products.table.columns.price' }),
       width: 120,
       render: (product) => (
         <span className="font-medium">
@@ -493,7 +495,7 @@ export function ProductsTab() {
     },
     {
       key: "cost",
-      label: "Cost",
+      label: intl.formatMessage({ id: 'products.table.columns.cost' }),
       width: 120,
       render: (product) => (
         <span className="text-muted-foreground">
@@ -503,7 +505,7 @@ export function ProductsTab() {
     },
     {
       key: "quantity",
-      label: "Stock",
+      label: intl.formatMessage({ id: 'products.table.columns.stock' }),
       width: 100,
       render: (product) => (
         <span className={`font-medium ${
@@ -516,7 +518,7 @@ export function ProductsTab() {
     },
     {
       key: "status",
-      label: "Status",
+      label: intl.formatMessage({ id: 'products.table.columns.status' }),
       width: 120,
       filterType: "select",
       render: (product) => (
@@ -524,13 +526,13 @@ export function ProductsTab() {
           product.status === "active" ? "default" :
           product.status === "inactive" ? "secondary" : "destructive"
         }>
-          {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+          {intl.formatMessage({ id: `products.form.status.${product.status}` })}
         </Badge>
       ),
     },
     {
       key: "created_at",
-      label: "Created",
+      label: intl.formatMessage({ id: 'products.table.columns.created' }),
       width: 130,
       render: (product) => (
         <span className="text-muted-foreground">
@@ -591,7 +593,7 @@ export function ProductsTab() {
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Loading products...</p>
+          <p className="text-muted-foreground">{intl.formatMessage({ id: 'common.loading' })}</p>
         </div>
       </div>
     );
