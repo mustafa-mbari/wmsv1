@@ -11,8 +11,8 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WMS v1 - Warehouse Management System",
-  description: "Modern warehouse management system built with Next.js and shadcn/ui",
+  title: "WM-Lab v1 - Warehouse Management Laboratory",
+  description: "Modern warehouse management laboratory built with Next.js and shadcn/ui",
 };
 
 export default function RootLayout({

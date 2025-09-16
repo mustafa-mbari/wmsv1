@@ -84,7 +84,7 @@ export default function RegisterPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-md">
               <Package className="h-4 w-4 text-white" />
             </div>
-            <span className="text-xl font-bold">WMS v1</span>
+            <span className="text-xl font-bold">WM-Lab v1</span>
           </div>
           <Button
             variant="ghost"
@@ -99,7 +99,7 @@ export default function RegisterPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create your account</CardTitle>
             <CardDescription>
-              Join thousands using WMS v1 to manage their warehouses
+              Join thousands using WM-Lab v1 to manage their warehouses
             </CardDescription>
           </CardHeader>
           <CardContent>

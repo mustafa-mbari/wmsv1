@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-WMSv1 is a TypeScript monorepo warehouse management system with three main workspaces:
+WM-Lab v1 is a TypeScript monorepo warehouse management laboratory with three main workspaces:
 
 - **backend/**: Express.js API with Prisma ORM and PostgreSQL
 - **frontend/**: Next.js React app with shadcn/ui components

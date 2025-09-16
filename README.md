@@ -1,4 +1,4 @@
-# WMSv1 Project
+# WM-Labv1 Project
 
 ## 🚀 Quick Start
 
@@ -11,7 +11,7 @@
 ```bash
 # Clone the repository
 git clone <your-repository-url>
-cd wmsv1
+cd wm-labv1
 
 # Install all dependencies (root, backend, frontend, shared)
 npm run install:all
@@ -104,7 +104,7 @@ npm run start
 ## 📁 Project Structure
 
 ```
-wmsv1/
+wm-labv1/
 ├── package.json                # Root workspace dependencies and scripts
 ├── .env                        # Environment variables (root level)
 ├── .gitignore                  # Git ignore patterns
@@ -163,7 +163,7 @@ wmsv1/
 
 ## Project Description
 
-**WMSv1** is a full-stack Warehouse Management System built with Node.js/Express for the backend and Next.js/React for the frontend. The project is organized into three main parts:
+**WM-Labv1** is a full-stack Warehouse Management System built with Node.js/Express for the backend and Next.js/React for the frontend. The project is organized into three main parts:
 
 - **🔧 backend/**: API server with Express.js, PostgreSQL database, Prisma ORM, authentication, file uploads, and comprehensive logging
 - **🎨 frontend/**: Modern Next.js web application with React, TypeScript, Tailwind CSS, shadcn/ui components, and responsive design  
@@ -208,7 +208,7 @@ npm run seed:reset      # Reset database and reseed
 
 #### Backend (.env)
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/wmsv1"
+DATABASE_URL="postgresql://username:password@localhost:5432/wm-labv1"
 JWT_SECRET="your-secret-key"
 PORT=8000
 ```
@@ -245,7 +245,7 @@ npx prisma migrate deploy
 pg_isready -h localhost -p 5432
 
 # Verify database exists
-psql -h localhost -p 5432 -U your_username -d wmsv1
+psql -h localhost -p 5432 -U your_username -d wm-labv1
 ```
 
 #### Port Already in Use

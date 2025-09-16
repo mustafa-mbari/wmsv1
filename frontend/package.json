@@ -1,5 +1,5 @@
 {
-  "name": "@wmsv1/frontend",
+  "name": "@wm-lab/frontend",
   "version": "1.0.0",
   "description": "Next.js React frontend with shadcn/ui",
   "scripts": {

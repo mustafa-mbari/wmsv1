@@ -65,21 +65,7 @@ interface DashboardLayoutProps {
 
 const getNavigation = (intl: any) => [
   { name: intl.formatMessage({ id: 'navigation.dashboard' }), href: "/dashboard", icon: Home },
-  { 
-    name: intl.formatMessage({ id: 'navigation.products' }), 
-    href: "/dashboard/products", 
-    icon: Package,
-    children: [
-      { name: intl.formatMessage({ id: 'menu.products.products' }), href: "/dashboard/products" },
-      { name: intl.formatMessage({ id: 'menu.products.categories' }), href: "/dashboard/products/categories" },
-      { name: intl.formatMessage({ id: 'menu.products.families' }), href: "/dashboard/products/family" },
-      { name: intl.formatMessage({ id: 'menu.products.brands' }), href: "/dashboard/products/brands" },
-      { name: intl.formatMessage({ id: 'menu.products.attributes' }), href: "/dashboard/products/attributes" },
-      { name: intl.formatMessage({ id: 'menu.products.attributeOptions' }), href: "/dashboard/products/attribute-options" },
-      { name: intl.formatMessage({ id: 'menu.products.attributeValues' }), href: "/dashboard/products/attribute-values" },
-      { name: intl.formatMessage({ id: 'menu.products.uom' }), href: "/dashboard/products/units" },
-    ]
-  },
+  { name: intl.formatMessage({ id: 'navigation.products' }), href: "/dashboard/products", icon: Package },
   { name: intl.formatMessage({ id: 'navigation.inventory' }), href: "/dashboard/inventory", icon: BarChart3 },
   { name: intl.formatMessage({ id: 'navigation.warehouses' }), href: "/dashboard/warehouses", icon: Warehouse },
   { name: intl.formatMessage({ id: 'navigation.users' }), href: "/dashboard/users", icon: Users },
@@ -110,9 +96,6 @@ function AppSidebar() {
 
   // Calculate which menus should be open based on current location
   const getAutoOpenMenus = () => {
-    if (pathname.startsWith('/dashboard/products')) {
-      return ['Products'];
-    }
     return [];
   };
 
@@ -145,7 +128,7 @@ function AppSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-md">
             <Package className="h-4 w-4 text-white" />
           </div>
-          <span className="text-lg font-semibold text-foreground">WMS</span>
+          <span className="text-lg font-semibold text-foreground">WM-Lab</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -153,8 +136,8 @@ function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               {filteredMenuItems.map((item) => {
-                const isActive = pathname === item.href || 
-                  (item.href !== "/" && pathname.startsWith(item.href));
+                const isActive = pathname === item.href ||
+                  (item.href !== "/" && item.href !== "/dashboard" && pathname.startsWith(item.href));
                 const isMenuOpen = openMenus.includes(item.name);
 
                 if (item.children) {

@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: `Welcome to WMS, ${user.firstName || user.username}!`,
+        description: `Welcome to WM-Lab, ${user.firstName || user.username}!`,
       });
     },
     onError: (error: Error) => {

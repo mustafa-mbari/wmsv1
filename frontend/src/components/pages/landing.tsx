@@ -55,7 +55,7 @@ const testimonials = [
     name: "Sarah Johnson",
     role: "Operations Manager",
     company: "TechCorp",
-    content: "This WMS has transformed our warehouse operations. Inventory tracking is now effortless and accurate.",
+    content: "This WM-Lab has transformed our warehouse operations. Inventory tracking is now effortless and accurate.",
     rating: 5
   },
   {
@@ -87,7 +87,7 @@ export default function LandingPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-md">
                 <Package className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-bold">WMS v1</span>
+              <span className="text-xl font-bold">WM-Lab v1</span>
             </div>
             <div className="flex items-center gap-4">
               <Button
@@ -121,7 +121,7 @@ export default function LandingPage() {
               <span className="text-primary">Management System</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Streamline your warehouse operations with our comprehensive WMS solution. 
+              Streamline your warehouse operations with our comprehensive WM-Lab solution. 
               Built with React, TypeScript, and modern best practices.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -147,7 +147,7 @@ export default function LandingPage() {
               Everything you need to manage your warehouse
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our comprehensive WMS includes all the tools you need to optimize your warehouse operations.
+              Our comprehensive WM-Lab includes all the tools you need to optimize your warehouse operations.
             </p>
           </div>
           
@@ -177,7 +177,7 @@ export default function LandingPage() {
               Trusted by warehouse teams worldwide
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              See what our customers are saying about WMS v1
+              See what our customers are saying about WM-Lab v1
             </p>
           </div>
           
@@ -215,7 +215,7 @@ export default function LandingPage() {
             Ready to transform your warehouse?
           </h2>
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Join thousands of companies using WMS v1 to optimize their warehouse operations.
+            Join thousands of companies using WM-Lab v1 to optimize their warehouse operations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" variant="secondary" className="text-lg px-8">
@@ -239,10 +239,10 @@ export default function LandingPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-md">
                 <Package className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-bold">WMS v1</span>
+              <span className="text-xl font-bold">WM-Lab v1</span>
             </div>
             <p className="text-muted-foreground">
-              © 2024 WMS v1. All rights reserved.
+              © 2024 WM-Lab v1. All rights reserved.
             </p>
           </div>
         </div>

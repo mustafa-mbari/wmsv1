@@ -15,7 +15,7 @@ export default function NotFound() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-md">
               <Package className="h-4 w-4 text-white" />
             </div>
-            <span className="text-xl font-bold">WMS v1</span>
+            <span className="text-xl font-bold">WM-Lab v1</span>
           </div>
         </div>
 

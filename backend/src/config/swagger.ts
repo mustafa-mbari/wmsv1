@@ -4,12 +4,12 @@ import { SwaggerDefinition } from 'swagger-jsdoc';
 const swaggerDefinition: SwaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'WMS API Documentation',
+    title: 'WM-Lab API Documentation',
     version: '1.0.0',
-    description: 'Warehouse Management System API documentation with comprehensive RBAC (Role-Based Access Control) system',
+    description: 'Warehouse Management Laboratory API documentation with comprehensive RBAC (Role-Based Access Control) system',
     contact: {
-      name: 'WMS Team',
-      email: 'support@wms.com',
+      name: 'WM-Lab Team',
+      email: 'support@wm-lab.com',
     },
   },
   tags: [

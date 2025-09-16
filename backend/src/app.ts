@@ -89,7 +89,7 @@ app.use('/api-docs', (req: Request, res: Response, next: any) => {
   // Simple middleware to serve Swagger UI
   const swaggerHtml = swaggerUi.generateHTML(swaggerSpec, {
     explorer: true,
-    customSiteTitle: 'WMS API Documentation',
+    customSiteTitle: 'WM-Lab API Documentation',
     swaggerOptions: {
       persistAuthorization: true,
       displayRequestDuration: true,
