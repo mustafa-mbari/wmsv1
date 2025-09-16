@@ -10,12 +10,23 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { type Locale, locales, localeNames } from '@/lib/i18n';
 import { useLocale } from '@/components/providers/intl-provider';
+import { useSettings } from '@/components/providers/settings-provider';
 
 export function LanguageSwitcher() {
-  const { locale: currentLocale, changeLocale } = useLocale();
+  const { locale: currentLocale } = useLocale();
+  const { settings, updateSetting, saveSettings } = useSettings();
+
+  // Use the language from settings as the source of truth
+  const currentLanguage = settings.language as Locale;
 
   const handleLocaleChange = (locale: Locale) => {
-    changeLocale(locale);
+    // Update the settings which will automatically trigger the locale change
+    updateSetting('language', locale);
+
+    // Auto-save the settings immediately
+    setTimeout(() => {
+      saveSettings();
+    }, 0);
   };
 
   return (
@@ -24,7 +35,7 @@ export function LanguageSwitcher() {
         <Button variant="ghost" size="sm" className="gap-2">
           <Globe className="h-4 w-4" />
           <span className="hidden sm:inline">
-            {localeNames[currentLocale]}
+            {localeNames[currentLanguage]}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -33,7 +44,7 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={locale}
             onClick={() => handleLocaleChange(locale)}
-            className={currentLocale === locale ? 'bg-accent' : ''}
+            className={currentLanguage === locale ? 'bg-accent' : ''}
           >
             <span className="flex items-center gap-2">
               {localeNames[locale]}

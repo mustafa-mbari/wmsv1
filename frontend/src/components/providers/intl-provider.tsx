@@ -35,29 +35,29 @@ export function IntlProvider({ children }: IntlProviderProps) {
       const browserLocale = navigator.language.split('-')[0] as Locale;
       const validBrowserLocale = locales.includes(browserLocale) ? browserLocale : defaultLocale;
       const detectedLocale = savedLocale && locales.includes(savedLocale) ? savedLocale : validBrowserLocale;
-      
+
       if (detectedLocale !== locale) {
         setLocale(detectedLocale);
         setMessages(getMessages(detectedLocale));
       }
-      
+
       // Set initial document direction and language
       document.documentElement.dir = detectedLocale === 'ar' ? 'rtl' : 'ltr';
       document.documentElement.lang = detectedLocale;
-      
+
       setIsInitialized(true);
     }
-  }, [locale, isInitialized]);
+  }, [isInitialized]);
 
   const changeLocale = (newLocale: Locale) => {
     if (locales.includes(newLocale)) {
       setLocale(newLocale);
       const newMessages = getMessages(newLocale);
       setMessages(newMessages);
-      
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('locale', newLocale);
-        
+
         // Update document direction for RTL languages
         document.documentElement.dir = newLocale === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = newLocale;

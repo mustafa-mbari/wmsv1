@@ -39,6 +39,7 @@
     "inventory": "Inventar",
     "warehouses": "Lagerhäuser",
     "users": "Benutzer",
+    "uiShowcase": "UI-Showcase",
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden",
@@ -271,11 +272,19 @@
       "accentColors": {
         "default": "Standard",
         "blue": "Blau",
+        "darkBlue": "Dunkelblau",
+        "navyBlue": "Marineblau",
+        "custom": "Benutzerblau",
         "green": "Grün",
         "purple": "Lila",
+        "darkPurple": "Dunkellila",
+        "deepPurple": "Tieflila",
         "red": "Rot",
         "orange": "Orange",
-        "pink": "Rosa"
+        "pink": "Rosa",
+        "black": "Schwarz",
+        "slate": "Schiefer",
+        "teal": "Blaugrün"
       },
       "fontSize": "Schriftgröße",
       "fontSizeOptions": {

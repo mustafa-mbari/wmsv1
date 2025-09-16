@@ -39,6 +39,7 @@
     "inventory": "المخزون",
     "warehouses": "المستودعات",
     "users": "المستخدمون",
+    "uiShowcase": "واجهة المستخدم",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
@@ -271,11 +272,19 @@
       "accentColors": {
         "default": "افتراضي",
         "blue": "أزرق",
+        "darkBlue": "أزرق داكن",
+        "navyBlue": "أزرق بحري",
+        "custom": "أزرق مخصص",
         "green": "أخضر",
         "purple": "بنفسجي",
+        "darkPurple": "بنفسجي داكن",
+        "deepPurple": "بنفسجي عميق",
         "red": "أحمر",
         "orange": "برتقالي",
-        "pink": "وردي"
+        "pink": "وردي",
+        "black": "أسود",
+        "slate": "رمادي",
+        "teal": "أزرق مخضر"
       },
       "fontSize": "حجم الخط",
       "fontSizeOptions": {
