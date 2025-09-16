@@ -437,208 +437,6 @@ export function WarehouseZonesTab() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button onClick={fetchZones} variant="outline" size="default">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="default">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Zone
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Create New Zone</DialogTitle>
-                  <DialogDescription>
-                    Fill in the details to create a new warehouse zone.
-                  </DialogDescription>
-                </DialogHeader>
-                <Form {...createForm}>
-                  <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={createForm.control}
-                        name="zone_name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Zone Name*</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Zone name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createForm.control}
-                        name="warehouse_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Warehouse*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select warehouse" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {warehouses.map((warehouse) => (
-                                  <SelectItem key={warehouse.warehouse_id} value={warehouse.warehouse_id}>
-                                    {warehouse.warehouse_name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={createForm.control}
-                      name="zone_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zone Type</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select zone type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="receiving">Receiving</SelectItem>
-                              <SelectItem value="storage">Storage</SelectItem>
-                              <SelectItem value="picking">Picking</SelectItem>
-                              <SelectItem value="packing">Packing</SelectItem>
-                              <SelectItem value="shipping">Shipping</SelectItem>
-                              <SelectItem value="staging">Staging</SelectItem>
-                              <SelectItem value="crossdock">Cross-dock</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="Zone description" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={createForm.control}
-                        name="area"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Area</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="1000"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createForm.control}
-                        name="capacity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Capacity</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="5000"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createForm.control}
-                        name="priority"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Priority (1-10)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min="1"
-                                max="10"
-                                placeholder="1"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={createForm.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="operational">Operational</SelectItem>
-                              <SelectItem value="maintenance">Maintenance</SelectItem>
-                              <SelectItem value="closed">Closed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <DialogFooter>
-                      <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit">
-                        <MapPin className="mr-2 h-4 w-4" />
-                        Create Zone
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </div>
-
       {/* Main Zones Table */}
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
@@ -655,6 +453,206 @@ export function WarehouseZonesTab() {
                 delete: canPerformAdminActions ? { label: "Delete Zone" } : undefined,
               }}
               emptyMessage="No zones found"
+              refreshButton={
+                <Button onClick={fetchZones} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions ? (
+                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Zone
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create New Zone</DialogTitle>
+                        <DialogDescription>
+                          Fill in the details to create a new warehouse zone.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...createForm}>
+                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="zone_name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Zone Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Zone name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="warehouse_id"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Warehouse*</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select warehouse" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {warehouses.map((warehouse) => (
+                                        <SelectItem key={warehouse.warehouse_id} value={warehouse.warehouse_id}>
+                                          {warehouse.warehouse_name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={createForm.control}
+                            name="zone_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Zone Type</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select zone type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="receiving">Receiving</SelectItem>
+                                    <SelectItem value="storage">Storage</SelectItem>
+                                    <SelectItem value="picking">Picking</SelectItem>
+                                    <SelectItem value="packing">Packing</SelectItem>
+                                    <SelectItem value="shipping">Shipping</SelectItem>
+                                    <SelectItem value="staging">Staging</SelectItem>
+                                    <SelectItem value="crossdock">Cross-dock</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Zone description" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-3 gap-4">
+                            <FormField
+                              control={createForm.control}
+                              name="area"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Area</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="1000"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="capacity"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Capacity</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="5000"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createForm.control}
+                              name="priority"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Priority (1-10)</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      max="10"
+                                      placeholder="1"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <FormField
+                            control={createForm.control}
+                            name="status"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Status</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="operational">Operational</SelectItem>
+                                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                                    <SelectItem value="closed">Closed</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit">
+                              <MapPin className="mr-2 h-4 w-4" />
+                              Create Zone
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                ) : undefined
+              }
             />
           </div>
         </CardContent>

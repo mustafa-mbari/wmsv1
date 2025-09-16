@@ -172,22 +172,6 @@ export function InventoryTab() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchInventory}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Inventory
-            </Button>
-          )}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="p-4">
@@ -246,6 +230,20 @@ export function InventoryTab() {
             loading={loading}
             title="Current Inventory"
             emptyMessage="No inventory items found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchInventory}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Inventory
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>

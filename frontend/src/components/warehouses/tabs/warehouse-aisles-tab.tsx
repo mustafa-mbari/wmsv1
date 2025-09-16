@@ -157,22 +157,6 @@ export function WarehouseAislesTab() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchAisles}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Aisle
-            </Button>
-          )}
-        </div>
-      </div>
-
       {/* Main Aisles Table */}
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
@@ -189,6 +173,20 @@ export function WarehouseAislesTab() {
                 delete: canPerformAdminActions ? { label: "Delete Aisle" } : undefined,
               }}
               emptyMessage="No aisles found"
+              refreshButton={
+                <Button variant="outline" size="sm" onClick={fetchAisles}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              }
+              addButton={
+                canPerformAdminActions ? (
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Aisle
+                  </Button>
+                ) : undefined
+              }
             />
           </div>
         </CardContent>

@@ -199,22 +199,6 @@ function LocationsContent() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchLocations}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Location
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -223,6 +207,20 @@ function LocationsContent() {
             loading={loading}
             title="Storage Locations"
             emptyMessage="No locations found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchLocations}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Location
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>
@@ -318,22 +316,6 @@ function BinTypesContent() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchBinTypes}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Bin Type
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -342,6 +324,20 @@ function BinTypesContent() {
             loading={loading}
             title="Bin Types"
             emptyMessage="No bin types found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchBinTypes}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Bin Type
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>
@@ -449,22 +445,6 @@ function BinsContent() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchBins}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Bin
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -473,6 +453,20 @@ function BinsContent() {
             loading={loading}
             title="Storage Bins"
             emptyMessage="No bins found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchBins}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Bin
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>
@@ -603,22 +597,6 @@ function BinMovementsContent() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchMovements}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Movement
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -627,6 +605,20 @@ function BinMovementsContent() {
             loading={loading}
             title="Bin Movements"
             emptyMessage="No movements found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchMovements}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Movement
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>
@@ -765,22 +757,6 @@ function BinContentsContent() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchContents}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Content
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -789,6 +765,20 @@ function BinContentsContent() {
             loading={loading}
             title="Bin Contents"
             emptyMessage="No contents found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchContents}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Content
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>

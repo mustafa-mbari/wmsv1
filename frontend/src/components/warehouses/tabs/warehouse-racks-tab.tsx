@@ -145,22 +145,6 @@ export function WarehouseRacksTab() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div></div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button variant="outline" size="default" onClick={fetchRacks}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-          {canPerformAdminActions && (
-            <Button size="default">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Rack
-            </Button>
-          )}
-        </div>
-      </div>
-
       <Card className="shadow-lg border-0 bg-card">
         <CardContent className="p-0">
           <AdvancedTable
@@ -169,6 +153,20 @@ export function WarehouseRacksTab() {
             loading={loading}
             title="Warehouse Racks"
             emptyMessage="No racks found"
+            refreshButton={
+              <Button variant="outline" size="sm" onClick={fetchRacks}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            }
+            addButton={
+              canPerformAdminActions ? (
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Rack
+                </Button>
+              ) : undefined
+            }
           />
         </CardContent>
       </Card>
