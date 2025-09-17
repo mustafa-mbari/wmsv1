@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { UserTabsNavigation } from "@/components/users/user-tabs-navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,24 @@ import { useAuth } from "@/components/providers/auth-provider";
 
 export default function UsersPage() {
   const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
+  const [activeTab, setActiveTab] = useState("users");
+
+  const getPageTitle = (tab: string) => {
+    switch (tab) {
+      case "users":
+        return "Users / User Management";
+      case "permissions":
+        return "Users / Permissions Management";
+      case "roles":
+        return "Users / Roles Management";
+      case "role-permissions":
+        return "Users / Role Permissions Management";
+      case "user-roles":
+        return "Users / User Roles Management";
+      default:
+        return "Users / User Management";
+    }
+  };
 
   // Check if user can access this page
   const canAccessUsersPage = isSuperAdmin() || isAdmin() || hasRole('manager');
@@ -44,12 +63,15 @@ export default function UsersPage() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-lg font-medium text-muted-foreground">
-          Users / User Management
+          {getPageTitle(activeTab)}
         </h1>
       </div>
 
       {/* Tab Navigation */}
-      <UserTabsNavigation defaultTab="users" />
+      <UserTabsNavigation
+        defaultTab="users"
+        onTabChange={setActiveTab}
+      />
     </div>
   );
 }

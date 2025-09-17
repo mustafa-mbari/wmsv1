@@ -487,47 +487,6 @@ export function UserRolesTab() {
 
   return (
     <div className="w-full space-y-6">
-      {/* Page Header */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight">
-              User Roles Management
-              {!canPerformAdminActions && (
-                <span className="ml-2 text-lg font-normal text-muted-foreground">(Read Only)</span>
-              )}
-            </h2>
-            <p className="text-muted-foreground max-w-2xl">
-              {canPerformAdminActions
-                ? "Manage the assignment of roles to users"
-                : "View user-role assignments (read-only access)"
-              }
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Read-only notice for non-Super Admins */}
-      {!canPerformAdminActions && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <div className="h-5 w-5 rounded-full bg-amber-500 flex items-center justify-center mt-0.5">
-                <div className="h-2 w-2 rounded-full bg-white"></div>
-              </div>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100">
-                Read-Only Access
-              </h3>
-              <p className="mt-1 text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                You have view-only access to user roles. To assign or remove roles, contact your system administrator.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* User Roles Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/30 border-blue-200 dark:border-blue-800">

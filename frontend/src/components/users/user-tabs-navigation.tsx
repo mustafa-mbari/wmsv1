@@ -12,14 +12,20 @@ import { UserRolesTab } from "./tabs/user-roles-tab";
 
 interface UserTabsNavigationProps {
   defaultTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-export function UserTabsNavigation({ defaultTab = "users" }: UserTabsNavigationProps) {
+export function UserTabsNavigation({ defaultTab = "users", onTabChange }: UserTabsNavigationProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+  };
 
   return (
     <div className="w-full space-y-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="border-b border-border/40 bg-background/50 backdrop-blur-sm rounded-lg p-2">
           <TabsList className="grid grid-cols-5 w-full h-auto p-1 bg-muted/30">
             <TabsTrigger
