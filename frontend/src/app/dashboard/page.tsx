@@ -19,7 +19,17 @@ import {
   ArrowDownRight,
   Calendar,
   Clock,
-  Target
+  Target,
+  DollarSign,
+  ShoppingCart,
+  Truck,
+  AlertTriangle,
+  CheckCircle,
+  Timer,
+  Zap,
+  Eye,
+  Star,
+  Shield
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { useIntl } from "react-intl";
@@ -41,6 +51,7 @@ import {
   Cell
 } from 'recharts';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 // Chart data
 const monthlyData = [
@@ -76,6 +87,10 @@ const getStats = (intl: any) => [
     icon: Package,
     trend: [2450, 2580, 2650, 2720, 2780, 2847],
     percentage: 85,
+    lastUpdated: "2 minutes ago",
+    gradient: "from-blue-500 via-blue-600 to-purple-600",
+    darkGradient: "from-blue-400 via-blue-500 to-purple-500",
+    color: "blue",
   },
   {
     name: intl.formatMessage({ id: 'dashboard.stats.activeUsers', defaultMessage: 'Active Users' }),
@@ -85,6 +100,10 @@ const getStats = (intl: any) => [
     icon: Users,
     trend: [110, 115, 120, 118, 125, 127],
     percentage: 76,
+    lastUpdated: "5 minutes ago",
+    gradient: "from-green-500 via-emerald-600 to-teal-600",
+    darkGradient: "from-green-400 via-emerald-500 to-teal-500",
+    color: "green",
   },
   {
     name: intl.formatMessage({ id: 'dashboard.stats.warehouses', defaultMessage: 'Warehouses' }),
@@ -94,6 +113,10 @@ const getStats = (intl: any) => [
     icon: Warehouse,
     trend: [8, 8, 8, 8, 8, 8],
     percentage: 100,
+    lastUpdated: "1 hour ago",
+    gradient: "from-orange-500 via-amber-600 to-red-600",
+    darkGradient: "from-orange-400 via-amber-500 to-red-500",
+    color: "orange",
   },
   {
     name: intl.formatMessage({ id: 'dashboard.stats.inventoryValue', defaultMessage: 'Inventory Value' }),
@@ -103,6 +126,85 @@ const getStats = (intl: any) => [
     icon: BarChart3,
     trend: [65000, 72000, 78000, 81000, 86000, 84293],
     percentage: 92,
+    lastUpdated: "10 minutes ago",
+    gradient: "from-purple-500 via-violet-600 to-pink-600",
+    darkGradient: "from-purple-400 via-violet-500 to-pink-500",
+    color: "purple",
+  },
+];
+
+const getEffectCards = (intl: any) => [
+  {
+    name: "Today's Orders",
+    value: "156",
+    change: "+23%",
+    changeType: "positive",
+    icon: ShoppingCart,
+    description: "Orders processed today",
+    lastUpdated: "Just now",
+    gradient: "from-emerald-500 to-blue-600",
+    darkGradient: "from-emerald-400 to-blue-500",
+    color: "emerald",
+  },
+  {
+    name: "Revenue Today",
+    value: "$12,483",
+    change: "+8.2%",
+    changeType: "positive",
+    icon: DollarSign,
+    description: "Today's total revenue",
+    lastUpdated: "3 minutes ago",
+    gradient: "from-violet-500 to-purple-600",
+    darkGradient: "from-violet-400 to-purple-500",
+    color: "violet",
+  },
+  {
+    name: "Shipments",
+    value: "89",
+    change: "+15%",
+    changeType: "positive",
+    icon: Truck,
+    description: "Outbound shipments",
+    lastUpdated: "7 minutes ago",
+    gradient: "from-cyan-500 to-blue-600",
+    darkGradient: "from-cyan-400 to-blue-500",
+    color: "cyan",
+  },
+  {
+    name: "Low Stock Items",
+    value: "12",
+    change: "-3",
+    changeType: "negative",
+    icon: AlertTriangle,
+    description: "Items below threshold",
+    lastUpdated: "15 minutes ago",
+    gradient: "from-amber-500 to-orange-600",
+    darkGradient: "from-amber-400 to-orange-500",
+    color: "amber",
+  },
+  {
+    name: "Completion Rate",
+    value: "98.5%",
+    change: "+2.1%",
+    changeType: "positive",
+    icon: CheckCircle,
+    description: "Order fulfillment rate",
+    lastUpdated: "20 minutes ago",
+    gradient: "from-green-500 to-emerald-600",
+    darkGradient: "from-green-400 to-emerald-500",
+    color: "green",
+  },
+  {
+    name: "Avg Processing Time",
+    value: "2.3h",
+    change: "-0.4h",
+    changeType: "positive",
+    icon: Timer,
+    description: "Average order processing",
+    lastUpdated: "12 minutes ago",
+    gradient: "from-indigo-500 to-purple-600",
+    darkGradient: "from-indigo-400 to-purple-500",
+    color: "indigo",
   },
 ];
 
@@ -110,6 +212,7 @@ export default function DashboardPage() {
   const intl = useIntl();
   const { user } = useAuth();
   const stats = getStats(intl);
+  const effectCards = getEffectCards(intl);
 
   const getUserDisplayName = () => {
     if (user?.name) return user.name;
@@ -118,6 +221,36 @@ export default function DashboardPage() {
     }
     return user?.username || 'User';
   };
+
+  const [currentDateTime, setCurrentDateTime] = useState(() => {
+    const now = new Date();
+    const date = now.toLocaleDateString();
+    const time = now.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    return { date, time };
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      setCurrentDateTime({ date, time });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const { date, time } = currentDateTime;
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -145,24 +278,30 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Page Header with Welcome Message */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="mb-8"
       >
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white shadow-2xl">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-2xl p-8 text-white shadow-2xl">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div>
-              <h1 className="text-3xl font-bold mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 Welcome back, {getUserDisplayName()}! 👋
               </h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-100 text-base md:text-lg">
                 Here's what's happening in your warehouse today
               </p>
             </div>
-            <div className="flex items-center space-x-2 text-blue-100">
-              <Calendar className="h-5 w-5" />
-              <span>{new Date().toLocaleDateString()}</span>
+            <div className="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:space-x-4 text-blue-100">
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5" />
+                <span className="text-sm md:text-base font-medium">{date}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="h-5 w-5" />
+                <span className="text-sm md:text-base font-mono font-medium">{time}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -173,31 +312,46 @@ export default function DashboardPage() {
         {stats.map((stat, index) => (
           <motion.div
             key={stat.name}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            transition={{
+              duration: 0.4,
+              delay: 0.1 + index * 0.08,
+              ease: "easeOut"
+            }}
           >
-            <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5" />
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.name}
-                </CardTitle>
+            <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-105 bg-card">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} dark:bg-gradient-to-br dark:${stat.darkGradient} opacity-5 group-hover:opacity-10 dark:opacity-10 dark:group-hover:opacity-15 transition-opacity duration-500`} />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-background/20 to-background/10" />
+              <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-3">
+                <div className="space-y-1">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {stat.name}
+                  </CardTitle>
+                  <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Updated {stat.lastUpdated}</span>
+                  </div>
+                </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-md" />
-                  <stat.icon className="relative h-5 w-5 text-primary" />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.gradient} dark:bg-gradient-to-r dark:${stat.darkGradient} rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
+                  <div className="relative bg-background/80 backdrop-blur-sm rounded-full p-2 shadow-lg border border-border/50">
+                    <stat.icon className="h-5 w-5 text-foreground" />
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="relative space-y-4">
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold">{stat.value}</div>
+                  <div className={`text-3xl font-bold bg-gradient-to-r ${stat.gradient} dark:bg-gradient-to-r dark:${stat.darkGradient} bg-clip-text text-transparent`}>
+                    {stat.value}
+                  </div>
                   <div className="flex items-center space-x-2">
                     <Badge
                       variant={
                         stat.changeType === "positive" ? "default" :
                         stat.changeType === "negative" ? "destructive" : "secondary"
                       }
-                      className="text-xs flex items-center space-x-1"
+                      className="text-xs flex items-center space-x-1 shadow-md"
                     >
                       {stat.changeType === "positive" && <ArrowUpRight className="h-3 w-3" />}
                       {stat.changeType === "negative" && <ArrowDownRight className="h-3 w-3" />}
@@ -244,23 +398,120 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Effect Cards Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-foreground">
+            Real-time Metrics
+          </h2>
+          <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-600 dark:border-green-400 animate-pulse">
+            <Zap className="h-3 w-3 mr-1" />
+            Live Data
+          </Badge>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {effectCards.map((card, index) => (
+            <motion.div
+              key={card.name}
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                duration: 0.3,
+                delay: 0.4 + index * 0.03,
+                ease: "easeOut"
+              }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="group"
+            >
+              <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
+                {/* Animated background gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} dark:bg-gradient-to-br dark:${card.darkGradient} opacity-0 group-hover:opacity-15 dark:group-hover:opacity-20 transition-all duration-700`} />
+
+                {/* Glow effect */}
+                <div className={`absolute -inset-1 bg-gradient-to-r ${card.gradient} dark:bg-gradient-to-r dark:${card.darkGradient} rounded-lg opacity-0 group-hover:opacity-20 dark:group-hover:opacity-30 blur-sm transition-all duration-500`} />
+
+                {/* Animated border */}
+                <div className="absolute inset-0 rounded-lg border border-transparent bg-gradient-to-r from-transparent via-background/50 to-transparent group-hover:from-background/30 group-hover:via-background/60 group-hover:to-background/30 transition-all duration-500" />
+
+                <CardContent className="relative p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className={`absolute inset-0 bg-gradient-to-r ${card.gradient} dark:bg-gradient-to-r dark:${card.darkGradient} rounded-full blur-md opacity-40 group-hover:opacity-70 transition-all duration-500`} />
+                          <div className="relative bg-background/90 backdrop-blur-sm rounded-lg p-2 shadow-md group-hover:shadow-lg transition-shadow duration-300 border border-border/50">
+                            <card.icon className="h-4 w-4 text-foreground" />
+                          </div>
+                        </div>
+                        <div className="text-xs font-medium text-muted-foreground group-hover:text-foreground/80 transition-colors">
+                          {card.name}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className={`text-2xl font-bold bg-gradient-to-r ${card.gradient} dark:bg-gradient-to-r dark:${card.darkGradient} bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300`}>
+                          {card.value}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Badge
+                            variant={card.changeType === "positive" ? "default" : "destructive"}
+                            className="text-xs flex items-center space-x-1 shadow-sm"
+                          >
+                            {card.changeType === "positive" ? (
+                              <ArrowUpRight className="h-2 w-2" />
+                            ) : (
+                              <ArrowDownRight className="h-2 w-2" />
+                            )}
+                            <span>{card.change}</span>
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">{card.description}</p>
+                    <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                      <Timer className="h-3 w-3" />
+                      <span>{card.lastUpdated}</span>
+                    </div>
+                  </div>
+
+                  {/* Pulse indicator for real-time data */}
+                  <div className="absolute top-2 right-2">
+                    <div className={`w-2 h-2 bg-gradient-to-r ${card.gradient} dark:bg-gradient-to-r dark:${card.darkGradient} rounded-full animate-pulse shadow-lg`} />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
       {/* Charts Section */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Revenue Chart */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
           className="lg:col-span-2"
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl">Revenue Overview</CardTitle>
+                  <CardTitle className="text-xl text-foreground">
+                    Revenue Overview
+                  </CardTitle>
                   <p className="text-muted-foreground">Monthly revenue and order trends</p>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-600 dark:border-green-400 shadow-md">
                   <TrendingUp className="h-3 w-3 mr-1" />
                   +18.2%
                 </Badge>
@@ -314,13 +565,15 @@ export default function DashboardPage() {
 
         {/* Warehouse Distribution */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.4, delay: 0.65, ease: "easeOut" }}
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl">Warehouse Distribution</CardTitle>
+              <CardTitle className="text-xl text-foreground">
+                Warehouse Distribution
+              </CardTitle>
               <p className="text-muted-foreground">Stock allocation across warehouses</p>
             </CardHeader>
             <CardContent>
@@ -367,15 +620,20 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Activity */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
+          transition={{ duration: 0.4, delay: 0.7, ease: "easeOut" }}
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">Recent Activity</CardTitle>
-                <Button variant="outline" size="sm">View All</Button>
+                <CardTitle className="text-xl text-foreground">
+                  Recent Activity
+                </CardTitle>
+                <Button variant="outline" size="sm" className="hover:shadow-md transition-shadow">
+                  <Eye className="h-3 w-3 mr-1" />
+                  View All
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -385,9 +643,13 @@ export default function DashboardPage() {
                   return (
                     <motion.div
                       key={index}
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0, x: -15 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      transition={{
+                        duration: 0.25,
+                        delay: index * 0.05,
+                        ease: "easeOut"
+                      }}
                       className="flex items-start space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className={`rounded-full p-2 ${getActivityColor(activity.type)} bg-current/10`}>
@@ -414,64 +676,74 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
+          transition={{ duration: 0.4, delay: 0.75, ease: "easeOut" }}
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl">Quick Actions</CardTitle>
+              <CardTitle className="text-xl text-foreground">
+                Quick Actions
+              </CardTitle>
               <p className="text-muted-foreground">Frequently used operations</p>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                <Button className="h-12 justify-start text-left group hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-3">
-                    <div className="rounded-lg bg-blue-100 p-2 group-hover:bg-blue-200 transition-colors">
-                      <Plus className="h-5 w-5 text-blue-600" />
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button className="h-12 w-full justify-start text-left group hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 dark:from-blue-400 dark:to-purple-500 dark:hover:from-blue-500 dark:hover:to-purple-600">
+                    <div className="flex items-center space-x-3">
+                      <div className="rounded-lg bg-white/20 backdrop-blur-sm p-2 group-hover:bg-white/30 transition-colors">
+                        <Plus className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-white">Add New Product</div>
+                        <div className="text-xs text-blue-100">Create and manage inventory</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium">Add New Product</div>
-                      <div className="text-xs text-muted-foreground">Create and manage inventory</div>
-                    </div>
-                  </div>
-                </Button>
+                  </Button>
+                </motion.div>
 
-                <Button variant="outline" className="h-12 justify-start text-left group hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-3">
-                    <div className="rounded-lg bg-green-100 p-2 group-hover:bg-green-200 transition-colors">
-                      <BarChart3 className="h-5 w-5 text-green-600" />
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="outline" className="h-12 w-full justify-start text-left group hover:shadow-xl transition-all duration-300 border-2 hover:border-green-300 hover:bg-green-50 dark:hover:border-green-400 dark:hover:bg-green-950/30">
+                    <div className="flex items-center space-x-3">
+                      <div className="rounded-lg bg-green-100 dark:bg-green-900/30 p-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 transition-colors">
+                        <BarChart3 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">Inventory Adjustment</div>
+                        <div className="text-xs text-muted-foreground">Update stock levels</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium">Inventory Adjustment</div>
-                      <div className="text-xs text-muted-foreground">Update stock levels</div>
-                    </div>
-                  </div>
-                </Button>
+                  </Button>
+                </motion.div>
 
-                <Button variant="outline" className="h-12 justify-start text-left group hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-3">
-                    <div className="rounded-lg bg-purple-100 p-2 group-hover:bg-purple-200 transition-colors">
-                      <FileText className="h-5 w-5 text-purple-600" />
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="outline" className="h-12 w-full justify-start text-left group hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-400 dark:hover:bg-purple-950/30">
+                    <div className="flex items-center space-x-3">
+                      <div className="rounded-lg bg-purple-100 dark:bg-purple-900/30 p-2 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/40 transition-colors">
+                        <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">Generate Report</div>
+                        <div className="text-xs text-muted-foreground">Export analytics data</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium">Generate Report</div>
-                      <div className="text-xs text-muted-foreground">Export analytics data</div>
-                    </div>
-                  </div>
-                </Button>
+                  </Button>
+                </motion.div>
 
-                <Button variant="outline" className="h-12 justify-start text-left group hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-3">
-                    <div className="rounded-lg bg-orange-100 p-2 group-hover:bg-orange-200 transition-colors">
-                      <Settings className="h-5 w-5 text-orange-600" />
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="outline" className="h-12 w-full justify-start text-left group hover:shadow-xl transition-all duration-300 border-2 hover:border-orange-300 hover:bg-orange-50 dark:hover:border-orange-400 dark:hover:bg-orange-950/30">
+                    <div className="flex items-center space-x-3">
+                      <div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-2 group-hover:bg-orange-200 dark:group-hover:bg-orange-800/40 transition-colors">
+                        <Settings className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">System Settings</div>
+                        <div className="text-xs text-muted-foreground">Configure preferences</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium">System Settings</div>
-                      <div className="text-xs text-muted-foreground">Configure preferences</div>
-                    </div>
-                  </div>
-                </Button>
+                  </Button>
+                </motion.div>
               </div>
             </CardContent>
           </Card>
