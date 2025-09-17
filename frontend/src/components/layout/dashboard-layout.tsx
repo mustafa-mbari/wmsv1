@@ -281,48 +281,49 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppSidebar />
       <SidebarInset className="bg-muted/30">
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-sm sticky top-0 z-50">
-          <div className="flex items-center gap-3 px-6">
+          <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6">
             <SidebarTrigger className="-ml-1 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors" />
-            <div className="h-5 w-px bg-border/60" />
+            <div className="h-5 w-px bg-border/60 hidden sm:block" />
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-              <h1 className="text-lg font-semibold text-foreground/90">{intl.formatMessage({ id: 'dashboard.warehouseManagementSystem' })}</h1>
+              <h1 className="text-sm sm:text-lg font-semibold text-foreground/90 hidden sm:block">{intl.formatMessage({ id: 'dashboard.warehouseManagementSystem' })}</h1>
+              <h1 className="text-sm font-semibold text-foreground/90 sm:hidden">WM-Lab</h1>
             </div>
           </div>
-          <div className="ml-auto flex items-center gap-3 px-6">
+          <div className="ml-auto flex items-center gap-1 sm:gap-3 px-3 sm:px-6">
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative hover:bg-accent hover:text-accent-foreground transition-colors">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 rounded-full text-[11px] text-white flex items-center justify-center font-medium">
+            <Button variant="ghost" size="icon" className="relative hover:bg-accent hover:text-accent-foreground transition-colors h-8 w-8 sm:h-10 sm:w-10">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-4 sm:w-4 bg-red-500 rounded-full text-[10px] sm:text-[11px] text-white flex items-center justify-center font-medium">
                 3
               </span>
             </Button>
-            
+
             {/* Language Switcher */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <LanguageSwitcher />
             </div>
-            
+
             {/* Theme Toggle */}
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
-              className="hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="hover:bg-accent hover:text-accent-foreground transition-colors h-8 w-8 sm:h-10 sm:w-10"
               onClick={handleThemeToggle}
               title={`Switch to ${displayTheme === "dark" ? "light" : "dark"} mode`}
             >
-              {displayTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {displayTheme === "dark" ? <Sun className="h-3 w-3 sm:h-4 sm:w-4" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4" />}
             </Button>
-            
+
             {/* User Menu */}
-            <div className="border-l border-border/40 pl-3 ml-1">
+            <div className="border-l border-border/40 pl-2 sm:pl-3 ml-1">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors ring-2 ring-transparent hover:ring-border/20">
+                  <Button variant="ghost" className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors ring-2 ring-transparent hover:ring-border/20">
                     <UserAvatar user={user} size="md" />
                   </Button>
                 </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64" align="end" forceMount>
+              <DropdownMenuContent className="w-56 sm:w-64" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-2">
                     <div className="flex items-center justify-between">
@@ -378,7 +379,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-6 bg-muted/30">
+        <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 lg:p-6 bg-muted/30">
           {children}
         </div>
       </SidebarInset>

@@ -278,9 +278,38 @@ router.get('/zones', async (req: Request, res: Response) => {
   try {
     logger.info('Fetching warehouse zones', { source: 'warehouseRoutes', method: 'getZones' });
 
-    const zones: any[] = [];
+    const { limit = 50, offset = 0, warehouse_id } = req.query;
+    const where: any = { deleted_at: null };
 
-    res.json(createApiResponse(true, zones));
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+
+    const zones = await prisma.zones.findMany({
+      where,
+      include: {
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { zone_name: 'asc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.zones.count({ where });
+
+    logger.info('Zones fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getZones',
+      count: zones.length
+    });
+
+    res.json(createApiResponse(true, { zones, total }));
   } catch (error: any) {
     logger.error('Error fetching zones', {
       source: 'warehouseRoutes',
@@ -299,8 +328,50 @@ router.get('/zones', async (req: Request, res: Response) => {
 
 router.get('/aisles', async (req: Request, res: Response) => {
   try {
-    const aisles: any[] = [];
-    res.json(createApiResponse(true, aisles));
+    logger.info('Fetching warehouse aisles', { source: 'warehouseRoutes', method: 'getAisles' });
+
+    const { limit = 50, offset = 0, warehouse_id, zone_id } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+
+    const aisles = await prisma.aisles.findMany({
+      where,
+      include: {
+        zones: {
+          select: {
+            zone_id: true,
+            zone_name: true,
+            zone_code: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { aisle_name: 'asc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.aisles.count({ where });
+
+    logger.info('Aisles fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getAisles',
+      count: aisles.length
+    });
+
+    res.json(createApiResponse(true, { aisles, total }));
   } catch (error: any) {
     logger.error('Error fetching aisles', {
       source: 'warehouseRoutes',
@@ -319,8 +390,70 @@ router.get('/aisles', async (req: Request, res: Response) => {
 
 router.get('/racks', async (req: Request, res: Response) => {
   try {
-    const racks: any[] = [];
-    res.json(createApiResponse(true, racks));
+    logger.info('Fetching warehouse racks', { source: 'warehouseRoutes', method: 'getRacks' });
+
+    const { limit = 50, offset = 0, warehouse_id, zone_id, aisle_id, location_id } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+    if (aisle_id) {
+      where.aisle_id = aisle_id;
+    }
+    if (location_id) {
+      where.location_id = location_id;
+    }
+
+    const racks = await prisma.racks.findMany({
+      where,
+      include: {
+        locations: {
+          select: {
+            location_id: true,
+            location_name: true,
+            location_code: true
+          }
+        },
+        aisles: {
+          select: {
+            aisle_id: true,
+            aisle_name: true,
+            aisle_code: true
+          }
+        },
+        zones: {
+          select: {
+            zone_id: true,
+            zone_name: true,
+            zone_code: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { rack_name: 'asc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.racks.count({ where });
+
+    logger.info('Racks fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getRacks',
+      count: racks.length
+    });
+
+    res.json(createApiResponse(true, { racks, total }));
   } catch (error: any) {
     logger.error('Error fetching racks', {
       source: 'warehouseRoutes',
@@ -339,8 +472,80 @@ router.get('/racks', async (req: Request, res: Response) => {
 
 router.get('/levels', async (req: Request, res: Response) => {
   try {
-    const levels: any[] = [];
-    res.json(createApiResponse(true, levels));
+    logger.info('Fetching warehouse levels', { source: 'warehouseRoutes', method: 'getLevels' });
+
+    const { limit = 50, offset = 0, warehouse_id, zone_id, aisle_id, location_id, rack_id } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+    if (aisle_id) {
+      where.aisle_id = aisle_id;
+    }
+    if (location_id) {
+      where.location_id = location_id;
+    }
+    if (rack_id) {
+      where.rack_id = rack_id;
+    }
+
+    const levels = await prisma.levels.findMany({
+      where,
+      include: {
+        racks: {
+          select: {
+            rack_id: true,
+            rack_name: true,
+            rack_code: true
+          }
+        },
+        locations: {
+          select: {
+            location_id: true,
+            location_name: true,
+            location_code: true
+          }
+        },
+        aisles: {
+          select: {
+            aisle_id: true,
+            aisle_name: true,
+            aisle_code: true
+          }
+        },
+        zones: {
+          select: {
+            zone_id: true,
+            zone_name: true,
+            zone_code: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { level_name: 'asc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.levels.count({ where });
+
+    logger.info('Levels fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getLevels',
+      count: levels.length
+    });
+
+    res.json(createApiResponse(true, { levels, total }));
   } catch (error: any) {
     logger.error('Error fetching levels', {
       source: 'warehouseRoutes',
@@ -359,8 +564,60 @@ router.get('/levels', async (req: Request, res: Response) => {
 
 router.get('/locations', async (req: Request, res: Response) => {
   try {
-    const locations: any[] = [];
-    res.json(createApiResponse(true, locations));
+    logger.info('Fetching warehouse locations', { source: 'warehouseRoutes', method: 'getLocations' });
+
+    const { limit = 50, offset = 0, warehouse_id, zone_id, aisle_id } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+    if (aisle_id) {
+      where.aisle_id = aisle_id;
+    }
+
+    const locations = await prisma.locations.findMany({
+      where,
+      include: {
+        aisles: {
+          select: {
+            aisle_id: true,
+            aisle_name: true,
+            aisle_code: true
+          }
+        },
+        zones: {
+          select: {
+            zone_id: true,
+            zone_name: true,
+            zone_code: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { location_name: 'asc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.locations.count({ where });
+
+    logger.info('Locations fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getLocations',
+      count: locations.length
+    });
+
+    res.json(createApiResponse(true, { locations, total }));
   } catch (error: any) {
     logger.error('Error fetching locations', {
       source: 'warehouseRoutes',
@@ -381,7 +638,54 @@ router.get('/inventory', async (req: Request, res: Response) => {
   try {
     logger.info('Fetching warehouse inventory', { source: 'warehouseRoutes', method: 'getInventory' });
 
-    const inventory: any[] = [];
+    const { limit = 50, offset = 0, warehouse_id, product_id, bin_id, status } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (product_id) {
+      where.product_id = product_id;
+    }
+    if (bin_id) {
+      where.bin_id = bin_id;
+    }
+    if (status) {
+      where.status = status;
+    }
+
+    const inventory = await prisma.inventory.findMany({
+      where,
+      include: {
+        products: {
+          select: {
+            product_id: true,
+            product_name: true,
+            product_code: true,
+            sku: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        },
+        bins: {
+          select: {
+            bin_id: true,
+            bin_code: true,
+            bin_name: true
+          }
+        }
+      },
+      orderBy: { updated_at: 'desc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.inventory.count({ where });
 
     logger.info('Inventory fetched successfully', {
       source: 'warehouseRoutes',
@@ -389,7 +693,7 @@ router.get('/inventory', async (req: Request, res: Response) => {
       count: inventory.length
     });
 
-    res.json(createApiResponse(true, inventory));
+    res.json(createApiResponse(true, { inventory, total }));
   } catch (error: any) {
     logger.error('Error fetching inventory', {
       source: 'warehouseRoutes',
@@ -406,7 +710,73 @@ router.get('/inventory-movements', async (req: Request, res: Response) => {
   try {
     logger.info('Fetching inventory movements', { source: 'warehouseRoutes', method: 'getInventoryMovements' });
 
-    const movements: any[] = [];
+    const { limit = 50, offset = 0, warehouse_id, product_id, movement_type, from_bin_id, to_bin_id, date_from, date_to } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (product_id) {
+      where.product_id = product_id;
+    }
+    if (movement_type) {
+      where.movement_type = movement_type;
+    }
+    if (from_bin_id) {
+      where.from_bin_id = from_bin_id;
+    }
+    if (to_bin_id) {
+      where.to_bin_id = to_bin_id;
+    }
+    if (date_from || date_to) {
+      where.movement_date = {};
+      if (date_from) {
+        where.movement_date.gte = new Date(date_from as string);
+      }
+      if (date_to) {
+        where.movement_date.lte = new Date(date_to as string);
+      }
+    }
+
+    const movements = await prisma.inventory_movements.findMany({
+      where,
+      include: {
+        products: {
+          select: {
+            product_id: true,
+            product_name: true,
+            product_code: true,
+            sku: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        },
+        bins_inventory_movements_from_bin_idTobins: {
+          select: {
+            bin_id: true,
+            bin_code: true,
+            bin_name: true
+          }
+        },
+        bins_inventory_movements_to_bin_idTobins: {
+          select: {
+            bin_id: true,
+            bin_code: true,
+            bin_name: true
+          }
+        }
+      },
+      orderBy: { movement_date: 'desc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.inventory_movements.count({ where });
 
     logger.info('Inventory movements fetched successfully', {
       source: 'warehouseRoutes',
@@ -414,7 +784,7 @@ router.get('/inventory-movements', async (req: Request, res: Response) => {
       count: movements.length
     });
 
-    res.json(createApiResponse(true, movements));
+    res.json(createApiResponse(true, { movements, total }));
   } catch (error: any) {
     logger.error('Error fetching inventory movements', {
       source: 'warehouseRoutes',
@@ -429,8 +799,55 @@ router.get('/inventory-movements', async (req: Request, res: Response) => {
 
 router.get('/inventory-counts', async (req: Request, res: Response) => {
   try {
-    const counts: any[] = [];
-    res.json(createApiResponse(true, counts));
+    logger.info('Fetching inventory counts', { source: 'warehouseRoutes', method: 'getInventoryCounts' });
+
+    const { limit = 50, offset = 0, warehouse_id, status, count_type, date_from, date_to } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (status) {
+      where.status = status;
+    }
+    if (count_type) {
+      where.count_type = count_type;
+    }
+    if (date_from || date_to) {
+      where.count_date = {};
+      if (date_from) {
+        where.count_date.gte = new Date(date_from as string);
+      }
+      if (date_to) {
+        where.count_date.lte = new Date(date_to as string);
+      }
+    }
+
+    const counts = await prisma.inventory_counts.findMany({
+      where,
+      include: {
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        }
+      },
+      orderBy: { count_date: 'desc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.inventory_counts.count({ where });
+
+    logger.info('Inventory counts fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getInventoryCounts',
+      count: counts.length
+    });
+
+    res.json(createApiResponse(true, { counts, total }));
   } catch (error: any) {
     logger.error('Error fetching inventory counts', {
       source: 'warehouseRoutes',
@@ -445,8 +862,77 @@ router.get('/inventory-counts', async (req: Request, res: Response) => {
 
 router.get('/inventory-count-details', async (req: Request, res: Response) => {
   try {
-    const details: any[] = [];
-    res.json(createApiResponse(true, details));
+    logger.info('Fetching inventory count details', { source: 'warehouseRoutes', method: 'getInventoryCountDetails' });
+
+    const { limit = 50, offset = 0, count_id, product_id, bin_id, variance_threshold } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (count_id) {
+      where.count_id = count_id;
+    }
+    if (product_id) {
+      where.product_id = product_id;
+    }
+    if (bin_id) {
+      where.bin_id = bin_id;
+    }
+    if (variance_threshold) {
+      const threshold = parseFloat(variance_threshold as string);
+      where.OR = [
+        {
+          variance_quantity: {
+            gte: threshold
+          }
+        },
+        {
+          variance_quantity: {
+            lte: -threshold
+          }
+        }
+      ];
+    }
+
+    const details = await prisma.inventory_count_details.findMany({
+      where,
+      include: {
+        inventory_counts: {
+          select: {
+            count_id: true,
+            count_date: true,
+            count_type: true,
+            status: true
+          }
+        },
+        products: {
+          select: {
+            product_id: true,
+            product_name: true,
+            product_code: true,
+            sku: true
+          }
+        },
+        bins: {
+          select: {
+            bin_id: true,
+            bin_code: true,
+            bin_name: true
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.inventory_count_details.count({ where });
+
+    logger.info('Inventory count details fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getInventoryCountDetails',
+      count: details.length
+    });
+
+    res.json(createApiResponse(true, { details, total }));
   } catch (error: any) {
     logger.error('Error fetching inventory count details', {
       source: 'warehouseRoutes',
@@ -461,8 +947,76 @@ router.get('/inventory-count-details', async (req: Request, res: Response) => {
 
 router.get('/inventory-reservations', async (req: Request, res: Response) => {
   try {
-    const reservations: any[] = [];
-    res.json(createApiResponse(true, reservations));
+    logger.info('Fetching inventory reservations', { source: 'warehouseRoutes', method: 'getInventoryReservations' });
+
+    const { limit = 50, offset = 0, warehouse_id, product_id, bin_id, reservation_type, status, date_from, date_to } = req.query;
+    const where: any = { deleted_at: null };
+
+    if (warehouse_id) {
+      where.warehouse_id = warehouse_id;
+    }
+    if (product_id) {
+      where.product_id = product_id;
+    }
+    if (bin_id) {
+      where.bin_id = bin_id;
+    }
+    if (reservation_type) {
+      where.reservation_type = reservation_type;
+    }
+    if (status) {
+      where.status = status;
+    }
+    if (date_from || date_to) {
+      where.reserved_date = {};
+      if (date_from) {
+        where.reserved_date.gte = new Date(date_from as string);
+      }
+      if (date_to) {
+        where.reserved_date.lte = new Date(date_to as string);
+      }
+    }
+
+    const reservations = await prisma.inventory_reservations.findMany({
+      where,
+      include: {
+        products: {
+          select: {
+            product_id: true,
+            product_name: true,
+            product_code: true,
+            sku: true
+          }
+        },
+        warehouses: {
+          select: {
+            warehouse_id: true,
+            warehouse_name: true,
+            warehouse_code: true
+          }
+        },
+        bins: {
+          select: {
+            bin_id: true,
+            bin_code: true,
+            bin_name: true
+          }
+        }
+      },
+      orderBy: { reserved_date: 'desc' },
+      take: parseInt(limit as string),
+      skip: parseInt(offset as string)
+    });
+
+    const total = await prisma.inventory_reservations.count({ where });
+
+    logger.info('Inventory reservations fetched successfully', {
+      source: 'warehouseRoutes',
+      method: 'getInventoryReservations',
+      count: reservations.length
+    });
+
+    res.json(createApiResponse(true, { reservations, total }));
   } catch (error: any) {
     logger.error('Error fetching inventory reservations', {
       source: 'warehouseRoutes',

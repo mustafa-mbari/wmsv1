@@ -13,6 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "WM-Lab v1 - Warehouse Management Laboratory",
   description: "Modern warehouse management laboratory built with Next.js and shadcn/ui",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({

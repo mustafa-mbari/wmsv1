@@ -2,10 +2,45 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Users, Package, Warehouse } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  BarChart3,
+  Users,
+  Package,
+  Warehouse,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Plus,
+  FileText,
+  Settings,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  Clock,
+  Target
+} from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { useIntl } from "react-intl";
 import { useAuth } from "@/components/providers/auth-provider";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
+import { motion } from 'framer-motion';
 
 const getStats = (intl: any) => [
   {
