@@ -1,0 +1,37 @@
+[
+  {
+    "name": "A-Class",
+    "description": "High-value, fast-moving items requiring close monitoring",
+    "is_active": true
+  },
+  {
+    "name": "B-Class", 
+    "description": "Medium-value items with moderate movement",
+    "is_active": true
+  },
+  {
+    "name": "C-Class",
+    "description": "Low-value, slow-moving items with minimal monitoring",
+    "is_active": true
+  },
+  {
+    "name": "Fragile",
+    "description": "Items requiring special handling due to fragility",
+    "is_active": true
+  },
+  {
+    "name": "Hazardous",
+    "description": "Items requiring special safety protocols",
+    "is_active": true
+  },
+  {
+    "name": "Perishable",
+    "description": "Items with expiration dates requiring rotation",
+    "is_active": true
+  },
+  {
+    "name": "Bulk",
+    "description": "Large volume items stored in bulk",
+    "is_active": true
+  }
+]

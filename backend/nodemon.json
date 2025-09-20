@@ -1,6 +1,15 @@
 {
   "watch": ["src"],
   "ext": "ts,json",
-  "ignore": ["src/**/*.spec.ts"],
-  "exec": "ts-node --transpile-only"
+  "ignore": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "dist/**/*",
+    "node_modules/**/*"
+  ],
+  "exec": "ts-node --transpile-only --require=reflect-metadata",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": "1000"
 }

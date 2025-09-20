@@ -44,7 +44,7 @@ export function WarehouseAislesTab() {
   const fetchAisles = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/aisles');
+      const response = await apiClient.get('/api/v2/aisles');
 
       if (response.data?.success) {
         setAisles(response.data.data?.aisles || []);

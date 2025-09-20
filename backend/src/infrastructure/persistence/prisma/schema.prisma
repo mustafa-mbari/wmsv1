@@ -1,0 +1,1114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "product", "inventory", "warehouse"]
+}
+
+// ========================================
+// PUBLIC SCHEMA MODELS
+// ========================================
+
+model class_types {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique(map: "class_types_name_unique") @db.VarChar(100)
+  description String?
+  is_active   Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("class_types_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("class_types_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?    @relation("class_types_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@schema("public")
+}
+
+model notifications {
+  id            Int       @id @default(autoincrement())
+  type          String    @db.VarChar(50)
+  title         String    @db.VarChar(200)
+  message       String
+  data          Json?     @db.Json
+  user_id       Int?
+  email         String?   @db.VarChar(255)
+  phone         String?   @db.VarChar(20)
+  status        String?   @default("pending") @db.VarChar(20)
+  sent_at       DateTime? @db.Timestamptz(6)
+  read_at       DateTime? @db.Timestamptz(6)
+  retry_count   Int?      @default(0)
+  error_message String?
+  priority      String?   @default("normal") @db.VarChar(10)
+  metadata      Json?     @db.Json
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at    DateTime? @db.Timestamptz(6)
+  created_by    Int?
+  updated_by    Int?
+  deleted_by    Int?
+  creator       users?    @relation("notifications_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter       users?    @relation("notifications_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater       users?    @relation("notifications_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  users         users?    @relation("notifications_user", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_user_id_foreign")
+
+  @@index([created_at, priority], map: "notifications_created_at_priority_index")
+  @@index([type, status], map: "notifications_type_status_index")
+  @@index([user_id, status], map: "notifications_user_id_status_index")
+  @@index([deleted_at])
+  @@schema("public")
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "permissions_name_unique") @db.VarChar(100)
+  slug             String             @unique(map: "permissions_slug_unique") @db.VarChar(100)
+  description      String?
+  module           String?            @db.VarChar(50)
+  is_active        Boolean?           @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_by       Int?
+  updated_by       Int?
+  deleted_by       Int?
+  creator          users?             @relation("permissions_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter          users?             @relation("permissions_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater          users?             @relation("permissions_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  role_permissions role_permissions[]
+
+  @@index([is_active, deleted_at])
+  @@index([module, is_active])
+  @@schema("public")
+}
+
+model role_permissions {
+  id            Int         @id @default(autoincrement())
+  role_id       Int
+  permission_id Int
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+  deleted_at    DateTime?   @db.Timestamptz(6)
+  created_by    Int?
+  updated_by    Int?
+  deleted_by    Int?
+  creator       users?      @relation("role_permissions_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter       users?      @relation("role_permissions_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_permission_id_foreign")
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_role_id_foreign")
+  updater       users?      @relation("role_permissions_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@unique([role_id, permission_id], map: "role_permissions_role_id_permission_id_unique")
+  @@index([deleted_at])
+  @@schema("public")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "roles_name_unique") @db.VarChar(100)
+  slug             String             @unique(map: "roles_slug_unique") @db.VarChar(100)
+  description      String?
+  is_active        Boolean?           @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_by       Int?
+  updated_by       Int?
+  deleted_by       Int?
+  role_permissions role_permissions[]
+  creator          users?             @relation("roles_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter          users?             @relation("roles_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater          users?             @relation("roles_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  user_roles       user_roles[]
+
+  @@index([is_active, deleted_at])
+  @@schema("public")
+}
+
+model system_logs {
+  id          Int       @id @default(autoincrement())
+  level       String    @db.VarChar(20)
+  action      String    @db.VarChar(100)
+  message     String
+  context     Json?     @db.Json
+  user_id     Int?
+  ip_address  String?   @db.VarChar(45)
+  user_agent  String?   @db.VarChar(500)
+  module      String?   @db.VarChar(50)
+  entity_type String?   @db.VarChar(50)
+  entity_id   Int?
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("system_logs_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("system_logs_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  users       users?    @relation("system_logs_user", fields: [user_id], references: [id], onUpdate: NoAction, map: "system_logs_user_id_foreign")
+
+  @@index([entity_type, entity_id], map: "system_logs_entity_type_entity_id_index")
+  @@index([level, created_at], map: "system_logs_level_created_at_index")
+  @@index([user_id, created_at], map: "system_logs_user_id_created_at_index")
+  @@index([deleted_at])
+  @@schema("public")
+}
+
+model system_settings {
+  id          Int       @id @default(autoincrement())
+  key         String    @unique(map: "system_settings_key_unique") @db.VarChar(100)
+  value       String?
+  type        String?   @default("string") @db.VarChar(20)
+  description String?
+  group       String?   @db.VarChar(50)
+  is_public   Boolean?  @default(false)
+  is_editable Boolean?  @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  creator     users?    @relation("system_settings_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?    @relation("system_settings_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?    @relation("system_settings_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([group, is_public])
+  @@index([deleted_at])
+  @@schema("public")
+}
+
+model units_of_measure {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique(map: "units_of_measure_name_unique") @db.VarChar(100)
+  symbol      String     @db.VarChar(10)
+  description String?
+  is_active   Boolean?   @default(true)
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime?  @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  products    products[]
+  creator     users?     @relation("units_of_measure_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?     @relation("units_of_measure_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?     @relation("units_of_measure_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@schema("public")
+}
+
+model user_roles {
+  id                                  Int       @id @default(autoincrement())
+  user_id                             Int
+  role_id                             Int
+  assigned_at                         DateTime? @default(now()) @db.Timestamptz(6)
+  assigned_by                         Int?
+  created_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at                          DateTime? @db.Timestamptz(6)
+  created_by                          Int?
+  updated_by                          Int?
+  deleted_by                          Int?
+  users_user_roles_assigned_byTousers users?    @relation("user_roles_assigned_byTousers", fields: [assigned_by], references: [id], onUpdate: NoAction, map: "user_roles_assigned_by_foreign")
+  creator                             users?    @relation("user_roles_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                             users?    @relation("user_roles_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  roles                               roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_role_id_foreign")
+  updater                             users?    @relation("user_roles_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  users_user_roles_user_idTousers     users     @relation("user_roles_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_roles_user_id_foreign")
+
+  @@unique([user_id, role_id], map: "user_roles_user_id_role_id_unique")
+  @@index([deleted_at])
+  @@schema("public")
+}
+
+model users {
+  id                                       Int                         @id @default(autoincrement())
+  username                                 String                      @unique(map: "users_username_unique") @db.VarChar(50)
+  email                                    String                      @unique(map: "users_email_unique") @db.VarChar(255)
+  password_hash                            String                      @db.VarChar(255)
+  first_name                               String                      @db.VarChar(100)
+  last_name                                String                      @db.VarChar(100)
+  phone                                    String?                     @db.VarChar(20)
+  address                                  String?
+  birth_date                               DateTime?                   @db.Date
+  gender                                   String?                     @db.VarChar(10)
+  avatar_url                               String?                     @db.VarChar(255)
+  is_active                                Boolean?                    @default(true)
+  email_verified                           Boolean?                    @default(false)
+  email_verified_at                        DateTime?                   @db.Timestamptz(6)
+  last_login_at                            DateTime?                   @db.Timestamptz(6)
+  reset_token                              String?                     @db.VarChar(255)
+  reset_token_expires_at                   DateTime?                   @db.Timestamptz(6)
+  created_at                               DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                               DateTime                    @default(now()) @db.Timestamptz(6)
+  deleted_at                               DateTime?                   @db.Timestamptz(6)
+  created_by                               Int?
+  updated_by                               Int?
+  deleted_by                               Int?
+  language                                 String?                     @default("en") @db.VarChar(10)
+  time_zone                                String?                     @default("UTC") @db.VarChar(100)
+  created_class_types                      class_types[]               @relation("class_types_created_by")
+  deleted_class_types                      class_types[]               @relation("class_types_deleted_by")
+  updated_class_types                      class_types[]               @relation("class_types_updated_by")
+  created_notifications                    notifications[]             @relation("notifications_created_by")
+  deleted_notifications                    notifications[]             @relation("notifications_deleted_by")
+  updated_notifications                    notifications[]             @relation("notifications_updated_by")
+  notifications                            notifications[]             @relation("notifications_user")
+  created_permissions                      permissions[]               @relation("permissions_created_by")
+  deleted_permissions                      permissions[]               @relation("permissions_deleted_by")
+  updated_permissions                      permissions[]               @relation("permissions_updated_by")
+  created_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_created_by")
+  deleted_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_deleted_by")
+  updated_product_attribute_options        product_attribute_options[] @relation("product_attribute_options_updated_by")
+  created_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_created_by")
+  deleted_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_deleted_by")
+  updated_product_attribute_values         product_attribute_values[]  @relation("product_attribute_values_updated_by")
+  created_product_attributes               product_attributes[]        @relation("product_attributes_created_by")
+  deleted_product_attributes               product_attributes[]        @relation("product_attributes_deleted_by")
+  updated_product_attributes               product_attributes[]        @relation("product_attributes_updated_by")
+  created_product_brands                   product_brands[]            @relation("product_brands_created_by")
+  deleted_product_brands                   product_brands[]            @relation("product_brands_deleted_by")
+  updated_product_brands                   product_brands[]            @relation("product_brands_updated_by")
+  created_product_categories               product_categories[]        @relation("product_categories_created_by")
+  deleted_product_categories               product_categories[]        @relation("product_categories_deleted_by")
+  updated_product_categories               product_categories[]        @relation("product_categories_updated_by")
+  created_product_families                 product_families[]          @relation("product_families_created_by")
+  deleted_product_families                 product_families[]          @relation("product_families_deleted_by")
+  updated_product_families                 product_families[]          @relation("product_families_updated_by")
+  created_products                         products[]                  @relation("products_created_by")
+  deleted_products                         products[]                  @relation("products_deleted_by")
+  updated_products                         products[]                  @relation("products_updated_by")
+  created_role_permissions                 role_permissions[]          @relation("role_permissions_created_by")
+  deleted_role_permissions                 role_permissions[]          @relation("role_permissions_deleted_by")
+  updated_role_permissions                 role_permissions[]          @relation("role_permissions_updated_by")
+  created_roles                            roles[]                     @relation("roles_created_by")
+  deleted_roles                            roles[]                     @relation("roles_deleted_by")
+  updated_roles                            roles[]                     @relation("roles_updated_by")
+  created_system_logs                      system_logs[]               @relation("system_logs_created_by")
+  deleted_system_logs                      system_logs[]               @relation("system_logs_deleted_by")
+  system_logs                              system_logs[]               @relation("system_logs_user")
+  created_system_settings                  system_settings[]           @relation("system_settings_created_by")
+  deleted_system_settings                  system_settings[]           @relation("system_settings_deleted_by")
+  updated_system_settings                  system_settings[]           @relation("system_settings_updated_by")
+  created_units_of_measure                 units_of_measure[]          @relation("units_of_measure_created_by")
+  deleted_units_of_measure                 units_of_measure[]          @relation("units_of_measure_deleted_by")
+  updated_units_of_measure                 units_of_measure[]          @relation("units_of_measure_updated_by")
+  user_roles_user_roles_assigned_byTousers user_roles[]                @relation("user_roles_assigned_byTousers")
+  created_user_roles                       user_roles[]                @relation("user_roles_created_by")
+  deleted_user_roles                       user_roles[]                @relation("user_roles_deleted_by")
+  updated_user_roles                       user_roles[]                @relation("user_roles_updated_by")
+  user_roles_user_roles_user_idTousers     user_roles[]                @relation("user_roles_user_idTousers")
+  creator                                  users?                      @relation("users_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  created_users                            users[]                     @relation("users_created_by")
+  deleter                                  users?                      @relation("users_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  deleted_users                            users[]                     @relation("users_deleted_by")
+  updater                                  users?                      @relation("users_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  updated_users                            users[]                     @relation("users_updated_by")
+
+  @@index([is_active, deleted_at])
+  @@index([email_verified, is_active])
+  @@schema("public")
+}
+
+// ========================================
+// PRODUCT SCHEMA MODELS
+// ========================================
+
+model product_attribute_options {
+  id                       Int                        @id @default(autoincrement())
+  attribute_id             Int
+  value                    String                     @db.VarChar(200)
+  label                    String                     @db.VarChar(200)
+  sort_order               Int?                       @default(0)
+  is_active                Boolean?                   @default(true)
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  product_attributes       product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_options_attribute_id_foreign")
+  creator                  users?                     @relation("product_attribute_options_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("product_attribute_options_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                  users?                     @relation("product_attribute_options_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  product_attribute_values product_attribute_values[]
+
+  @@unique([attribute_id, value], map: "product_attribute_options_attribute_id_value_unique")
+  @@index([is_active, deleted_at])
+  @@map("product_attribute_options")
+  @@schema("product")
+}
+
+model product_attribute_values {
+  id                        Int                        @id @default(autoincrement())
+  product_id                Int
+  attribute_id              Int
+  value                     String?
+  option_id                 Int?
+  created_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                  @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
+  product_attributes        product_attributes         @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_attribute_id_foreign")
+  creator                   users?                     @relation("product_attribute_values_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                     @relation("product_attribute_values_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_attribute_options product_attribute_options? @relation(fields: [option_id], references: [id], onUpdate: NoAction, map: "product_attribute_values_option_id_foreign")
+  products                  products                   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "product_attribute_values_product_id_foreign")
+  updater                   users?                     @relation("product_attribute_values_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@unique([product_id, attribute_id], map: "product_attribute_values_product_id_attribute_id_unique")
+  @@index([deleted_at])
+  @@map("product_attribute_values")
+  @@schema("product")
+}
+
+model product_attributes {
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @db.VarChar(100)
+  slug                      String                      @unique(map: "product_attributes_slug_unique") @db.VarChar(100)
+  type                      String                      @db.VarChar(50)
+  description               String?
+  is_required               Boolean?                    @default(false)
+  is_filterable             Boolean?                    @default(false)
+  is_searchable             Boolean?                    @default(false)
+  sort_order                Int?                        @default(0)
+  is_active                 Boolean?                    @default(true)
+  created_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  deleted_at                DateTime?                   @db.Timestamptz(6)
+  created_by                Int?
+  updated_by                Int?
+  deleted_by                Int?
+  product_attribute_options product_attribute_options[]
+  product_attribute_values  product_attribute_values[]
+  creator                   users?                      @relation("product_attributes_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                   users?                      @relation("product_attributes_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater                   users?                      @relation("product_attributes_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@index([type, is_active])
+  @@map("product_attributes")
+  @@schema("product")
+}
+
+model product_brands {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique(map: "product_brands_name_unique") @db.VarChar(100)
+  slug        String     @unique(map: "product_brands_slug_unique") @db.VarChar(100)
+  description String?
+  website     String?    @db.VarChar(255)
+  logo_url    String?    @db.VarChar(255)
+  is_active   Boolean?   @default(true)
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime?  @db.Timestamptz(6)
+  created_by  Int?
+  updated_by  Int?
+  deleted_by  Int?
+  products    products[]
+  creator     users?     @relation("product_brands_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter     users?     @relation("product_brands_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater     users?     @relation("product_brands_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([is_active, deleted_at])
+  @@map("product_brands")
+  @@schema("product")
+}
+
+model product_categories {
+  id                       Int                  @id @default(autoincrement())
+  name                     String               @db.VarChar(100)
+  slug                     String               @unique(map: "product_categories_slug_unique") @db.VarChar(100)
+  description              String?
+  parent_id                Int?
+  image_url                String?              @db.VarChar(255)
+  sort_order               Int?                 @default(0)
+  is_active                Boolean?             @default(true)
+  created_at               DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime             @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?            @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  creator                  users?               @relation("product_categories_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?               @relation("product_categories_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_categories       product_categories?  @relation("product_categoriesToproduct_categories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "product_categories_parent_id_foreign")
+  other_product_categories product_categories[] @relation("product_categoriesToproduct_categories")
+  updater                  users?               @relation("product_categories_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  product_families         product_families[]
+  products                 products[]
+
+  @@index([is_active, deleted_at])
+  @@index([parent_id, is_active])
+  @@map("product_categories")
+  @@schema("product")
+}
+
+model product_families {
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique(map: "product_families_name_unique") @db.VarChar(100)
+  description        String?
+  category_id        Int?
+  is_active          Boolean?            @default(true)
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  created_by         Int?
+  updated_by         Int?
+  deleted_by         Int?
+  product_categories product_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "product_families_category_id_foreign")
+  creator            users?              @relation("product_families_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter            users?              @relation("product_families_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  updater            users?              @relation("product_families_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+  products           products[]
+
+  @@index([is_active, deleted_at])
+  @@index([category_id, is_active])
+  @@map("product_families")
+  @@schema("product")
+}
+
+model products {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(200)
+  sku                      String                     @unique(map: "products_sku_unique") @db.VarChar(100)
+  barcode                  String?                    @unique(map: "products_barcode_unique") @db.VarChar(100)
+  description              String?
+  short_description        String?
+  category_id              Int?
+  family_id                Int?
+  brand_id                 Int?
+  unit_id                  Int?
+  price                    Decimal?                   @default(0) @db.Decimal(12, 2)
+  cost                     Decimal?                   @default(0) @db.Decimal(12, 2)
+  stock_quantity           Int?                       @default(0)
+  min_stock_level          Int?                       @default(0)
+  weight                   Decimal?                   @db.Decimal(8, 3)
+  length                   Decimal?                   @db.Decimal(8, 2)
+  width                    Decimal?                   @db.Decimal(8, 2)
+  height                   Decimal?                   @db.Decimal(8, 2)
+  status                   String?                    @default("active") @db.VarChar(20)
+  is_digital               Boolean?                   @default(false)
+  track_stock              Boolean?                   @default(true)
+  image_url                String?                    @db.VarChar(255)
+  images                   Json?                      @db.Json
+  tags                     Json?                      @db.Json
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  deleted_at               DateTime?                  @db.Timestamptz(6)
+  created_by               Int?
+  updated_by               Int?
+  deleted_by               Int?
+  product_attribute_values product_attribute_values[]
+  product_brands           product_brands?            @relation(fields: [brand_id], references: [id], onUpdate: NoAction, map: "products_brand_id_foreign")
+  product_categories       product_categories?        @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_foreign")
+  creator                  users?                     @relation("products_created_by", fields: [created_by], references: [id], onUpdate: NoAction)
+  deleter                  users?                     @relation("products_deleted_by", fields: [deleted_by], references: [id], onUpdate: NoAction)
+  product_families         product_families?          @relation(fields: [family_id], references: [id], onUpdate: NoAction, map: "products_family_id_foreign")
+  units_of_measure         units_of_measure?          @relation(fields: [unit_id], references: [id], onUpdate: NoAction, map: "products_unit_id_foreign")
+  updater                  users?                     @relation("products_updated_by", fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@index([brand_id, status], map: "products_brand_id_status_index")
+  @@index([category_id, status], map: "products_category_id_status_index")
+  @@index([sku, status], map: "products_sku_status_index")
+  @@index([status, deleted_at])
+  @@map("products")
+  @@schema("product")
+}
+
+// ========================================
+// INVENTORY SCHEMA MODELS
+// ========================================
+
+model inventory {
+  inventory_id        String    @id @db.VarChar
+  product_id          String?   @db.VarChar
+  location_id         String?   @db.VarChar
+  quantity            Decimal?  @db.Decimal
+  uom_id              String?   @db.VarChar
+  min_stock_level     Decimal?  @db.Decimal
+  max_stock_level     Decimal?  @db.Decimal
+  reorder_point       Decimal?  @db.Decimal
+  lot_number          String?   @db.VarChar
+  serial_number       String?   @db.VarChar
+  production_date     DateTime? @db.Date
+  expiry_date         DateTime? @db.Date
+  last_movement_date  DateTime? @db.Timestamp
+  status              String?   @db.VarChar
+  is_active           Boolean?
+  quality_status      String?   @db.VarChar
+  temperature_zone    String?   @db.VarChar
+  weight              Decimal?  @db.Decimal
+  dimensions          String?   @db.VarChar
+  hazard_class        String?   @db.VarChar
+  owner_id            String?   @db.VarChar
+  supplier_id         String?   @db.VarChar
+  customs_info        String?
+  barcode             String?   @db.VarChar
+  rfid_tag            String?   @db.VarChar
+  last_audit_date     DateTime? @db.Date
+  audit_notes         String?
+  approval_date       DateTime? @db.Timestamp
+  approved_by         String?   @db.VarChar
+  created_at          DateTime? @db.Timestamp
+  updated_at          DateTime? @db.Timestamp
+  deleted_at          DateTime? @db.Timestamp
+  created_by          String?   @db.VarChar
+  updated_by          String?   @db.VarChar
+  deleted_by          String?   @db.VarChar
+
+  @@map("inventory")
+  @@schema("inventory")
+}
+
+model inventory_count_details {
+  count_detail_id        String    @id @db.VarChar
+  count_id               String?   @db.VarChar
+  inventory_id           String?   @db.VarChar
+  expected_quantity      Decimal?  @db.Decimal
+  counted_quantity       Decimal?  @db.Decimal
+  recount_quantity       Decimal?  @db.Decimal
+  uom_id                 String?   @db.VarChar
+  variance               Decimal?  @db.Decimal
+  variance_percentage    Decimal?  @db.Decimal
+  status                 String?   @db.VarChar
+  count_method           String?   @db.VarChar
+  device_id              String?   @db.VarChar
+  counted_by             String?   @db.VarChar
+  counted_at             DateTime? @db.Timestamp
+  recount_by             String?   @db.VarChar
+  recount_at             DateTime? @db.Timestamp
+  recount_status         String?   @db.VarChar
+  adjustment_id          String?   @db.VarChar
+  adjustment_by          String?   @db.VarChar
+  adjustment_date        DateTime? @db.Timestamp
+  location_verified      Boolean?
+  batch_verified         Boolean?
+  expiry_verified        Boolean?
+  item_condition         String?   @db.VarChar
+  notes                  String?
+  created_at             DateTime? @db.Timestamp
+  updated_at             DateTime? @db.Timestamp
+  deleted_at             DateTime? @db.Timestamp
+  created_by             String?   @db.VarChar
+  updated_by             String?   @db.VarChar
+  deleted_by             String?   @db.VarChar
+
+  @@map("inventory_count_details")
+  @@schema("inventory")
+}
+
+model inventory_counts {
+  count_id               String    @id @db.VarChar
+  warehouse_id           String?   @db.VarChar
+  count_name             String?   @db.VarChar
+  count_type             String?   @db.VarChar
+  status                 String?   @db.VarChar
+  start_date             DateTime? @db.Timestamp
+  end_date               DateTime? @db.Timestamp
+  expected_completion    DateTime? @db.Timestamp
+  team_leader            String?   @db.VarChar
+  count_team             String?
+  count_method           String?   @db.VarChar
+  count_frequency        String?   @db.VarChar
+  count_zone             String?   @db.VarChar
+  count_category         String?   @db.VarChar
+  variance_threshold     Decimal?  @db.Decimal
+  is_approved            Boolean?
+  approved_at            DateTime? @db.Timestamp
+  approved_by            String?   @db.VarChar
+  is_recount             Boolean?
+  original_count_id      String?   @db.VarChar
+  priority               String?   @db.VarChar
+  notes                  String?
+  created_at             DateTime? @db.Timestamp
+  updated_at             DateTime? @db.Timestamp
+  deleted_at             DateTime? @db.Timestamp
+  created_by             String?   @db.VarChar
+  updated_by             String?   @db.VarChar
+  deleted_by             String?   @db.VarChar
+
+  @@map("inventory_counts")
+  @@schema("inventory")
+}
+
+model inventory_movements {
+  movement_id              String    @id @db.VarChar
+  inventory_id             String?   @db.VarChar
+  source_location_id       String?   @db.VarChar
+  destination_location_id  String?   @db.VarChar
+  quantity                 Decimal?  @db.Decimal
+  uom_id                   String?   @db.VarChar
+  movement_type            String?   @db.VarChar
+  movement_reason          String?   @db.VarChar
+  reference_id             String?   @db.VarChar
+  reference_type           String?   @db.VarChar
+  batch_number             String?   @db.VarChar
+  movement_date            DateTime? @db.Timestamp
+  performed_by             String?   @db.VarChar
+  system_generated         Boolean?
+  approval_status          String?   @db.VarChar
+  approval_date            DateTime? @db.Timestamp
+  approved_by              String?   @db.VarChar
+  transaction_value        Decimal?  @db.Decimal
+  currency                 String?   @db.VarChar
+  movement_cost            Decimal?  @db.Decimal
+  transport_mode           String?   @db.VarChar
+  carrier_id               String?   @db.VarChar
+  tracking_number          String?   @db.VarChar
+  expected_arrival         DateTime? @db.Timestamp
+  actual_arrival           DateTime? @db.Timestamp
+  notes                    String?
+  created_at               DateTime? @db.Timestamp
+  deleted_at               DateTime? @db.Timestamp
+  created_by               String?   @db.VarChar
+  updated_by               String?   @db.VarChar
+  deleted_by               String?   @db.VarChar
+
+  @@map("inventory_movements")
+  @@schema("inventory")
+}
+
+model inventory_reservations {
+  reservation_id      String    @id @db.VarChar
+  reservation_number  String?   @db.VarChar
+  product_id          String?   @db.VarChar
+  inventory_id        String?   @db.VarChar
+  location_id         String?   @db.VarChar
+  quantity            Decimal?  @db.Decimal
+  uom_id              String?   @db.VarChar
+  reservation_type    String?   @db.VarChar
+  status              String?   @db.VarChar
+  reference_id        String?   @db.VarChar
+  reference_type      String?   @db.VarChar
+  reserved_at         DateTime? @db.Timestamp
+  expires_at          DateTime? @db.Timestamp
+  released_at         DateTime? @db.Timestamp
+  reserved_by         String?   @db.VarChar
+  released_by         String?   @db.VarChar
+  notes               String?
+  priority            Int?
+  created_at          DateTime? @db.Timestamp
+  updated_at          DateTime? @db.Timestamp
+  deleted_at          DateTime? @db.Timestamp
+  created_by          String?   @db.VarChar
+  updated_by          String?   @db.VarChar
+  deleted_by          String?   @db.VarChar
+
+  @@map("inventory_reservations")
+  @@schema("inventory")
+}
+
+// ========================================
+// WAREHOUSE SCHEMA MODELS
+// ========================================
+
+model aisles {
+  aisle_id         String    @id @db.VarChar
+  zone_id          String?   @db.VarChar
+  aisle_name       String?   @db.VarChar
+  aisle_code       String?   @db.VarChar
+  description      String?
+  length           Decimal?  @db.Decimal
+  width            Decimal?  @db.Decimal
+  height           Decimal?  @db.Decimal
+  dimension_unit   String?   @db.VarChar
+  capacity         Int?
+  aisle_direction  String?   @db.VarChar
+  is_active        Boolean?
+  status           String?   @db.VarChar
+  created_at       DateTime? @db.Timestamp
+  updated_at       DateTime? @db.Timestamp
+  deleted_at       DateTime? @db.Timestamp
+  created_by       String?   @db.VarChar
+  updated_by       String?   @db.VarChar
+  deleted_by       String?   @db.VarChar
+  start_x          Float?    @db.DoublePrecision
+  start_y          Float?    @db.DoublePrecision
+  end_x            Float?    @db.DoublePrecision
+  end_y            Float?    @db.DoublePrecision
+  center_x         Float?    @db.DoublePrecision
+  center_y         Float?    @db.DoublePrecision
+  coordinate_unit  String?   @db.VarChar
+  custom_attributes Json?    @db.JsonB
+  lc_warehouse_code String?  @db.Char(1)
+  lc_zone_code     String?   @db.Char(1)
+  lc_aisle_code    String?   @db.Char(1)
+  lc_full_code     String?   @db.VarChar
+
+  @@map("aisles")
+  @@schema("warehouse")
+}
+
+model bin_contents {
+  content_id            BigInt    @id @default(autoincrement())
+  bin_id                String?   @db.VarChar
+  product_id            String?   @db.VarChar
+  batch_number          String?   @db.VarChar
+  serial_number         String?   @db.VarChar
+  quantity              Decimal?  @db.Decimal
+  uom                   String?   @db.VarChar
+  min_quantity          Decimal?  @db.Decimal
+  max_quantity          Decimal?  @db.Decimal
+  storage_condition     String?   @db.VarChar
+  putaway_date          DateTime? @db.Timestamp
+  last_accessed         DateTime? @db.Timestamp
+  expiration_date       DateTime? @db.Date
+  quality_status        String?   @db.VarChar
+  inspection_required   Boolean?
+  last_inspection_date  DateTime? @db.Timestamp
+  inspection_due_date   DateTime? @db.Date
+  source_document       String?   @db.VarChar
+  source_reference      String?   @db.VarChar
+  is_locked             Boolean?
+  locked_by             String?   @db.VarChar
+  locked_at             DateTime? @db.Timestamp
+  lock_reason           String?   @db.VarChar
+  created_at            DateTime? @db.Timestamp
+  updated_at            DateTime? @db.Timestamp
+  deleted_at            DateTime? @db.Timestamp
+  created_by            String?   @db.VarChar
+  updated_by            String?   @db.VarChar
+  deleted_by            String?   @db.VarChar
+
+  @@map("bin_contents")
+  @@schema("warehouse")
+}
+
+model bin_movements {
+  movement_id           String    @id @db.VarChar
+  source_bin_id         String?   @db.VarChar
+  destination_bin_id    String?   @db.VarChar
+  product_id            String?   @db.VarChar
+  quantity              Decimal?  @db.Decimal
+  uom                   String?   @db.VarChar
+  movement_type         String?   @db.VarChar
+  reason                String?   @db.VarChar
+  reference_document    String?   @db.VarChar
+  reference_number      String?   @db.VarChar
+  movement_date         DateTime? @db.Timestamp
+  performed_by          String?   @db.VarChar
+  batch_number          String?   @db.VarChar
+  serial_number         String?   @db.VarChar
+  status                String?   @db.VarChar
+  priority              String?   @db.VarChar
+  equipment_used        String?   @db.VarChar
+  labor_hours           Decimal?  @db.Decimal
+  movement_cost         Decimal?  @db.Decimal
+  notes                 String?
+  created_at            DateTime? @db.Timestamp
+  updated_at            DateTime? @db.Timestamp
+  deleted_at            DateTime? @db.Timestamp
+  created_by            String?   @db.VarChar
+  updated_by            String?   @db.VarChar
+  deleted_by            String?   @db.VarChar
+
+  @@map("bin_movements")
+  @@schema("warehouse")
+}
+
+model bin_types {
+  bin_type_id       String    @id @db.VarChar
+  type_name         String?   @db.VarChar
+  type_code         String?   @db.VarChar
+  description       String?
+  default_capacity  Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_stackable      Boolean?
+  stackable_height  Int?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  material          String?   @db.VarChar
+  color             String?   @db.VarChar
+  is_active         Boolean?
+  hazmat_approved   Boolean?
+  temperature_controlled Boolean?
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+
+  @@map("bin_types")
+  @@schema("warehouse")
+}
+
+model bins {
+  bin_id            String    @id @db.VarChar
+  location_id       String?   @db.VarChar
+  bin_type_id       String?   @db.VarChar
+  bin_code          String?   @db.VarChar
+  bin_name          String?   @db.VarChar
+  description       String?
+  capacity          Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  bin_priority      Int?
+  accessibility     String?   @db.VarChar
+  temperature_zone  String?   @db.VarChar
+  hazmat_approved   Boolean?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  position_z        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  qr_code           String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_bin_code       String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("bins")
+  @@schema("warehouse")
+}
+
+model levels {
+  level_id          String    @id @db.VarChar
+  rack_id           String?   @db.VarChar
+  level_number      Int?
+  level_name        String?   @db.VarChar
+  level_code        String?   @db.VarChar
+  description       String?
+  height_from_floor Decimal?  @db.Decimal
+  level_height      Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  accessibility     String?   @db.VarChar
+  safety_rating     String?   @db.VarChar
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("levels")
+  @@schema("warehouse")
+}
+
+model locations {
+  location_id       String    @id @db.VarChar
+  warehouse_id      String?   @db.VarChar
+  location_code     String?   @db.VarChar
+  location_name     String?   @db.VarChar
+  location_type     String?   @db.VarChar
+  parent_location   String?   @db.VarChar
+  description       String?
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  capacity          Decimal?  @db.Decimal
+  weight_capacity   Decimal?  @db.Decimal
+  picking_zone      String?   @db.VarChar
+  replenishment_zone String?   @db.VarChar
+  temperature_zone  String?   @db.VarChar
+  hazmat_approved   Boolean?
+  abc_class         String?   @db.VarChar
+  velocity_class    String?   @db.VarChar
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  position_z        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  qr_code           String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_level_code     String?   @db.Char(1)
+  lc_bin_code       String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("locations")
+  @@schema("warehouse")
+}
+
+model racks {
+  rack_id           String    @id @db.VarChar
+  aisle_id          String?   @db.VarChar
+  rack_name         String?   @db.VarChar
+  rack_code         String?   @db.VarChar
+  description       String?
+  rack_type         String?   @db.VarChar
+  position_in_aisle Int?
+  side              String?   @db.VarChar
+  levels_count      Int?
+  max_weight        Decimal?  @db.Decimal
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  accessibility     String?   @db.VarChar
+  safety_rating     String?   @db.VarChar
+  material          String?   @db.VarChar
+  manufacturer      String?   @db.VarChar
+  model_number      String?   @db.VarChar
+  installation_date DateTime? @db.Date
+  last_inspection   DateTime? @db.Date
+  next_inspection   DateTime? @db.Date
+  position_x        Float?    @db.DoublePrecision
+  position_y        Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_aisle_code     String?   @db.Char(1)
+  lc_rack_code      String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("racks")
+  @@schema("warehouse")
+}
+
+model warehouses {
+  warehouse_id      String    @id @db.VarChar
+  warehouse_name    String?   @db.VarChar
+  warehouse_code    String?   @db.VarChar
+  description       String?
+  warehouse_type    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  address_line1     String?   @db.VarChar
+  address_line2     String?   @db.VarChar
+  city              String?   @db.VarChar
+  state_province    String?   @db.VarChar
+  postal_code       String?   @db.VarChar
+  country           String?   @db.VarChar
+  latitude          Float?    @db.DoublePrecision
+  longitude         Float?    @db.DoublePrecision
+  time_zone         String?   @db.VarChar
+  operating_hours   Json?     @db.JsonB
+  contact_person    String?   @db.VarChar
+  phone             String?   @db.VarChar
+  email             String?   @db.VarChar
+  total_area        Decimal?  @db.Decimal
+  storage_area      Decimal?  @db.Decimal
+  office_area       Decimal?  @db.Decimal
+  area_unit         String?   @db.VarChar
+  ceiling_height    Decimal?  @db.Decimal
+  dock_doors        Int?
+  truck_capacity    Int?
+  climate_controlled Boolean?
+  temperature_min   Decimal?  @db.Decimal
+  temperature_max   Decimal?  @db.Decimal
+  humidity_control  Boolean?
+  security_level    String?   @db.VarChar
+  insurance_info    String?
+  certifications    Json?     @db.JsonB
+  manager_id        String?   @db.VarChar
+  established_date  DateTime? @db.Date
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("warehouses")
+  @@schema("warehouse")
+}
+
+model zones {
+  zone_id           String    @id @db.VarChar
+  warehouse_id      String?   @db.VarChar
+  zone_name         String?   @db.VarChar
+  zone_code         String?   @db.VarChar
+  description       String?
+  zone_type         String?   @db.VarChar
+  parent_zone_id    String?   @db.VarChar
+  is_active         Boolean?
+  status            String?   @db.VarChar
+  capacity          Decimal?  @db.Decimal
+  temperature_controlled Boolean?
+  temperature_min   Decimal?  @db.Decimal
+  temperature_max   Decimal?  @db.Decimal
+  humidity_control  Boolean?
+  hazmat_approved   Boolean?
+  security_level    String?   @db.VarChar
+  picking_priority  Int?
+  replenishment_priority Int?
+  length            Decimal?  @db.Decimal
+  width             Decimal?  @db.Decimal
+  height            Decimal?  @db.Decimal
+  dimension_unit    String?   @db.VarChar
+  start_x           Float?    @db.DoublePrecision
+  start_y           Float?    @db.DoublePrecision
+  end_x             Float?    @db.DoublePrecision
+  end_y             Float?    @db.DoublePrecision
+  center_x          Float?    @db.DoublePrecision
+  center_y          Float?    @db.DoublePrecision
+  coordinate_unit   String?   @db.VarChar
+  barcode           String?   @db.VarChar
+  rfid_tag          String?   @db.VarChar
+  custom_attributes Json?     @db.JsonB
+  created_at        DateTime? @db.Timestamp
+  updated_at        DateTime? @db.Timestamp
+  deleted_at        DateTime? @db.Timestamp
+  created_by        String?   @db.VarChar
+  updated_by        String?   @db.VarChar
+  deleted_by        String?   @db.VarChar
+  lc_warehouse_code String?   @db.Char(1)
+  lc_zone_code      String?   @db.Char(1)
+  lc_full_code      String?   @db.VarChar
+
+  @@map("zones")
+  @@schema("warehouse")
+}

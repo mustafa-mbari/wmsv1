@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+// Enhanced Warehouses Tab - Layer 1: UI Component using the layered architecture
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -23,706 +24,476 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2,
   Plus,
   RefreshCw,
-  Warehouse,
-  Save,
+  Search,
   Edit,
   Trash2,
+  Warehouse,
+  AlertCircle,
   MapPin,
-  Phone,
-  Mail,
+  Building,
 } from "lucide-react";
-import { useAuth } from "@/components/providers/auth-provider";
-import { apiClient } from "@/lib/api-client";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AdvancedTable, TableData, ColumnConfig } from "@/components/ui/advanced-table";
-import { useAlert } from "@/hooks/useAlert";
-import { getErrorMessage } from "@/lib/error-utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-export interface WarehouseData {
-  warehouse_id: string;
-  warehouse_name: string;
-  warehouse_code: string;
-  lc_warehouse_code: string;
-  lc_full_code?: string;
-  warehouse_type?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  postal_code?: string;
-  contact_person?: string;
-  contact_email?: string;
-  contact_phone?: string;
-  total_area?: number;
-  area_unit?: string;
-  storage_capacity?: number;
-  temperature_controlled: boolean;
-  min_temperature?: number;
-  max_temperature?: number;
-  temperature_unit?: string;
-  is_active: boolean;
-  status: string;
-  timezone?: string;
-  operating_hours?: any;
-  custom_attributes?: any;
-  created_at: string;
-  updated_at: string;
-}
+// Layer 2: Custom Hooks
+import {
+  useWarehouses,
+  useWarehouseMutations,
+  useWarehouseState,
+  useWarehouseSearch
+} from "@/hooks/use-warehouses";
+
+// Types
+import { Warehouse as WarehouseType } from "@/types/api";
+
+// Form schemas
+const warehouseFormSchema = z.object({
+  name: z.string().min(1, "Warehouse name is required"),
+  code: z.string().min(1, "Warehouse code is required"),
+  description: z.string().optional(),
+  address: z.object({
+    street: z.string().min(1, "Street address is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    country: z.string().min(1, "Country is required"),
+    postal_code: z.string().min(1, "Postal code is required"),
+  }),
+  status: z.enum(["active", "inactive"]).default("active"),
+});
+
+type WarehouseFormData = z.infer<typeof warehouseFormSchema>;
 
 export function WarehousesTab() {
-  const { user: currentAuthUser, isSuperAdmin, hasRole, isAdmin } = useAuth();
-  const { showAlert, AlertComponent } = useAlert();
-  const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Layer 2: Custom Hooks for state management
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
-  const [currentWarehouse, setCurrentWarehouse] = useState<WarehouseData | null>(null);
 
-  const canPerformAdminActions = isSuperAdmin() || isAdmin() || hasRole('manager') || hasRole('warehouse-manager');
+  // Warehouse state management
+  const {
+    selectedWarehouses,
+    currentWarehouse,
+    selectWarehouse,
+    clearSelection,
+    setCurrentWarehouse,
+    hasSelection,
+    selectionCount
+  } = useWarehouseState();
 
-  const warehouseFormSchema = z.object({
-    warehouse_name: z.string().min(1, "Warehouse name is required"),
-    warehouse_code: z.string().min(1, "Warehouse code is required"),
-    warehouse_type: z.string().optional(),
-    address: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    country: z.string().optional(),
-    postal_code: z.string().optional(),
-    contact_person: z.string().optional(),
-    contact_email: z.string().email().optional().or(z.literal("")),
-    contact_phone: z.string().optional(),
-    total_area: z.coerce.number().min(0).optional(),
-    area_unit: z.string().optional(),
-    storage_capacity: z.coerce.number().min(0).optional(),
-    temperature_controlled: z.boolean().default(false),
-    min_temperature: z.coerce.number().optional(),
-    max_temperature: z.coerce.number().optional(),
-    temperature_unit: z.string().optional(),
-    status: z.enum(["operational", "maintenance", "closed"]).default("operational"),
-    timezone: z.string().optional(),
+  // Data fetching with React Query
+  const {
+    data: warehousesResponse,
+    isLoading,
+    error,
+    refetch
+  } = useWarehouses({
+    page: currentPage,
+    limit: 10,
+    search: searchTerm
   });
 
-  useEffect(() => {
-    fetchWarehouses();
-  }, []);
+  // Mutations
+  const {
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+    bulkOperations
+  } = useWarehouseMutations();
 
-  const fetchWarehouses = async () => {
-    try {
-      setLoading(true);
-      const response = await apiClient.get('/api/warehouses');
+  // Search functionality
+  const { updateSearch, clearSearch } = useWarehouseSearch();
 
-      if (response.data?.success) {
-        setWarehouses(response.data.data?.warehouses || []);
-      } else {
-        setWarehouses([]);
-      }
-    } catch (error) {
-      console.error("Error fetching warehouses:", error);
-      setWarehouses([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createForm = useForm<z.infer<typeof warehouseFormSchema>>({
+  // Forms
+  const createForm = useForm<WarehouseFormData>({
     resolver: zodResolver(warehouseFormSchema),
     defaultValues: {
-      warehouse_name: "",
-      warehouse_code: "",
-      warehouse_type: "",
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      postal_code: "",
-      contact_person: "",
-      contact_email: "",
-      contact_phone: "",
-      total_area: 0,
-      area_unit: "SQM",
-      storage_capacity: 0,
-      temperature_controlled: false,
-      min_temperature: 0,
-      max_temperature: 0,
-      temperature_unit: "CELSIUS",
-      status: "operational",
-      timezone: "",
+      name: "",
+      code: "",
+      description: "",
+      address: {
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        postal_code: "",
+      },
+      status: "active",
     },
   });
 
-  const editForm = useForm<z.infer<typeof warehouseFormSchema>>({
+  const editForm = useForm<WarehouseFormData>({
     resolver: zodResolver(warehouseFormSchema),
   });
 
-  const onCreateSubmit = async (data: z.infer<typeof warehouseFormSchema>) => {
-    try {
-      const response = await apiClient.post('/api/warehouses', {
-        ...data,
-        is_active: true,
-      });
-
-      if (response.data?.success) {
-        setIsCreateDialogOpen(false);
-        createForm.reset();
-        fetchWarehouses();
-        showAlert({
-          title: "Success",
-          description: "Warehouse created successfully",
-        });
-      } else {
-        throw new Error(response.data?.message || "Failed to create warehouse");
-      }
-    } catch (error: any) {
-      console.error("Error creating warehouse:", error);
-      showAlert({
-        title: "Error Creating Warehouse",
-        description: getErrorMessage(error, "Failed to create warehouse")
-      });
-    }
+  // Event handlers
+  const handleCreateWarehouse = async (data: WarehouseFormData) => {
+    await createWarehouse.mutateAsync(data);
+    setIsCreateDialogOpen(false);
+    createForm.reset();
   };
 
-  const onEditSubmit = async (data: z.infer<typeof warehouseFormSchema>) => {
+  const handleEditWarehouse = async (data: WarehouseFormData) => {
     if (!currentWarehouse) return;
 
-    try {
-      const response = await apiClient.put(`/api/warehouses/${currentWarehouse.warehouse_id}`, data);
-
-      if (response.data?.success) {
-        setIsEditDialogOpen(false);
-        setCurrentWarehouse(null);
-        fetchWarehouses();
-        showAlert({
-          title: "Success",
-          description: "Warehouse updated successfully",
-        });
-      } else {
-        throw new Error(response.data?.message || "Failed to update warehouse");
-      }
-    } catch (error: any) {
-      console.error("Error updating warehouse:", error);
-      showAlert({
-        title: "Error Updating Warehouse",
-        description: getErrorMessage(error, "Failed to update warehouse")
-      });
-    }
+    await updateWarehouse.mutateAsync({
+      id: currentWarehouse.id,
+      data
+    });
+    setIsEditDialogOpen(false);
+    setCurrentWarehouse(null);
+    editForm.reset();
   };
 
-  const confirmDelete = async () => {
-    if (currentWarehouse) {
-      try {
-        setIsDeleteLoading(true);
-        const response = await apiClient.delete(`/api/warehouses/${currentWarehouse.warehouse_id}`);
-
-        if (response.data?.success) {
-          setIsDeleteDialogOpen(false);
-          setCurrentWarehouse(null);
-          fetchWarehouses();
-          showAlert({
-            title: "Success",
-            description: "Warehouse deleted successfully",
-          });
-        } else {
-          throw new Error(response.data?.message || "Failed to delete warehouse");
-        }
-      } catch (error: any) {
-        console.error("Error deleting warehouse:", error);
-        showAlert({
-          title: "Error Deleting Warehouse",
-          description: getErrorMessage(error, "Failed to delete warehouse")
-        });
-      } finally {
-        setIsDeleteLoading(false);
-      }
-    }
+  const handleDeleteWarehouse = async (warehouse: WarehouseType) => {
+    await deleteWarehouse.mutateAsync(warehouse.id);
   };
 
-  const handleEdit = (warehouse: WarehouseData) => {
+  const handleBulkDelete = async () => {
+    if (selectedWarehouses.length === 0) return;
+
+    await bulkOperations.mutateAsync({
+      operation: 'delete',
+      warehouses: selectedWarehouses.map(w => ({ id: w.id }))
+    });
+    clearSelection();
+  };
+
+  const openEditDialog = (warehouse: WarehouseType) => {
     setCurrentWarehouse(warehouse);
     editForm.reset({
-      warehouse_name: warehouse.warehouse_name,
-      warehouse_code: warehouse.warehouse_code,
-      warehouse_type: warehouse.warehouse_type || "",
-      address: warehouse.address || "",
-      city: warehouse.city || "",
-      state: warehouse.state || "",
-      country: warehouse.country || "",
-      postal_code: warehouse.postal_code || "",
-      contact_person: warehouse.contact_person || "",
-      contact_email: warehouse.contact_email || "",
-      contact_phone: warehouse.contact_phone || "",
-      total_area: warehouse.total_area || 0,
-      area_unit: warehouse.area_unit || "SQM",
-      storage_capacity: warehouse.storage_capacity || 0,
-      temperature_controlled: warehouse.temperature_controlled,
-      min_temperature: warehouse.min_temperature || 0,
-      max_temperature: warehouse.max_temperature || 0,
-      temperature_unit: warehouse.temperature_unit || "CELSIUS",
-      status: warehouse.status as "operational" | "maintenance" | "closed",
-      timezone: warehouse.timezone || "",
+      name: warehouse.name,
+      code: warehouse.code,
+      description: warehouse.description || "",
+      address: warehouse.address,
+      status: warehouse.status as "active" | "inactive",
     });
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (warehouse: WarehouseData) => {
-    setCurrentWarehouse(warehouse);
-    setIsDeleteDialogOpen(true);
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    updateSearch({ search: value });
   };
 
-  // Transform warehouses to TableData format for the table
-  const transformedWarehouses: (WarehouseData & TableData)[] = useMemo(() => {
-    if (!warehouses) return [];
-
-    return warehouses.map((warehouse: WarehouseData) => ({
-      ...warehouse,
-      id: warehouse.warehouse_id,
-    }));
-  }, [warehouses]);
-
-  // Define column configuration for the table
-  const columnConfig: ColumnConfig<WarehouseData & TableData>[] = [
-    {
-      key: "lc_full_code",
-      label: "LC Code",
-      width: 120,
-      render: (warehouse) => (
-        <span className="font-mono text-sm bg-blue-50 dark:bg-blue-950/30 px-2 py-1 rounded">
-          {warehouse.lc_full_code || warehouse.lc_warehouse_code}
-        </span>
-      ),
-    },
-    {
-      key: "warehouse_name",
-      label: "Warehouse Name",
-      width: 200,
-      render: (warehouse) => (
-        <div className="font-medium">{warehouse.warehouse_name}</div>
-      ),
-    },
-    {
-      key: "warehouse_code",
-      label: "Code",
-      width: 120,
-      render: (warehouse) => (
-        <span className="font-mono text-sm">{warehouse.warehouse_code}</span>
-      ),
-    },
-    {
-      key: "warehouse_type",
-      label: "Type",
-      width: 150,
-      filterType: "select",
-      render: (warehouse) => (
-        <Badge variant="outline">{warehouse.warehouse_type || "Standard"}</Badge>
-      ),
-    },
-    {
-      key: "city",
-      label: "Location",
-      width: 180,
-      render: (warehouse) => (
-        <div className="flex items-center gap-1">
-          <MapPin className="h-3 w-3 text-muted-foreground" />
-          <span className="text-sm">{warehouse.city ? `${warehouse.city}, ${warehouse.state}` : "N/A"}</span>
-        </div>
-      ),
-    },
-    {
-      key: "contact_email",
-      label: "Contact",
-      width: 200,
-      render: (warehouse) => (
-        <div className="space-y-1">
-          {warehouse.contact_email && (
-            <div className="flex items-center gap-1">
-              <Mail className="h-3 w-3 text-muted-foreground" />
-              <span className="text-sm">{warehouse.contact_email}</span>
-            </div>
-          )}
-          {warehouse.contact_phone && (
-            <div className="flex items-center gap-1">
-              <Phone className="h-3 w-3 text-muted-foreground" />
-              <span className="text-sm">{warehouse.contact_phone}</span>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "total_area",
-      label: "Area",
-      width: 120,
-      render: (warehouse) => (
-        <span className="text-sm">
-          {warehouse.total_area ? `${warehouse.total_area} ${warehouse.area_unit || 'SQM'}` : "N/A"}
-        </span>
-      ),
-    },
-    {
-      key: "temperature_controlled",
-      label: "Climate",
-      width: 100,
-      render: (warehouse) => (
-        <Badge variant={warehouse.temperature_controlled ? "default" : "secondary"}>
-          {warehouse.temperature_controlled ? "Controlled" : "Standard"}
-        </Badge>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      width: 120,
-      filterType: "select",
-      render: (warehouse) => (
-        <Badge variant={
-          warehouse.status === "operational" ? "default" :
-          warehouse.status === "maintenance" ? "secondary" : "destructive"
-        }>
-          {warehouse.status?.charAt(0).toUpperCase() + warehouse.status?.slice(1)}
-        </Badge>
-      ),
-    },
-    {
-      key: "created_at",
-      label: "Created",
-      width: 130,
-      render: (warehouse) => (
-        <span className="text-muted-foreground">
-          {new Date(warehouse.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
-      ),
-    },
-  ];
-
-  const handleWarehouseEdit = (warehouse: WarehouseData & TableData) => {
-    const warehouseFound = warehouses?.find((w: WarehouseData) => w.warehouse_id === warehouse.id);
-    if (warehouseFound) {
-      handleEdit(warehouseFound);
-    }
-  };
-
-  const handleWarehouseDelete = (warehouse: WarehouseData & TableData) => {
-    const warehouseFound = warehouses?.find((w: WarehouseData) => w.warehouse_id === warehouse.id);
-    if (warehouseFound) {
-      setCurrentWarehouse(warehouseFound);
-      setIsDeleteDialogOpen(true);
-    }
-  };
-
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Loading warehouses...</p>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading warehouses...</span>
       </div>
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <AlertCircle className="h-8 w-8 text-red-500" />
+        <span className="ml-2 text-red-500">Error loading warehouses</span>
+        <Button onClick={() => refetch()} variant="outline" className="ml-4">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  const warehouses = warehousesResponse?.data || [];
+
   return (
-    <div className="w-full space-y-6">
-      {/* Main Warehouses Table */}
-      <Card className="shadow-lg border-0 bg-card">
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <AdvancedTable
-              data={transformedWarehouses}
-              columns={columnConfig}
-              loading={loading}
-              title="Warehouse Facilities"
-              onRowEdit={canPerformAdminActions ? handleWarehouseEdit : undefined}
-              onRowDelete={canPerformAdminActions ? handleWarehouseDelete : undefined}
-              actions={{
-                edit: canPerformAdminActions ? { label: "Edit Warehouse" } : undefined,
-                delete: canPerformAdminActions ? { label: "Delete Warehouse" } : undefined,
-              }}
-              emptyMessage="No warehouses found"
-              refreshButton={
-                <Button onClick={fetchWarehouses} variant="outline" size="sm">
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
+          <p className="text-muted-foreground">
+            Manage warehouse locations and facilities
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          {hasSelection && (
+            <HardDeleteConfirmationDialog
+              trigger={
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Selected ({selectionCount})
                 </Button>
               }
-              addButton={
-                canPerformAdminActions ? (
-                  <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Warehouse
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Create New Warehouse</DialogTitle>
-                        <DialogDescription>
-                          Fill in the details to create a new warehouse facility.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Form {...createForm}>
-                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={createForm.control}
-                              name="warehouse_name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Warehouse Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Warehouse name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={createForm.control}
-                              name="warehouse_code"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Warehouse Code*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="WH001" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <FormField
-                            control={createForm.control}
-                            name="warehouse_type"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Warehouse Type</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select warehouse type" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="distribution_center">Distribution Center</SelectItem>
-                                    <SelectItem value="fulfillment_center">Fulfillment Center</SelectItem>
-                                    <SelectItem value="cold_storage">Cold Storage</SelectItem>
-                                    <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                                    <SelectItem value="retail">Retail</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={createForm.control}
-                            name="address"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Address</FormLabel>
-                                <FormControl>
-                                  <Textarea placeholder="Street address" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="grid grid-cols-3 gap-4">
-                            <FormField
-                              control={createForm.control}
-                              name="city"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>City</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="City" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={createForm.control}
-                              name="state"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>State</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="State" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={createForm.control}
-                              name="postal_code"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Postal Code</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="12345" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={createForm.control}
-                              name="contact_email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Contact Email</FormLabel>
-                                  <FormControl>
-                                    <Input type="email" placeholder="contact@warehouse.com" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={createForm.control}
-                              name="contact_phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Contact Phone</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="+1-555-0123" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={createForm.control}
-                              name="total_area"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Total Area</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      placeholder="10000"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={createForm.control}
-                              name="storage_capacity"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Storage Capacity</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="50000"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <FormField
-                            control={createForm.control}
-                            name="status"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Operational Status</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select status" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="operational">Operational</SelectItem>
-                                    <SelectItem value="maintenance">Maintenance</SelectItem>
-                                    <SelectItem value="closed">Closed</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                              Cancel
-                            </Button>
-                            <Button type="submit">
-                              <Warehouse className="mr-2 h-4 w-4" />
-                              Create Warehouse
-                            </Button>
-                          </DialogFooter>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
-                ) : undefined
-              }
+              title="Delete Selected Warehouses"
+              description={`Are you sure you want to delete ${selectionCount} selected warehouses? This action cannot be undone.`}
+              onConfirm={handleBulkDelete}
+              loading={bulkOperations.isPending}
             />
-          </div>
-        </CardContent>
-      </Card>
+          )}
+          <Button onClick={() => refetch()} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Warehouse
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New Warehouse</DialogTitle>
+                <DialogDescription>
+                  Add a new warehouse facility
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...createForm}>
+                <form onSubmit={createForm.handleSubmit(handleCreateWarehouse)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={createForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Warehouse Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter warehouse name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createForm.control}
+                      name="code"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Warehouse Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter warehouse code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={createForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Enter warehouse description" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium">Address</h4>
+                    <FormField
+                      control={createForm.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter street address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="address.city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter city" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="address.state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter state" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="address.country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter country" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={createForm.control}
+                        name="address.postal_code"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Postal Code</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter postal code" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      disabled={createWarehouse.isPending}
+                    >
+                      {createWarehouse.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      Create Warehouse
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
 
-      {/* Edit Warehouse Dialog */}
+      {/* Search */}
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search warehouses..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {/* Warehouses Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {warehouses.map((warehouse) => (
+          <Card key={warehouse.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedWarehouses.some(w => w.id === warehouse.id)}
+                    onChange={() => selectWarehouse(warehouse)}
+                    className="rounded"
+                  />
+                  <Warehouse className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="flex space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditDialog(warehouse)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <HardDeleteConfirmationDialog
+                    trigger={
+                      <Button variant="ghost" size="sm">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    }
+                    title="Delete Warehouse"
+                    description={`Are you sure you want to delete "${warehouse.name}"?`}
+                    onConfirm={() => handleDeleteWarehouse(warehouse)}
+                    loading={deleteWarehouse.isPending}
+                  />
+                </div>
+              </div>
+              <CardTitle className="text-lg">{warehouse.name}</CardTitle>
+              <p className="text-sm text-muted-foreground">Code: {warehouse.code}</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {warehouse.description && (
+                  <p className="text-sm line-clamp-2">{warehouse.description}</p>
+                )}
+                <div className="flex items-start space-x-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div className="text-sm">
+                    <div>{warehouse.address.street}</div>
+                    <div>{warehouse.address.city}, {warehouse.address.state} {warehouse.address.postal_code}</div>
+                    <div>{warehouse.address.country}</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Badge variant={warehouse.status === 'active' ? 'default' : 'secondary'}>
+                    {warehouse.status}
+                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">Facility</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {warehouses.length === 0 && (
+        <div className="text-center py-12">
+          <Warehouse className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No warehouses found</h3>
+          <p className="text-gray-500 mb-4">Get started by adding your first warehouse.</p>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Warehouse
+          </Button>
+        </div>
+      )}
+
+      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Warehouse</DialogTitle>
             <DialogDescription>
-              Update warehouse details and configuration.
+              Update warehouse information
             </DialogDescription>
           </DialogHeader>
           <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-              {/* Same form fields as create form - abbreviated for brevity */}
+            <form onSubmit={editForm.handleSubmit(handleEditWarehouse)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
-                  name="warehouse_name"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Warehouse Name*</FormLabel>
+                      <FormLabel>Warehouse Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Warehouse name" {...field} />
+                        <Input placeholder="Enter warehouse name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -730,25 +501,109 @@ export function WarehousesTab() {
                 />
                 <FormField
                   control={editForm.control}
-                  name="warehouse_code"
+                  name="code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Warehouse Code*</FormLabel>
+                      <FormLabel>Warehouse Code</FormLabel>
                       <FormControl>
-                        <Input placeholder="WH001" {...field} />
+                        <Input placeholder="Enter warehouse code" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter warehouse description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium">Address</h4>
+                <FormField
+                  control={editForm.control}
+                  name="address.street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter street address" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="address.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter city" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editForm.control}
+                    name="address.state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter state" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="address.country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter country" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editForm.control}
+                    name="address.postal_code"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Postal Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter postal code" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  <Save className="mr-2 h-4 w-4" />
+                <Button
+                  type="submit"
+                  disabled={updateWarehouse.isPending}
+                >
+                  {updateWarehouse.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Update Warehouse
                 </Button>
               </DialogFooter>
@@ -756,19 +611,6 @@ export function WarehousesTab() {
           </Form>
         </DialogContent>
       </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <HardDeleteConfirmationDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={confirmDelete}
-        title="Delete Warehouse Permanently"
-        description={`Are you sure you want to permanently delete "${currentWarehouse?.warehouse_name}" (${currentWarehouse?.warehouse_code})? This action cannot be undone and will remove all associated data from the database.`}
-        loading={isDeleteLoading}
-      />
-
-      {/* General Alert Dialog */}
-      <AlertComponent />
     </div>
   );
 }

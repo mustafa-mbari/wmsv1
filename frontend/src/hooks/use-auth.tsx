@@ -44,17 +44,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
     isLoading,
   } = useQuery<UserWithRoles | null, Error>({
-    queryKey: ["/api/user"],
+    queryKey: ["/api/v2/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
+      const res = await apiRequest("POST", "/api/v2/login", credentials);
       return await res.json();
     },
     onSuccess: (user: UserWithRoles) => {
-      queryClient.setQueryData(["/api/user"], user);
+      queryClient.setQueryData(["/api/v2/user"], user);
       toast({
         title: "Login successful",
         description: `Welcome back, ${user.firstName || user.username}!`,
@@ -71,11 +71,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const registerMutation = useMutation({
     mutationFn: async (credentials: InsertUser) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
+      const res = await apiRequest("POST", "/api/v2/register", credentials);
       return await res.json();
     },
     onSuccess: (user: UserWithRoles) => {
-      queryClient.setQueryData(["/api/user"], user);
+      queryClient.setQueryData(["/api/v2/user"], user);
       toast({
         title: "Registration successful",
         description: `Welcome to WM-Lab, ${user.firstName || user.username}!`,
@@ -92,10 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/logout", {});
+      await apiRequest("POST", "/api/v2/logout", {});
     },
     onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
+      queryClient.setQueryData(["/api/v2/user"], null);
       toast({
         title: "Logout successful",
         description: "You have been logged out.",

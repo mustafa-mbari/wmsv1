@@ -5,49 +5,52 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { createApiResponse, HttpStatus } from '@my-app/shared';
 import logger from './utils/logger/logger';
-import { requestLogger } from './middleware/requestLogger';
+import { requestLogger } from './core/api/middleware/requestLogger';
 import { swaggerSpec } from './config/swagger';
 
 // Import routes - Public Schema
-import userRoutes from './routes/public/userRoutes';
-import authRoutes from './routes/public/authRoutes';
-import profileRoutes from './routes/public/profileRoutes';
-import permissionRoutes from './routes/public/permissionRoutes';
-import roleRoutes from './routes/public/roleRoutes';
-import rolePermissionRoutes from './routes/public/rolePermissionRoutes';
-import userRoleRoutes from './routes/public/userRoleRoutes';
-import unitRoutes from './routes/public/unitRoutes';
-import classTypeRoutes from './routes/public/classTypeRoutes';
-import notificationRoutes from './routes/public/notificationRoutes';
-import systemLogRoutes from './routes/public/systemLogRoutes';
-import systemSettingRoutes from './routes/public/systemSettingRoutes';
+import userRoutes from './core/api/routes/public/userRoutes';
+import authRoutes from './core/api/routes/public/authRoutes';
+import profileRoutes from './core/api/routes/public/profileRoutes';
+import permissionRoutes from './core/api/routes/public/permissionRoutes';
+import roleRoutes from './core/api/routes/public/roleRoutes';
+import rolePermissionRoutes from './core/api/routes/public/rolePermissionRoutes';
+import userRoleRoutes from './core/api/routes/public/userRoleRoutes';
+import unitRoutes from './core/api/routes/public/unitRoutes';
+import classTypeRoutes from './core/api/routes/public/classTypeRoutes';
+import notificationRoutes from './core/api/routes/public/notificationRoutes';
+import systemLogRoutes from './core/api/routes/public/systemLogRoutes';
+import systemSettingRoutes from './core/api/routes/public/systemSettingRoutes';
 
 // Import routes - Product Schema
-import productRoutes from './routes/product/productRoutes';
-import categoryRoutes from './routes/product/categoryRoutes';
-import familyRoutes from './routes/product/familyRoutes';
-import brandRoutes from './routes/product/brandRoutes';
-import attributeRoutes from './routes/product/attributeRoutes';
-import attributeOptionRoutes from './routes/product/attributeOptionRoutes';
-import attributeValueRoutes from './routes/product/attributeValueRoutes';
+import productRoutes from './core/api/routes/product/productRoutes';
+import categoryRoutes from './core/api/routes/product/categoryRoutes';
+import familyRoutes from './core/api/routes/product/familyRoutes';
+import brandRoutes from './core/api/routes/product/brandRoutes';
+import attributeRoutes from './core/api/routes/product/attributeRoutes';
+import attributeOptionRoutes from './core/api/routes/product/attributeOptionRoutes';
+import attributeValueRoutes from './core/api/routes/product/attributeValueRoutes';
 
 // Import routes - Inventory Schema
-import inventoryRoutes from './routes/inventory/inventoryRoutes';
-import inventoryCountRoutes from './routes/inventory/inventoryCountRoutes';
-import inventoryMovementRoutes from './routes/inventory/inventoryMovementRoutes';
-import inventoryReservationRoutes from './routes/inventory/inventoryReservationRoutes';
+import inventoryRoutes from './core/api/routes/inventory/inventoryRoutes';
+import inventoryCountRoutes from './core/api/routes/inventory/inventoryCountRoutes';
+import inventoryMovementRoutes from './core/api/routes/inventory/inventoryMovementRoutes';
+import inventoryReservationRoutes from './core/api/routes/inventory/inventoryReservationRoutes';
 
 // Import routes - Warehouse Schema
-import warehouseRoutes from './routes/warehouse/warehouseRoutes';
-import aisleRoutes from './routes/warehouse/aisleRoutes';
-import zoneRoutes from './routes/warehouse/zoneRoutes';
-import rackRoutes from './routes/warehouse/rackRoutes';
-import levelRoutes from './routes/warehouse/levelRoutes';
-import binRoutes from './routes/warehouse/binRoutes';
-import binTypeRoutes from './routes/warehouse/binTypeRoutes';
-import binMovementRoutes from './routes/warehouse/binMovementRoutes';
-import binContentRoutes from './routes/warehouse/binContentRoutes';
-import locationRoutes from './routes/warehouse/locationRoutes';
+import warehouseRoutes from './core/api/routes/warehouse/warehouseRoutes';
+
+// Import v2 API routes with Domain-Driven Design - temporarily disabled
+// import v2Routes from './core/api/routes/v2';
+import aisleRoutes from './core/api/routes/warehouse/aisleRoutes';
+import zoneRoutes from './core/api/routes/warehouse/zoneRoutes';
+import rackRoutes from './core/api/routes/warehouse/rackRoutes';
+import levelRoutes from './core/api/routes/warehouse/levelRoutes';
+import binRoutes from './core/api/routes/warehouse/binRoutes';
+import binTypeRoutes from './core/api/routes/warehouse/binTypeRoutes';
+import binMovementRoutes from './core/api/routes/warehouse/binMovementRoutes';
+import binContentRoutes from './core/api/routes/warehouse/binContentRoutes';
+import locationRoutes from './core/api/routes/warehouse/locationRoutes';
 
 dotenv.config();
 
@@ -135,6 +138,9 @@ app.use('/api/inventory-reservations', inventoryReservationRoutes);
 
 // Routes - Warehouse Schema
 app.use('/api/warehouses', warehouseRoutes);
+
+// Routes - v2 API with Domain-Driven Design - temporarily disabled
+// app.use('/api/v2', v2Routes);
 app.use('/api/aisles', aisleRoutes);
 app.use('/api/zones', zoneRoutes);
 app.use('/api/racks', rackRoutes);

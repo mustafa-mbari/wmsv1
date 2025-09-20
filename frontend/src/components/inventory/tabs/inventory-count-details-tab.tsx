@@ -48,7 +48,7 @@ export function InventoryCountDetailsTab() {
   const fetchCountDetails = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/inventory/count-details');
+      const response = await apiClient.get('/api/v2/inventory/count-details');
       if (response.data.success && response.data.data) {
         setDetails(response.data.data.details || []);
         console.log('Inventory count details data loaded:', response.data.data.details?.length, 'items');

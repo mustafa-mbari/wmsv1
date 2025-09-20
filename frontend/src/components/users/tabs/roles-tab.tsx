@@ -123,7 +123,7 @@ export function RolesTab() {
   const fetchRoles = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get("/api/roles");
+      const response = await apiClient.get("/api/v2/roles");
       const roleData = response.data.data || [];
       setRoles(roleData);
     } catch (error) {
@@ -136,7 +136,7 @@ export function RolesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof roleFormSchema>) => {
     try {
-      await apiClient.post("/api/roles", data);
+      await apiClient.post("/api/v2/roles", data);
       showAlert({
         title: "Success",
         description: "Role created successfully"

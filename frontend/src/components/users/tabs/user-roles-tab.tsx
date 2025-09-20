@@ -146,9 +146,9 @@ export function UserRolesTab() {
     try {
       setLoading(true);
       const [userRolesRes, usersRes, rolesRes] = await Promise.all([
-        apiClient.get("/api/user-roles"),
-        apiClient.get("/api/users"),
-        apiClient.get("/api/roles"),
+        apiClient.get("/api/v2/user-roles"),
+        apiClient.get("/api/v2/users"),
+        apiClient.get("/api/v2/roles"),
       ]);
 
       const userRolesData = userRolesRes.data.data || [];
@@ -307,7 +307,7 @@ export function UserRolesTab() {
         originalFormData: data
       });
 
-      await apiClient.post("/api/user-roles", requestData);
+      await apiClient.post("/api/v2/user-roles", requestData);
 
       setDialogMessage(`Role "${selectedRole.name}" assigned to user "${selectedUser.username}" successfully!`);
       setIsSuccessDialogOpen(true);

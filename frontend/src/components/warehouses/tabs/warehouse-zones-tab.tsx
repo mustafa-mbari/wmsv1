@@ -117,7 +117,7 @@ export function WarehouseZonesTab() {
 
   const fetchWarehouses = async () => {
     try {
-      const response = await apiClient.get('/api/warehouses');
+      const response = await apiClient.get('/api/v2/warehouses');
       if (response.data?.success) {
         setWarehouses(response.data.data?.warehouses || []);
       }
@@ -129,7 +129,7 @@ export function WarehouseZonesTab() {
   const fetchZones = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/zones');
+      const response = await apiClient.get('/api/v2/zones');
 
       if (response.data?.success) {
         setZones(response.data.data?.zones || []);
@@ -173,7 +173,7 @@ export function WarehouseZonesTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof zoneFormSchema>) => {
     try {
-      const response = await apiClient.post('/api/zones', {
+      const response = await apiClient.post('/api/v2/zones', {
         ...data,
         is_active: true,
       });

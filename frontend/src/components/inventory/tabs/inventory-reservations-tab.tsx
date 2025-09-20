@@ -44,7 +44,7 @@ export function InventoryReservationsTab() {
   const fetchReservations = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/inventory/reservations');
+      const response = await apiClient.get('/api/v2/inventory/reservations');
       if (response.data.success && response.data.data) {
         setReservations(response.data.data.reservations || []);
         console.log('Inventory reservations data loaded:', response.data.data.reservations?.length, 'items');

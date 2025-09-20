@@ -81,7 +81,7 @@ export function UserAvatar({
         return avatarPath;
       }
       // Otherwise, construct the full URL
-      return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${avatarPath}`;
+      return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}${avatarPath}`;
     }
     
     return undefined;

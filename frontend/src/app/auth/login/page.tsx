@@ -30,7 +30,7 @@ export default function LoginPage() {
   const testAPI = async () => {
     try {
       console.log("Testing API connection...");
-      const response = await fetch("http://localhost:8001/api/health");
+      const response = await fetch("http://localhost:8000/api/health");
       const data = await response.json();
       console.log("API Health test:", data);
       showAlert({

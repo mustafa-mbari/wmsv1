@@ -46,7 +46,7 @@ export function InventoryMovementsTab() {
   const fetchMovements = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/inventory/movements');
+      const response = await apiClient.get('/api/v2/inventory/movements');
       if (response.data.success && response.data.data) {
         setMovements(response.data.data.movements || []);
         console.log('Inventory movements data loaded:', response.data.data.movements?.length, 'items');

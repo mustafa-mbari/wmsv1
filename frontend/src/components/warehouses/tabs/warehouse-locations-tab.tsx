@@ -110,7 +110,7 @@ function LocationsContent() {
   const fetchLocations = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/locations');
+      const response = await apiClient.get('/api/v2/locations');
 
       if (response.data?.success) {
         setLocations(response.data.data?.locations || []);
@@ -242,7 +242,7 @@ function BinTypesContent() {
   const fetchBinTypes = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/bin-types');
+      const response = await apiClient.get('/api/v2/bin-types');
 
       if (response.data?.success) {
         setBinTypes(response.data.data?.binTypes || []);
@@ -359,7 +359,7 @@ function BinsContent() {
   const fetchBins = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/bins');
+      const response = await apiClient.get('/api/v2/bins');
 
       if (response.data?.success) {
         setBins(response.data.data?.bins || []);
@@ -488,7 +488,7 @@ function BinMovementsContent() {
   const fetchMovements = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/bin-movements');
+      const response = await apiClient.get('/api/v2/bin-movements');
 
       if (response.data?.success) {
         setMovements(response.data.data?.movements || []);
@@ -640,7 +640,7 @@ function BinContentsContent() {
   const fetchContents = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/bin-contents');
+      const response = await apiClient.get('/api/v2/bin-contents');
 
       if (response.data?.success) {
         setContents(response.data.data?.contents || []);

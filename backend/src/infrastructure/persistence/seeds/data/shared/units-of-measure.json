@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Piece",
+    "symbol": "pcs",
+    "description": "Individual items or units",
+    "is_active": true
+  },
+  {
+    "name": "Kilogram",
+    "symbol": "kg",
+    "description": "Weight measurement in kilograms",
+    "is_active": true
+  },
+  {
+    "name": "Gram",
+    "symbol": "g", 
+    "description": "Weight measurement in grams",
+    "is_active": true
+  },
+  {
+    "name": "Liter",
+    "symbol": "L",
+    "description": "Volume measurement in liters",
+    "is_active": true
+  },
+  {
+    "name": "Milliliter",
+    "symbol": "mL",
+    "description": "Volume measurement in milliliters",
+    "is_active": true
+  },
+  {
+    "name": "Meter",
+    "symbol": "m",
+    "description": "Length measurement in meters",
+    "is_active": true
+  },
+  {
+    "name": "Centimeter",
+    "symbol": "cm",
+    "description": "Length measurement in centimeters", 
+    "is_active": true
+  },
+  {
+    "name": "Box",
+    "symbol": "box",
+    "description": "Packaging unit - box",
+    "is_active": true
+  },
+  {
+    "name": "Carton",
+    "symbol": "ctn",
+    "description": "Packaging unit - carton",
+    "is_active": true
+  },
+  {
+    "name": "Pallet",
+    "symbol": "plt",
+    "description": "Packaging unit - pallet",
+    "is_active": true
+  }
+]

@@ -140,9 +140,9 @@ export function RolePermissionsTab() {
     try {
       setLoading(true);
       const [rolePermissionsRes, rolesRes, permissionsRes] = await Promise.all([
-        apiClient.get("/api/role-permissions"),
-        apiClient.get("/api/roles"),
-        apiClient.get("/api/permissions"),
+        apiClient.get("/api/v2/role-permissions"),
+        apiClient.get("/api/v2/roles"),
+        apiClient.get("/api/v2/permissions"),
       ]);
 
       setRolePermissions(rolePermissionsRes.data.data || []);
@@ -160,7 +160,7 @@ export function RolePermissionsTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof rolePermissionFormSchema>) => {
     try {
-      await apiClient.post("/api/role-permissions", {
+      await apiClient.post("/api/v2/role-permissions", {
         role_id: parseInt(data.role_id),
         permission_id: parseInt(data.permission_id),
       });

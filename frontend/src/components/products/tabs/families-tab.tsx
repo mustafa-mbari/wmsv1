@@ -32,7 +32,7 @@ export function FamiliesTab() {
   const fetchFamilies = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/families');
+      const response = await apiClient.get('/api/v2/families');
       if (response.data?.success) {
         setFamilies(response.data.data.map((family: any) => ({
           id: parseInt(family.id),

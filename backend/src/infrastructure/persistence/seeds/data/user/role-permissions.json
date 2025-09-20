@@ -1,0 +1,54 @@
+[
+  {
+    "role_slug": "super-admin",
+    "permissions": [
+      "view-users", "create-users", "edit-users", "delete-users",
+      "view-products", "create-products", "edit-products", "delete-products",
+      "view-inventory", "manage-inventory",
+      "view-reports", "export-data",
+      "system-settings"
+    ]
+  },
+  {
+    "role_slug": "admin", 
+    "permissions": [
+      "view-users", "create-users", "edit-users",
+      "view-products", "create-products", "edit-products", "delete-products",
+      "view-inventory", "manage-inventory",
+      "view-reports", "export-data"
+    ]
+  },
+  {
+    "role_slug": "manager",
+    "permissions": [
+      "view-users",
+      "view-products", "create-products", "edit-products",
+      "view-inventory", "manage-inventory",
+      "view-reports", "export-data"
+    ]
+  },
+  {
+    "role_slug": "supervisor", 
+    "permissions": [
+      "view-products", "edit-products",
+      "view-inventory", "manage-inventory",
+      "view-reports"
+    ]
+  },
+  {
+    "role_slug": "employee",
+    "permissions": [
+      "view-products",
+      "view-inventory",
+      "view-reports"
+    ]
+  },
+  {
+    "role_slug": "viewer",
+    "permissions": [
+      "view-products",
+      "view-inventory",
+      "view-reports"
+    ]
+  }
+]

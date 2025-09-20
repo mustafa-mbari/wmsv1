@@ -43,7 +43,7 @@ export function InventoryTab() {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/inventory');
+      const response = await apiClient.get('/api/v2/inventory');
       console.log('Inventory API response:', response);
 
       if (response.data.success && response.data.data) {

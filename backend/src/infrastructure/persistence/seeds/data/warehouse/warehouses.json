@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Main Warehouse",
+    "code": "WH001",
+    "lc_warehouse_code": "01",
+    "address": "1234 Industrial Drive",
+    "city": "Manufacturing City",
+    "state": "State1",
+    "country": "Country1",
+    "postal_code": "12345",
+    "phone": "+1234567800",
+    "email": "warehouse1@wmlab.com",
+    "manager_username": "manager1",
+    "is_active": true
+  },
+  {
+    "name": "Secondary Storage",
+    "code": "WH002",
+    "lc_warehouse_code": "02", 
+    "address": "5678 Storage Boulevard",
+    "city": "Storage Town",
+    "state": "State2", 
+    "country": "Country1",
+    "postal_code": "67890",
+    "phone": "+1234567801",
+    "email": "warehouse2@wmlab.com",
+    "manager_username": "supervisor1",
+    "is_active": true
+  },
+  {
+    "name": "Distribution Center",
+    "code": "WH003",
+    "lc_warehouse_code": "03",
+    "address": "9999 Distribution Way",
+    "city": "Logistics Hub",
+    "state": "State3",
+    "country": "Country1", 
+    "postal_code": "11111",
+    "phone": "+1234567802",
+    "email": "distribution@wmlab.com",
+    "manager_username": "manager1",
+    "is_active": true
+  },
+  {
+    "name": "Cold Storage",
+    "code": "WH004",
+    "lc_warehouse_code": "04",
+    "address": "2222 Freezer Lane",
+    "city": "Cold City",
+    "state": "State1",
+    "country": "Country1",
+    "postal_code": "33333",
+    "phone": "+1234567803", 
+    "email": "coldstorage@wmlab.com",
+    "manager_username": "supervisor1",
+    "is_active": true
+  }
+]

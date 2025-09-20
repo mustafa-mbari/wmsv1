@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/core/**/*",
+    "src/infrastructure/**/*",
+    "src/utils/**/*",
+    "src/config/**/*",
+    "src/di/**/*",
+    "src/plugins/**/*",
+    "src/i18n/**/*",
+    "src/visualization/**/*",
+    "src/host/**/*",
+    "src/test-architecture.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/routes/**/*",
+    "src/middleware/**/*",
+    "src/app.ts",
+    "src/server.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

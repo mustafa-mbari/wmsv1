@@ -1,0 +1,148 @@
+[
+  {
+    "type": "low_stock",
+    "title": "Low Stock Alert",
+    "message": "Product inventory is running low and needs replenishment",
+    "data": {
+      "product_id": "PROD001",
+      "current_stock": 5,
+      "min_threshold": 10
+    },
+    "user_id": 1,
+    "email": "warehouse@example.com",
+    "status": "pending",
+    "priority": "high",
+    "metadata": {
+      "source": "inventory_system",
+      "alert_type": "stock_level"
+    }
+  },
+  {
+    "type": "system",
+    "title": "System Maintenance Scheduled",
+    "message": "Scheduled maintenance window this weekend from 2:00 AM to 6:00 AM",
+    "data": {
+      "maintenance_type": "database",
+      "start_time": "2024-09-15T02:00:00Z",
+      "end_time": "2024-09-15T06:00:00Z"
+    },
+    "email": "admin@example.com",
+    "status": "pending",
+    "priority": "normal",
+    "metadata": {
+      "source": "system_admin",
+      "category": "maintenance"
+    }
+  },
+  {
+    "type": "order",
+    "title": "New Order Received",
+    "message": "A new order has been received and is ready for processing",
+    "data": {
+      "order_id": "ORD001",
+      "customer": "ABC Company",
+      "total_items": 15
+    },
+    "user_id": 2,
+    "email": "orders@example.com",
+    "status": "sent",
+    "priority": "normal",
+    "metadata": {
+      "source": "order_system",
+      "order_type": "standard"
+    }
+  },
+  {
+    "type": "security",
+    "title": "Unauthorized Access Attempt",
+    "message": "Multiple failed login attempts detected from IP address",
+    "data": {
+      "ip_address": "192.168.1.100",
+      "attempt_count": 5,
+      "timestamp": "2024-09-14T10:30:00Z"
+    },
+    "user_id": 1,
+    "email": "security@example.com",
+    "status": "sent",
+    "priority": "urgent",
+    "metadata": {
+      "source": "security_system",
+      "alert_level": "high"
+    }
+  },
+  {
+    "type": "expiry",
+    "title": "Product Expiring Soon",
+    "message": "Some products in inventory are approaching their expiry dates",
+    "data": {
+      "products": [
+        {
+          "product_id": "PROD004",
+          "lot_number": "LOT2024004",
+          "expiry_date": "2024-12-31",
+          "days_remaining": 15
+        }
+      ]
+    },
+    "user_id": 3,
+    "email": "quality@example.com",
+    "status": "pending",
+    "priority": "high",
+    "metadata": {
+      "source": "quality_system",
+      "alert_type": "expiry_warning"
+    }
+  },
+  {
+    "type": "movement",
+    "title": "Large Inventory Movement",
+    "message": "A significant inventory movement has been completed",
+    "data": {
+      "movement_id": "MOV001",
+      "product_count": 500,
+      "source_location": "LOC001",
+      "destination_location": "LOC005"
+    },
+    "user_id": 2,
+    "status": "sent",
+    "priority": "normal",
+    "metadata": {
+      "source": "inventory_system",
+      "movement_type": "bulk_transfer"
+    }
+  },
+  {
+    "type": "audit",
+    "title": "Cycle Count Due",
+    "message": "Scheduled cycle count is due for Zone A",
+    "data": {
+      "zone_id": "ZONE_A",
+      "last_count_date": "2024-08-15",
+      "items_to_count": 120
+    },
+    "user_id": 4,
+    "email": "audit@example.com",
+    "status": "pending",
+    "priority": "normal",
+    "metadata": {
+      "source": "audit_system",
+      "count_type": "cycle_count"
+    }
+  },
+  {
+    "type": "welcome",
+    "title": "Welcome to WMS",
+    "message": "Welcome to the Warehouse Management System! Your account has been successfully created.",
+    "data": {
+      "user_role": "warehouse_operator",
+      "setup_complete": true
+    },
+    "user_id": 5,
+    "status": "read",
+    "priority": "low",
+    "metadata": {
+      "source": "user_system",
+      "onboarding": true
+    }
+  }
+]

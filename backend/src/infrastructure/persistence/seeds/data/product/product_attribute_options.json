@@ -1,0 +1,191 @@
+[
+  {
+    "attribute_slug": "screen_size",
+    "value": "13",
+    "label": "13 inch",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "screen_size",
+    "value": "14",
+    "label": "14 inch",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "screen_size",
+    "value": "15",
+    "label": "15 inch",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "screen_size",
+    "value": "17",
+    "label": "17 inch",
+    "sort_order": 4,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "black",
+    "label": "Black",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "white",
+    "label": "White",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "silver",
+    "label": "Silver",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "gray",
+    "label": "Gray",
+    "sort_order": 4,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "blue",
+    "label": "Blue",
+    "sort_order": 5,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "color",
+    "value": "red",
+    "label": "Red",
+    "sort_order": 6,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "usb_a",
+    "label": "USB-A",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "usb_c",
+    "label": "USB-C",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "bluetooth",
+    "label": "Bluetooth",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "wifi",
+    "label": "Wi-Fi",
+    "sort_order": 4,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "wireless",
+    "label": "Wireless",
+    "sort_order": 5,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "wired",
+    "label": "Wired",
+    "sort_order": 6,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "hdmi",
+    "label": "HDMI",
+    "sort_order": 7,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "connectivity",
+    "value": "ethernet",
+    "label": "Ethernet",
+    "sort_order": 8,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "resolution",
+    "value": "hd",
+    "label": "HD (720p)",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "resolution",
+    "value": "full_hd",
+    "label": "Full HD (1080p)",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "resolution",
+    "value": "2k",
+    "label": "2K (1440p)",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "resolution",
+    "value": "4k",
+    "label": "4K UHD (2160p)",
+    "sort_order": 4,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "resolution",
+    "value": "8k",
+    "label": "8K UHD (4320p)",
+    "sort_order": 5,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "noise_canceling",
+    "value": "none",
+    "label": "None",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "noise_canceling",
+    "value": "passive",
+    "label": "Passive",
+    "sort_order": 2,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "noise_canceling",
+    "value": "active",
+    "label": "Active",
+    "sort_order": 3,
+    "is_active": true
+  },
+  {
+    "attribute_slug": "noise_canceling",
+    "value": "hybrid",
+    "label": "Hybrid",
+    "sort_order": 4,
+    "is_active": true
+  }
+]

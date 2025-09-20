@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Apple",
+    "slug": "apple",
+    "description": "American multinational technology company that designs, develops, and sells consumer electronics, computer software, and online services.",
+    "website": "https://apple.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Samsung",
+    "slug": "samsung",
+    "description": "South Korean multinational conglomerate headquartered in Samsung Town, Seoul.",
+    "website": "https://samsung.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Sony",
+    "slug": "sony",
+    "description": "Japanese multinational conglomerate corporation headquartered in Kōnan, Minato, Tokyo.",
+    "website": "https://sony.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Microsoft",
+    "slug": "microsoft",
+    "description": "American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services.",
+    "website": "https://microsoft.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Nike",
+    "slug": "nike",
+    "description": "American multinational corporation that is engaged in the design, development, manufacturing, and worldwide marketing and sales of footwear, apparel, equipment, accessories, and services.",
+    "website": "https://nike.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Adidas",
+    "slug": "adidas",
+    "description": "German multinational corporation, founded and headquartered in Herzogenaurach, Germany, that designs and manufactures shoes, clothing and accessories.",
+    "website": "https://adidas.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "HP",
+    "slug": "hp",
+    "description": "American multinational information technology company headquartered in Palo Alto, California.",
+    "website": "https://hp.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Dell",
+    "slug": "dell",
+    "description": "American multinational computer technology company that develops, sells, repairs, and supports computers and related products and services.",
+    "website": "https://dell.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "LG",
+    "slug": "lg",
+    "description": "South Korean multinational conglomerate corporation.",
+    "website": "https://lg.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Canon",
+    "slug": "canon",
+    "description": "Japanese multinational corporation specialized in the manufacture of imaging and optical products.",
+    "website": "https://canon.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Lenovo",
+    "slug": "lenovo",
+    "description": "Chinese multinational technology company specializing in designing, manufacturing, and marketing consumer electronics, personal computers, software, business solutions, and related services.",
+    "website": "https://lenovo.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Asus",
+    "slug": "asus",
+    "description": "Taiwanese multinational computer and phone hardware and electronics company.",
+    "website": "https://asus.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Huawei",
+    "slug": "huawei",
+    "description": "Chinese multinational technology company that designs, develops, and sells telecommunications equipment and consumer electronics.",
+    "website": "https://huawei.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Xiaomi",
+    "slug": "xiaomi",
+    "description": "Chinese multinational electronics company founded in April 2010 and headquartered in Beijing.",
+    "website": "https://mi.com",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Tesla",
+    "slug": "tesla",
+    "description": "American electric vehicle and clean energy company based in Palo Alto, California.",
+    "website": "https://tesla.com",
+    "logo_url": null,
+    "is_active": true
+  }
+]

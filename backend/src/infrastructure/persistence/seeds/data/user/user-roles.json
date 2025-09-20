@@ -1,0 +1,30 @@
+[
+  {
+    "username": "mustafa",
+    "role_slugs": ["super-admin"]
+  },
+  {
+    "username": "superadmin", 
+    "role_slugs": ["super-admin"]
+  },
+  {
+    "username": "admin",
+    "role_slugs": ["super-admin"]
+  },
+  {
+    "username": "manager1",
+    "role_slugs": ["manager"]
+  },
+  {
+    "username": "supervisor1",
+    "role_slugs": ["supervisor"]
+  },
+  {
+    "username": "employee1", 
+    "role_slugs": ["employee"]
+  },
+  {
+    "username": "viewer1",
+    "role_slugs": ["viewer"]
+  }
+]

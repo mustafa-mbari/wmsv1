@@ -1,0 +1,93 @@
+[
+  {
+    "name": "View Users",
+    "slug": "view-users",
+    "description": "Can view user information",
+    "module": "users",
+    "is_active": true
+  },
+  {
+    "name": "Create Users", 
+    "slug": "create-users",
+    "description": "Can create new users",
+    "module": "users",
+    "is_active": true
+  },
+  {
+    "name": "Edit Users",
+    "slug": "edit-users", 
+    "description": "Can edit user information",
+    "module": "users",
+    "is_active": true
+  },
+  {
+    "name": "Delete Users",
+    "slug": "delete-users",
+    "description": "Can delete users",
+    "module": "users", 
+    "is_active": true
+  },
+  {
+    "name": "View Products",
+    "slug": "view-products",
+    "description": "Can view product information",
+    "module": "products",
+    "is_active": true
+  },
+  {
+    "name": "Create Products",
+    "slug": "create-products",
+    "description": "Can create new products",
+    "module": "products",
+    "is_active": true
+  },
+  {
+    "name": "Edit Products",
+    "slug": "edit-products",
+    "description": "Can edit product information", 
+    "module": "products",
+    "is_active": true
+  },
+  {
+    "name": "Delete Products",
+    "slug": "delete-products",
+    "description": "Can delete products",
+    "module": "products",
+    "is_active": true
+  },
+  {
+    "name": "View Inventory",
+    "slug": "view-inventory",
+    "description": "Can view inventory levels",
+    "module": "inventory",
+    "is_active": true
+  },
+  {
+    "name": "Manage Inventory",
+    "slug": "manage-inventory",
+    "description": "Can adjust inventory levels",
+    "module": "inventory",
+    "is_active": true
+  },
+  {
+    "name": "View Reports",
+    "slug": "view-reports",
+    "description": "Can view system reports",
+    "module": "reports",
+    "is_active": true
+  },
+  {
+    "name": "Export Data",
+    "slug": "export-data",
+    "description": "Can export system data",
+    "module": "reports",
+    "is_active": true
+  },
+  {
+    "name": "System Settings",
+    "slug": "system-settings",
+    "description": "Can modify system settings",
+    "module": "system",
+    "is_active": true
+  }
+]

@@ -90,7 +90,7 @@ export function CategoriesTab() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/categories');
+      const response = await apiClient.get('/api/v2/categories');
 
       if (response.data?.success) {
         const apiCategories = response.data.data.map((category: any) => ({
@@ -151,7 +151,7 @@ export function CategoriesTab() {
         is_active: data.isActive,
       };
 
-      const response = await apiClient.post('/api/categories', categoryData);
+      const response = await apiClient.post('/api/v2/categories', categoryData);
 
       if (response.data?.success) {
         setIsCreateDialogOpen(false);

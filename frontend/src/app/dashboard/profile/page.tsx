@@ -283,7 +283,7 @@ export default function ProfilePage() {
       setPasswordChanging(true);
       setError(null);
       
-      await apiClient.post('/api/profile/password', {
+      await apiClient.post('/api/v2/profile/password', {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });

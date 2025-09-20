@@ -128,7 +128,7 @@ export function PermissionsTab() {
   const fetchPermissions = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get("/api/permissions");
+      const response = await apiClient.get("/api/v2/permissions");
       const permissionData = response.data.data || [];
       setPermissions(permissionData);
     } catch (error) {
@@ -141,7 +141,7 @@ export function PermissionsTab() {
 
   const onCreateSubmit = async (data: z.infer<typeof permissionFormSchema>) => {
     try {
-      await apiClient.post("/api/permissions", data);
+      await apiClient.post("/api/v2/permissions", data);
       showAlert({
         title: "Success",
         description: "Permission created successfully"

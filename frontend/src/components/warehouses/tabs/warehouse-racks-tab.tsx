@@ -43,7 +43,7 @@ export function WarehouseRacksTab() {
   const fetchRacks = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/racks');
+      const response = await apiClient.get('/api/v2/racks');
 
       if (response.data?.success) {
         setRacks(response.data.data?.racks || []);

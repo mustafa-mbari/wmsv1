@@ -40,7 +40,7 @@ export function WarehouseLevelsTab() {
   const fetchLevels = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/levels');
+      const response = await apiClient.get('/api/v2/levels');
 
       if (response.data?.success) {
         setLevels(response.data.data?.levels || []);

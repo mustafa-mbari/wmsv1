@@ -34,7 +34,7 @@ export function AttributeOptionsTab() {
   const fetchOptions = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/attribute-options');
+      const response = await apiClient.get('/api/v2/attribute-options');
       if (response.data?.success) {
         setOptions(response.data.data.map((option: any) => ({
           id: parseInt(option.id),

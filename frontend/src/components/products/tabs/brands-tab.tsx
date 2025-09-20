@@ -80,7 +80,7 @@ export function BrandsTab() {
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/brands');
+      const response = await apiClient.get('/api/v2/brands');
 
       if (response.data?.success) {
         const apiBrands = response.data.data.map((brand: any) => ({
@@ -138,7 +138,7 @@ export function BrandsTab() {
         is_active: data.isActive,
       };
 
-      const response = await apiClient.post('/api/brands', brandData);
+      const response = await apiClient.post('/api/v2/brands', brandData);
 
       if (response.data?.success) {
         setIsCreateDialogOpen(false);

@@ -89,7 +89,7 @@ export function AvatarUpload({
     }
     
     if (user?.profilePicture) {
-      return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${user.profilePicture}`;
+      return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}${user.profilePicture}`;
     }
     
     return undefined;
@@ -129,7 +129,7 @@ export function AvatarUpload({
       const formData = new FormData();
       formData.append('avatar', file);
 
-      const response = await apiClient.post('/api/profile/avatar', formData);
+      const response = await apiClient.post('/api/v2/profile/avatar', formData);
 
       if (response.data.success) {
         // Clean up preview
@@ -183,7 +183,7 @@ export function AvatarUpload({
     try {
       setIsRemoving(true);
       
-      const response = await apiClient.delete('/api/profile/avatar');
+      const response = await apiClient.delete('/api/v2/profile/avatar');
       
       if (response.data.success) {
         // Refresh user data

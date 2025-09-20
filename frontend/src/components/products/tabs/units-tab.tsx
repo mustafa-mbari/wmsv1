@@ -34,7 +34,7 @@ export function UnitsTab() {
   const fetchUnits = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/units');
+      const response = await apiClient.get('/api/v2/units');
       if (response.data?.success) {
         setUnits(response.data.data.map((unit: any) => ({
           id: parseInt(unit.id),

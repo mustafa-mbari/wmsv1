@@ -33,7 +33,7 @@ export function AttributeValuesTab() {
   const fetchValues = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/attribute-values');
+      const response = await apiClient.get('/api/v2/attribute-values');
       if (response.data?.success) {
         setValues(response.data.data.map((value: any) => ({
           id: parseInt(value.id),
